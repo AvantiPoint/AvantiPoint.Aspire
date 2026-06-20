@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developers.cloudflare.com/workers/wrangler/configuration/",
+  "name": "cloudflare-playground-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2025-06-01"
+}

@@ -1,5 +1,7 @@
 - name: R2 Buckets
   href: r2.md
+- name: Cloudflare Workers
+  href: workers.md
 - name: Cloudflare Containers
   href: containers.md
 - name: Cloudflare Pages

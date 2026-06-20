@@ -26,6 +26,9 @@ var api = builder.AddProject<Projects.CloudflarePlayground_Api>("api")
     .WaitForCompletion(seeder)
     .PublishAsCloudflareContainer(cloudflare);
 
+// A hand-authored Cloudflare Worker: runs locally via `wrangler dev`, deploys via `wrangler deploy`.
+cloudflare.AddCloudflareWorker("worker", "../CloudflarePlayground.Worker");
+
 // A JavaScript (Vite) frontend deployed to Cloudflare Pages on `aspire deploy`.
 // Run `npm install` in ../CloudflarePlayground.Web before `aspire run`.
 builder.AddViteApp("web", "../CloudflarePlayground.Web")

@@ -11,6 +11,7 @@
 `aspire deploy` is hijacked so your distributed application is published and deployed to Cloudflare:
 
 - **.NET APIs → Cloudflare Containers** — a container image is built from your `ProjectResource` and run on Cloudflare Containers.
+- **Cloudflare Workers** — run a hand-authored Worker locally with `wrangler dev` (no account needed) and deploy it with `aspire deploy`.
 - **JavaScript frontends → Cloudflare Pages** — your build output directory is deployed to Pages.
 - **R2 buckets** — provisioned via the Cloudflare API, with S3-compatible connection details flowed back to your apps. A local **MinIO** emulator runs during `aspire run` so the inner dev loop needs no cloud credentials.
 
