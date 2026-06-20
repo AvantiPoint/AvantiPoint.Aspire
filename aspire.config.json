@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "samples/playground/CloudflarePlayground.AppHost/CloudflarePlayground.AppHost.csproj"
+  }
+}

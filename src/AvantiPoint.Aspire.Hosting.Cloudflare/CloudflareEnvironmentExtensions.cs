@@ -1,6 +1,8 @@
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
+using Aspire.Hosting.Pipelines;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Api;
+using AvantiPoint.Aspire.Hosting.Cloudflare.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -43,6 +45,11 @@ public static class CloudflareEnvironmentExtensions
         var account = accountId ?? builder.CreateDefaultParameter("cloudflare-account-id", AccountIdEnvVar, secret: false);
 
         var resource = new CloudflareEnvironmentResource(name, token.Resource, account.Resource);
+
+        // Hijack the publish/deploy/destroy pipeline: contribute validate-token + publish + deploy +
+        // destroy steps (ordered via WellKnownPipelineSteps) so resources go to Cloudflare, not Azure.
+        resource.Annotations.Add(new PipelineStepAnnotation(_ => CloudflarePipelineSteps.CreateSteps(resource)));
+
         return builder.AddResource(resource);
     }
 

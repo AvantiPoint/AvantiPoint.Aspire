@@ -1,8 +1,12 @@
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
+using AvantiPoint.Aspire.Hosting.Cloudflare.Publishing;
 using AvantiPoint.Aspire.Hosting.Cloudflare.R2.Emulator;
 using AvantiPoint.Aspire.Hosting.Cloudflare.R2.Provisioning;
+using AvantiPoint.Aspire.Hosting.Cloudflare.R2.Publishing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.R2;
 
@@ -34,6 +38,9 @@ public static class R2HostingExtensions
         var builder = environment.ApplicationBuilder;
         environment.Resource.RequireScopes(CloudflareScopes.WorkersR2StorageEdit);
 
+        // Register the R2 publish target so the environment's deploy pipeline provisions buckets.
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ICloudflarePublishTarget, R2PublishTarget>());
+
         var resource = new R2BucketResource(name, environment.Resource, bucketName ?? name);
         var bucket = builder.AddResource(resource);
 
@@ -55,6 +62,16 @@ public static class R2HostingExtensions
         string locationHint)
     {
         bucket.Resource.LocationHint = locationHint;
+        return bucket;
+    }
+
+    /// <summary>
+    /// Permits <c>aspire deploy --destroy</c> to delete this real R2 bucket. Off by default so a
+    /// destroy never silently drops stored objects.
+    /// </summary>
+    public static IResourceBuilder<R2BucketResource> AllowDeletion(this IResourceBuilder<R2BucketResource> bucket)
+    {
+        bucket.Resource.AllowDestroy = true;
         return bucket;
     }
 
