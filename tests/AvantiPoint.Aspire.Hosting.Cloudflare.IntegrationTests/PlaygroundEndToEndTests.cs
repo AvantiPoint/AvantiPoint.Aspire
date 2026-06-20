@@ -14,7 +14,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests;
 /// </summary>
 public class PlaygroundEndToEndTests
 {
-    [Fact]
+    [Fact(Timeout = 600_000)] // hard cap so a stuck orchestration can never hang CI
     public async Task Seeder_Populates_R2_And_Api_Serves_The_Data()
     {
         Assert.SkipUnless(DockerIsAvailable(), "Docker is required for the MinIO R2 emulator.");

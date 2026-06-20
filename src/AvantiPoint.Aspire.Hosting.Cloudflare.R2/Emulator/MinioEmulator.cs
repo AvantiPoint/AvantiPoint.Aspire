@@ -34,7 +34,7 @@ internal static class MinioEmulator
     public const string DefaultSecretKey = "cloudflare-r2-local-secret";
 
     private const string Image = "minio/minio";
-    private const string Tag = "latest"; // TODO(M6): pin to a specific RELEASE.* tag.
+    private const string Tag = "RELEASE.2025-09-07T16-13-09Z"; // pinned for reproducible dev runs
     private const int ApiPort = 9000;
     private const int ConsolePort = 9001;
     private const string S3EndpointName = "s3";

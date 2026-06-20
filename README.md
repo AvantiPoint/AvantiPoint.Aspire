@@ -19,7 +19,7 @@ Cross-cutting:
 - **API-token first** — the Cloudflare API token is an Aspire secret parameter, and its permission scopes are validated up front (fail-fast) before anything is provisioned.
 - **Custom domains** — attach a custom domain (with your Zone Id) to a Container or Pages app during deploy.
 
-> Status: early development. See [the implementation plan](#packages) and milestones below.
+> Status: active development. R2 (hosting + client + MinIO emulator), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
 
 ## Packages
 

@@ -1,7 +1,9 @@
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
+using AvantiPoint.Aspire.Hosting.Cloudflare.Api;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Cli;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Publishing.Generators;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.Publishing;
@@ -86,6 +88,19 @@ internal sealed class ContainerPublishTarget(ILogger<ContainerPublishTarget> log
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
         logger.LogInformation("Deployed container Worker '{Worker}'.", annotation.WorkerName);
+
+        // Attach any custom domains (Workers custom domains; Cloudflare manages DNS + SSL).
+        var customDomains = resource.Annotations.OfType<CustomDomainAnnotation>().ToList();
+        if (customDomains.Count > 0)
+        {
+            var apiClient = context.Services.GetRequiredService<ICloudflareApiClient>();
+            foreach (var domain in customDomains)
+            {
+                await apiClient.AttachWorkersCustomDomainAsync(
+                    context.ApiToken, context.AccountId, domain.ZoneId, domain.Hostname, annotation.WorkerName,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+        }
     }
 
     public async Task DestroyAsync(CloudflareDeployContext context, IResource resource, CancellationToken cancellationToken)

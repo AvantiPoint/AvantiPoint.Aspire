@@ -1,6 +1,9 @@
 using Aspire.Hosting.ApplicationModel;
+using AvantiPoint.Aspire.Hosting.Cloudflare;
+using AvantiPoint.Aspire.Hosting.Cloudflare.Api;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Cli;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Publishing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Publishing;
@@ -50,6 +53,18 @@ internal sealed class PagesPublishTarget(ILogger<PagesPublishTarget> logger, IWr
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
         logger.LogInformation("Deployed '{Project}' to Cloudflare Pages.", annotation.ProjectName);
+
+        // Attach any custom domains: register with the Pages project and upsert a proxied CNAME.
+        var customDomains = resource.Annotations.OfType<CustomDomainAnnotation>().ToList();
+        if (customDomains.Count > 0)
+        {
+            var apiClient = context.Services.GetRequiredService<ICloudflareApiClient>();
+            foreach (var domain in customDomains)
+            {
+                await apiClient.AttachPagesDomainAsync(context.ApiToken, context.AccountId, annotation.ProjectName, domain.Hostname, cancellationToken).ConfigureAwait(false);
+                await apiClient.UpsertCnameRecordAsync(context.ApiToken, domain.ZoneId, domain.Hostname, $"{annotation.ProjectName}.pages.dev", cancellationToken).ConfigureAwait(false);
+            }
+        }
     }
 
     public async Task DestroyAsync(CloudflareDeployContext context, IResource resource, CancellationToken cancellationToken)

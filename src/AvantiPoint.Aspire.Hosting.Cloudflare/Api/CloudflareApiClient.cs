@@ -82,6 +82,65 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         }
     }
 
+    public async Task AttachWorkersCustomDomainAsync(string apiToken, string accountId, string zoneId, string hostname, string service, string environment = "production", CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Put, $"accounts/{accountId}/workers/domains", apiToken);
+        request.Content = JsonContent.Create(new WorkersDomainRequest
+        {
+            ZoneId = zoneId,
+            Hostname = hostname,
+            Service = service,
+            Environment = environment,
+        });
+
+        await SendAsync<object>(request, "attach Workers custom domain", cancellationToken).ConfigureAwait(false);
+        logger.LogInformation("Attached Worker '{Service}' to custom domain '{Hostname}'.", service, hostname);
+    }
+
+    public async Task AttachPagesDomainAsync(string apiToken, string accountId, string projectName, string hostname, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/pages/projects/{projectName}/domains", apiToken);
+        request.Content = JsonContent.Create(new PagesDomainRequest { Name = hostname });
+
+        var envelope = await SendRawAsync<object>(request, cancellationToken).ConfigureAwait(false);
+        if (envelope.Success)
+        {
+            logger.LogInformation("Added custom domain '{Hostname}' to Pages project '{Project}'.", hostname, projectName);
+            return;
+        }
+
+        // Treat an already-existing domain as success.
+        if (envelope.Errors.Any(e => e.Message.Contains("already", StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        throw CloudflareApiException.FromResponse("attach Pages custom domain", envelope.Errors);
+    }
+
+    public async Task UpsertCnameRecordAsync(string apiToken, string zoneId, string name, string content, CancellationToken cancellationToken = default)
+    {
+        using var lookup = CreateRequest(HttpMethod.Get, $"zones/{zoneId}/dns_records?type=CNAME&name={Uri.EscapeDataString(name)}", apiToken);
+        var existing = await SendAsync<List<DnsRecord>>(lookup, "list DNS records", cancellationToken).ConfigureAwait(false);
+
+        var body = new DnsRecordRequest { Type = "CNAME", Name = name, Content = content, Proxied = true };
+        var current = existing?.FirstOrDefault();
+        if (current is not null)
+        {
+            using var update = CreateRequest(HttpMethod.Put, $"zones/{zoneId}/dns_records/{current.Id}", apiToken);
+            update.Content = JsonContent.Create(body);
+            await SendAsync<DnsRecord>(update, "update DNS record", cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            using var create = CreateRequest(HttpMethod.Post, $"zones/{zoneId}/dns_records", apiToken);
+            create.Content = JsonContent.Create(body);
+            await SendAsync<DnsRecord>(create, "create DNS record", cancellationToken).ConfigureAwait(false);
+        }
+
+        logger.LogInformation("Upserted CNAME '{Name}' -> '{Content}'.", name, content);
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

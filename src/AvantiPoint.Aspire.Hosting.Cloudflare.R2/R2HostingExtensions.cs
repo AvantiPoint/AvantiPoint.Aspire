@@ -130,12 +130,13 @@ public static class R2HostingExtensions
             return builder.CreateResourceBuilder(existing);
         }
 
+        // Resolve lazily from env/config. Return empty (rather than throw) when unset so the
+        // deployment-state save during publish doesn't warn for apps that don't access R2 at runtime;
+        // a consuming app that actually needs the credentials will surface a clear S3 auth error.
         return builder.AddParameter(parameterName, () =>
             Environment.GetEnvironmentVariable(environmentVariable)
             ?? builder.Configuration[$"Parameters:{parameterName}"]
-            ?? throw new InvalidOperationException(
-                $"R2 credential '{parameterName}' is not set. Provide it via the {environmentVariable} " +
-                $"environment variable, user-secrets, or configuration key 'Parameters:{parameterName}'."),
+            ?? string.Empty,
             secret: true);
     }
 }

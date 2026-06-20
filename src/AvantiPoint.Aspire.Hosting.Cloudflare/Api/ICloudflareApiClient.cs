@@ -23,4 +23,16 @@ public interface ICloudflareApiClient
 
     /// <summary>Deletes an R2 bucket. No-op if it does not exist.</summary>
     Task DeleteR2BucketAsync(string apiToken, string accountId, string bucketName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Attaches a Worker to a custom domain (Workers custom domains). Cloudflare creates the DNS record
+    /// and SSL certificate automatically. Idempotent.
+    /// </summary>
+    Task AttachWorkersCustomDomainAsync(string apiToken, string accountId, string zoneId, string hostname, string service, string environment = "production", CancellationToken cancellationToken = default);
+
+    /// <summary>Adds a custom domain to a Pages project. Idempotent (existing domain is treated as success).</summary>
+    Task AttachPagesDomainAsync(string apiToken, string accountId, string projectName, string hostname, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates or updates a proxied CNAME record in the zone (upsert by name).</summary>
+    Task UpsertCnameRecordAsync(string apiToken, string zoneId, string name, string content, CancellationToken cancellationToken = default);
 }
