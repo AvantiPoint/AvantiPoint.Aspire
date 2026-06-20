@@ -42,13 +42,52 @@ public class ContainerGeneratorTests
     [Fact]
     public void Worker_Extends_Container_And_Forwards()
     {
-        var worker = WorkerShimGenerator.GenerateWorker("ApiContainer", "API_CONTAINER", 8080, "10m");
+        var worker = WorkerShimGenerator.GenerateWorker("ApiContainer", "API_CONTAINER", 8080, "10m", new Dictionary<string, string>());
 
         Assert.Contains("""import { Container, getContainer } from "@cloudflare/containers";""", worker);
         Assert.Contains("export class ApiContainer extends Container", worker);
         Assert.Contains("defaultPort = 8080;", worker);
         Assert.Contains("""sleepAfter = "10m";""", worker);
+        Assert.Contains("envVars = {};", worker);
         Assert.Contains("getContainer(env.API_CONTAINER).fetch(request)", worker);
+    }
+
+    [Fact]
+    public void Worker_Injects_Environment_Into_Container_EnvVars()
+    {
+        var env = new Dictionary<string, string>
+        {
+            ["ConnectionStrings__uploads"] = "Endpoint=https://acct.r2.cloudflarestorage.com;AccessKey=ak;SecretKey=sk;Bucket=uploads;Region=auto",
+            ["ASPNETCORE_ENVIRONMENT"] = "Production",
+        };
+
+        var worker = WorkerShimGenerator.GenerateWorker("ApiContainer", "API_CONTAINER", 8080, "10m", env);
+
+        Assert.Contains("envVars =", worker);
+        Assert.Contains("ConnectionStrings__uploads", worker);
+        Assert.Contains("r2.cloudflarestorage.com", worker);
+        Assert.Contains("\"ASPNETCORE_ENVIRONMENT\": \"Production\"", worker);
+    }
+
+    [Fact]
+    public void ContainerEnvironment_Filters_Local_Only_Variables()
+    {
+        var resolved = new Dictionary<string, string>
+        {
+            ["ConnectionStrings__uploads"] = "Endpoint=...;Bucket=uploads",
+            ["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://localhost:4317",
+            ["services__api__http__0"] = "http://localhost:5000",
+            ["ASPNETCORE_URLS"] = "http://localhost:5000",
+            ["MY_SETTING"] = "keep-me",
+        };
+
+        var filtered = ContainerEnvironment.Filter(resolved);
+
+        Assert.True(filtered.ContainsKey("ConnectionStrings__uploads"));
+        Assert.True(filtered.ContainsKey("MY_SETTING"));
+        Assert.False(filtered.ContainsKey("OTEL_EXPORTER_OTLP_ENDPOINT"));
+        Assert.False(filtered.ContainsKey("services__api__http__0"));
+        Assert.False(filtered.ContainsKey("ASPNETCORE_URLS"));
     }
 
     [Fact]

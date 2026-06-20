@@ -41,15 +41,21 @@ builder.AddProject<Projects.Api>("api")
 - **wrangler** installed — see [How wrangler authenticates](../getting-started/wrangler.md).
 - API token with *Workers Scripts: Edit* — see [API Tokens](../getting-started/api-tokens.md).
 
-## Using R2 and other references
+## Environment & configuration
 
-`WithReference` works as usual; the connection details are made available to the project:
+The project's resolved environment variables — connection strings from `WithReference`, anything from `WithEnvironment` — are injected into the container via the Worker's `envVars`, so your app reads its configuration exactly as it does locally. Local-only variables (OpenTelemetry endpoints, service-discovery URLs, the local listen URL) are filtered out.
 
 ```csharp
 builder.AddProject<Projects.Api>("api")
-    .WithReference(uploads)               // an R2 bucket
+    .WithReference(uploads)               // an R2 bucket — its connection string is injected
+    .WithEnvironment("FEATURE_FLAG", "on")
     .PublishAsCloudflareContainer(cloudflare);
 ```
+
+At deploy, the R2 connection string resolves to the **real** R2 endpoint and credentials, so the container reaches R2 in production with no code change.
+
+> [!NOTE]
+> Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
 
 ## Custom domains
 

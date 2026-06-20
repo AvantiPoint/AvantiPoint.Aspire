@@ -54,17 +54,21 @@ internal sealed class ContainerPublishTarget(ILogger<ContainerPublishTarget> log
             throw new InvalidOperationException($"dotnet publish failed for '{resource.Name}' (exit {publish.ExitCode}).\n{publish.StandardError}");
         }
 
-        // 2. Generate the Dockerfile, Worker shim, package.json and wrangler.jsonc.
+        // 2. Resolve the app's environment (connection strings, WithEnvironment) so the container receives it.
+        var environment = await ContainerEnvironment.ResolveAsync(resource, logger).ConfigureAwait(false);
+        logger.LogInformation("Injecting {Count} environment variable(s) into container '{Worker}'.", environment.Count, annotation.WorkerName);
+
+        // 3. Generate the Dockerfile, Worker shim, package.json and wrangler.jsonc.
         await File.WriteAllTextAsync(Path.Combine(workingDirectory, "Dockerfile"),
             DockerfileGenerator.Generate(assemblyName, annotation.Port), cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(Path.Combine(workingDirectory, "worker.js"),
-            WorkerShimGenerator.GenerateWorker(annotation.ClassName, annotation.BindingName, annotation.Port, annotation.SleepAfter), cancellationToken).ConfigureAwait(false);
+            WorkerShimGenerator.GenerateWorker(annotation.ClassName, annotation.BindingName, annotation.Port, annotation.SleepAfter, environment), cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(Path.Combine(workingDirectory, "package.json"),
             WorkerShimGenerator.GeneratePackageJson(annotation.WorkerName), cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(Path.Combine(workingDirectory, "wrangler.jsonc"),
             WranglerContainerConfigGenerator.Generate(annotation), cancellationToken).ConfigureAwait(false);
 
-        // 3. Install the Worker's dependencies (@cloudflare/containers) so wrangler can bundle it.
+        // 4. Install the Worker's dependencies (@cloudflare/containers) so wrangler can bundle it.
         var npm = await CliRunner.RunAsync("npm", ["install"], workingDirectory, logger: logger, cancellationToken: cancellationToken).ConfigureAwait(false);
         if (!npm.Success)
         {
