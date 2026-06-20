@@ -40,13 +40,37 @@ public sealed class CloudflareEnvironmentResource : Resource, IComputeEnvironmen
         }
     }
 
-    // IComputeEnvironmentResource — exercised once compute resources (Containers) target this
-    // environment (milestone M4). Until then there are no compute targets to resolve.
+    // IComputeEnvironmentResource — resolves the public address of a compute resource (Container)
+    // deployed to this environment, so other resources can reference it (e.g. a Pages app calling the API).
     ReferenceExpression IComputeEnvironmentResource.GetHostAddressExpression(EndpointReference endpointReference)
-        => throw new NotSupportedException(
-            "Cloudflare compute (Container) endpoints are not yet supported. This arrives with container support.");
+        => ReferenceExpression.Create($"{HostFor(endpointReference.Resource)}");
 
     ReferenceExpression IComputeEnvironmentResource.GetEndpointPropertyExpression(EndpointReferenceExpression endpointReferenceExpression)
-        => throw new NotSupportedException(
-            "Cloudflare compute (Container) endpoints are not yet supported. This arrives with container support.");
+    {
+        var host = HostFor(endpointReferenceExpression.Endpoint.Resource);
+        return endpointReferenceExpression.Property switch
+        {
+            EndpointProperty.Port or EndpointProperty.TargetPort => ReferenceExpression.Create($"443"),
+            EndpointProperty.Scheme => ReferenceExpression.Create($"https"),
+            EndpointProperty.TlsEnabled => ReferenceExpression.Create($"true"),
+            EndpointProperty.Host or EndpointProperty.IPV4Host => ReferenceExpression.Create($"{host}"),
+            EndpointProperty.HostAndPort => ReferenceExpression.Create($"{host}:443"),
+            _ => ReferenceExpression.Create($"https://{host}"),
+        };
+    }
+
+    // The public hostname for a deployed resource: its custom domain if one is configured, otherwise a
+    // workers.dev placeholder. (Accurate workers.dev URLs require the account subdomain; custom domains
+    // give a deterministic address — see WithCustomDomain.)
+    private static string HostFor(IResource resource)
+    {
+        var customDomain = resource.Annotations.OfType<CustomDomainAnnotation>().FirstOrDefault();
+        if (customDomain is not null)
+        {
+            return customDomain.Hostname;
+        }
+
+        var container = resource.Annotations.OfType<CloudflareContainerAnnotation>().FirstOrDefault();
+        return container is not null ? $"{container.WorkerName}.workers.dev" : $"{resource.Name}.workers.dev";
+    }
 }

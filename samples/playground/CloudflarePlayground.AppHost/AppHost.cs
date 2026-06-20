@@ -19,11 +19,12 @@ var seeder = builder.AddProject<Projects.CloudflarePlayground_Seeder>("seeder")
     .WaitFor(uploads)
     .ExcludeFromManifest();
 
-// The API reads data.json from R2 and serves it. (Becomes a Cloudflare Container in M4.)
+// The API reads data.json from R2 and serves it, deployed as a Cloudflare Container.
 var api = builder.AddProject<Projects.CloudflarePlayground_Api>("api")
     .WithReference(uploads)
     .WaitFor(uploads)
-    .WaitForCompletion(seeder);
+    .WaitForCompletion(seeder)
+    .PublishAsCloudflareContainer(cloudflare);
 
 // A JavaScript (Vite) frontend deployed to Cloudflare Pages on `aspire deploy`.
 // Run `npm install` in ../CloudflarePlayground.Web before `aspire run`.
