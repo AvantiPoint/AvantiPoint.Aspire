@@ -1,0 +1,43 @@
+name: Integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Nightly at 04:00 UTC
+    - cron: "0 4 * * *"
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+
+jobs:
+  integration:
+    name: Cloudflare Integration Tests
+    # Ubuntu has a Linux Docker daemon for the MinIO emulator used by the R2 tests.
+    runs-on: ubuntu-latest
+    # Requires the CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets to be configured.
+    environment: integration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5.3.0
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore AvantiPoint.Aspire.slnx
+
+      - name: Integration tests
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: >
+          dotnet test AvantiPoint.Aspire.slnx -c Release
+          --filter "FullyQualifiedName~IntegrationTests"

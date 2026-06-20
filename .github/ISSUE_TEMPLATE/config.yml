@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Cloudflare developer docs
+    url: https://developers.cloudflare.com/
+    about: Reference for R2, Pages, Workers and Containers.
+  - name: .NET Aspire docs
+    url: https://aspire.dev/
+    about: Reference for Aspire hosting and deployment.

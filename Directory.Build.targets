@@ -1,0 +1,12 @@
+<Project>
+
+  <!-- SourceLink + README packaging only for shipping packages.
+       Imported after the project body so the per-project IsPackable override is visible. -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="/" Condition="Exists('$(MSBuildProjectDirectory)/README.md')" />
+    <None Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath="/" Condition="!Exists('$(MSBuildProjectDirectory)/README.md')" />
+    <None Include="$(MSBuildThisFileDirectory)/avantipoint-icon.png" Pack="true" PackagePath="/icon.png" Visible="false" />
+  </ItemGroup>
+
+</Project>

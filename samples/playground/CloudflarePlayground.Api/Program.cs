@@ -1,0 +1,47 @@
+using Amazon.S3;
+using Amazon.S3.Model;
+using AvantiPoint.Aspire.Cloudflare.R2;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Registers IAmazonS3 configured for R2 from the "uploads" connection string injected by the AppHost.
+// Locally this points at the MinIO emulator; in production at real R2 — no code change.
+builder.AddR2Client("uploads");
+
+var app = builder.Build();
+
+app.MapGet("/", () => Results.Ok(new { status = "ok" }));
+
+// Store an object: PUT /files/{key} with a text/binary body.
+app.MapPut("/files/{key}", async (string key, HttpRequest request, IAmazonS3 s3, R2ClientSettings settings, CancellationToken ct) =>
+{
+    using var ms = new MemoryStream();
+    await request.Body.CopyToAsync(ms, ct);
+    ms.Position = 0;
+
+    await s3.PutObjectAsync(new PutObjectRequest
+    {
+        BucketName = settings.BucketName,
+        Key = key,
+        InputStream = ms,
+        ContentType = request.ContentType ?? "application/octet-stream",
+    }, ct);
+
+    return Results.Created($"/files/{key}", new { bucket = settings.BucketName, key });
+});
+
+// Retrieve an object: GET /files/{key}.
+app.MapGet("/files/{key}", async (string key, IAmazonS3 s3, R2ClientSettings settings, CancellationToken ct) =>
+{
+    try
+    {
+        var response = await s3.GetObjectAsync(settings.BucketName, key, ct);
+        return Results.Stream(response.ResponseStream, response.Headers.ContentType ?? "application/octet-stream");
+    }
+    catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+    {
+        return Results.NotFound();
+    }
+});
+
+app.Run();

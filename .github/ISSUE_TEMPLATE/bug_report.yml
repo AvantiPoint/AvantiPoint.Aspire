@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a problem with an AvantiPoint.Aspire Cloudflare integration
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug report!
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package does this affect?
+      options:
+        - AvantiPoint.Aspire.Hosting.Cloudflare
+        - AvantiPoint.Aspire.Hosting.Cloudflare.R2
+        - AvantiPoint.Aspire.Cloudflare.R2
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal AppHost wiring and the command you ran (`aspire run` / `aspire deploy`).
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Package version, .NET SDK version, wrangler version, OS.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      render: shell

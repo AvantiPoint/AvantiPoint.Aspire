@@ -1,0 +1,53 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Don't fail the build on missing XML doc comments while scaffolding -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- Not packable unless a project opts in -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- CI sets ContinuousIntegrationBuild for deterministic, source-linked builds -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' OR '$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- Shared package metadata (applies to packable projects) -->
+  <PropertyGroup>
+    <Authors>AvantiPoint</Authors>
+    <Company>AvantiPoint</Company>
+    <Product>AvantiPoint Aspire for Cloudflare</Product>
+    <Copyright>© AvantiPoint</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/AvantiPoint/AvantiPoint.Aspire</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AvantiPoint/AvantiPoint.Aspire.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>https://github.com/AvantiPoint/AvantiPoint.Aspire/releases</PackageReleaseNotes>
+    <!-- Default tags; individual packages may extend/override. -->
+    <PackageTags>aspire;cloudflare;dotnet;hosting</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- All packages emit to a single repo-root Artifacts folder for CI publishing. -->
+    <PackageOutputPath>$(MSBuildThisFileDirectory)Artifacts</PackageOutputPath>
+  </PropertyGroup>
+
+  <!-- Git-height based versioning; major.minor tracks the targeted Aspire release (see version.json). -->
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

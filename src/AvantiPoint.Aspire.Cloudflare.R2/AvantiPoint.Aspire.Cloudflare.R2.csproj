@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Client for Cloudflare R2</Title>
+    <Description>A .NET Aspire client integration for Cloudflare R2. Registers a R2-tuned IAmazonS3 client (S3-compatible) from the Aspire-injected connection string, with a health check. Works unchanged against the local MinIO emulator and real R2.</Description>
+    <PackageTags>aspire;cloudflare;r2;s3;object-storage;client;iamazons3;aws-sdk</PackageTags>
+    <IsAspireClientIntegration>true</IsAspireClientIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+  </ItemGroup>
+
+</Project>

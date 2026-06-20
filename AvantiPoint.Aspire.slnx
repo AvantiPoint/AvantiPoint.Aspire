@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/solution/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="nuget.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
+    <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj" />
+    <Project Path="src/AvantiPoint.Aspire.Cloudflare.R2/AvantiPoint.Aspire.Cloudflare.R2.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests.csproj" />
+    <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests.csproj" />
+    <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/playground/CloudflarePlayground.AppHost/CloudflarePlayground.AppHost.csproj" />
+    <Project Path="samples/playground/CloudflarePlayground.Api/CloudflarePlayground.Api.csproj" />
+  </Folder>
+</Solution>

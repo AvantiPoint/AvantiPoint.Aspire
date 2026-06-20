@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Hosting for Cloudflare</Title>
+    <Description>.NET Aspire hosting integration that redirects the publish/deploy pipeline to Cloudflare instead of Azure. Provides a Cloudflare compute environment, API-token validation, and (in upcoming releases) Cloudflare Containers, Pages, and custom-domain support.</Description>
+    <PackageTags>aspire;cloudflare;hosting;deployment;workers;containers;pages;custom-domains;wrangler</PackageTags>
+    <!-- Aspire hosting integration marker -->
+    <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Satellite hosting packages and tests consume internal services (token validator, API client). -->
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.R2" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Tests" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests" />
+  </ItemGroup>
+
+</Project>

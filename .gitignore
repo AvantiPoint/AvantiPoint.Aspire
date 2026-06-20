@@ -1,0 +1,64 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+build/artifacts/
+artifacts/
+Artifacts/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+*.nupkg
+*.snupkg
+.dotnet/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.DotSettings.user
+
+# Aspire / DCP
+.aspire/
+aspire-output/
+
+# Wrangler / Cloudflare
+.wrangler/
+wrangler.jsonc.generated
+.dev.vars
+.mf/
+
+# Node / JS frontends
+node_modules/
+dist/
+.next/
+.turbo/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Secrets / local env
+*.env
+.env.local
+secrets.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test results
+[Tt]est[Rr]esults/
+*.trx
+coverage/
+*.coverage
+*.coveragexml
