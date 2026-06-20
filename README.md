@@ -22,8 +22,9 @@ Cross-cutting:
 
 | Package | Description |
 | --- | --- |
-| `AvantiPoint.Aspire.Hosting.Cloudflare` | Core hosting integration: the Cloudflare deploy environment, the publish/deploy pipeline hijack, token/scope validation, Container & Pages resources, and custom domains. |
+| `AvantiPoint.Aspire.Hosting.Cloudflare` | Core hosting integration: the Cloudflare deploy environment, the publish/deploy pipeline hijack, token/scope validation, the Container target, and custom domains. |
 | `AvantiPoint.Aspire.Hosting.Cloudflare.R2` | R2 bucket hosting: provisioning via the Cloudflare API plus a local MinIO S3 emulator for `aspire run`. |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.Pages` | Cloudflare Pages hosting: `.PublishAsCloudflarePages(...)` attaches to an Aspire JavaScript app (`AddViteApp`/`AddNodeApp`) and deploys its build output. |
 | `AvantiPoint.Aspire.Cloudflare.R2` | R2 **client** integration: registers a R2-tuned `IAmazonS3` from the Aspire-injected connection string. |
 
 ## Quickstart
@@ -41,7 +42,9 @@ var api = builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)
     .WithCustomDomain(zoneId: "<zone-id>", hostname: "api.example.com");
 
-builder.AddCloudflarePages("web", cloudflare, buildOutputPath: "../Web/dist")
+// Pages attaches to a JavaScript app Aspire already models — not a raw folder.
+builder.AddViteApp("web", "../Web")
+    .PublishAsCloudflarePages(cloudflare)
     .WithCustomDomain(zoneId: "<zone-id>", hostname: "www.example.com");
 
 builder.Build().Run();
