@@ -1,0 +1,14 @@
+- name: Introduction
+  href: introduction.md
+- name: Prerequisites
+  href: prerequisites.md
+- name: Account ID & Zone ID
+  href: account-and-zone-ids.md
+- name: API Tokens & Scopes
+  href: api-tokens.md
+- name: R2 S3 Credentials
+  href: r2-credentials.md
+- name: How wrangler authenticates
+  href: wrangler.md
+- name: Quickstart
+  href: quickstart.md

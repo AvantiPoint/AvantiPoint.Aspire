@@ -22,5 +22,6 @@
   <Folder Name="/samples/">
     <Project Path="samples/playground/CloudflarePlayground.AppHost/CloudflarePlayground.AppHost.csproj" />
     <Project Path="samples/playground/CloudflarePlayground.Api/CloudflarePlayground.Api.csproj" />
+    <Project Path="samples/playground/CloudflarePlayground.Seeder/CloudflarePlayground.Seeder.csproj" />
   </Folder>
 </Solution>

@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
     <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj" />
+    <ProjectReference Include="../../samples/playground/CloudflarePlayground.AppHost/CloudflarePlayground.AppHost.csproj" />
   </ItemGroup>
 
 </Project>

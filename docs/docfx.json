@@ -1,0 +1,28 @@
+{
+  "build": {
+    "content": [
+      {
+        "files": [ "**/*.{md,yml}" ],
+        "exclude": [ "_site/**", "obj/**" ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "images/**" ]
+      }
+    ],
+    "output": "_site",
+    "template": [ "default", "modern" ],
+    "globalMetadata": {
+      "_appName": "AvantiPoint Aspire for Cloudflare",
+      "_appTitle": "AvantiPoint Aspire for Cloudflare",
+      "_appFooter": "AvantiPoint Aspire for Cloudflare",
+      "_enableSearch": true,
+      "_gitContribute": {
+        "repo": "https://github.com/AvantiPoint/AvantiPoint.Aspire",
+        "branch": "master"
+      },
+      "pdf": false
+    }
+  }
+}

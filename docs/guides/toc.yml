@@ -1,0 +1,4 @@
+- name: R2 Buckets
+  href: r2.md
+- name: Cloudflare Pages
+  href: pages.md

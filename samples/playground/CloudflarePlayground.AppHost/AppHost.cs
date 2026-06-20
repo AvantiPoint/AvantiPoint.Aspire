@@ -12,13 +12,24 @@ var cloudflare = builder.AddCloudflareEnvironment();
 // During `aspire deploy` it is provisioned in real R2.
 var uploads = cloudflare.AddR2Bucket("uploads");
 
-builder.AddProject<Projects.CloudflarePlayground_Api>("api")
+// Local-only provisioning step: uploads the data file into the bucket, then exits.
+// Excluded from the manifest so it is never deployed to Cloudflare.
+var seeder = builder.AddProject<Projects.CloudflarePlayground_Seeder>("seeder")
     .WithReference(uploads)
-    .WaitFor(uploads);
+    .WaitFor(uploads)
+    .ExcludeFromManifest();
+
+// The API reads data.json from R2 and serves it. (Becomes a Cloudflare Container in M4.)
+var api = builder.AddProject<Projects.CloudflarePlayground_Api>("api")
+    .WithReference(uploads)
+    .WaitFor(uploads)
+    .WaitForCompletion(seeder);
 
 // A JavaScript (Vite) frontend deployed to Cloudflare Pages on `aspire deploy`.
 // Run `npm install` in ../CloudflarePlayground.Web before `aspire run`.
 builder.AddViteApp("web", "../CloudflarePlayground.Web")
-    .PublishAsCloudflarePages(cloudflare);
+    .WithEnvironment("VITE_API_URL", api.GetEndpoint("http"))
+    .PublishAsCloudflarePages(cloudflare)
+    .WaitFor(api);
 
 builder.Build().Run();
