@@ -71,7 +71,7 @@ internal static class CloudflarePipelineSteps
         PipelineStepContext ctx)
     {
         var targets = ctx.Services.GetServices<ICloudflarePublishTarget>().ToList();
-        foreach (var resource in ctx.Model.Resources.OfType<ICloudflareResource>().Where(r => ReferenceEquals(r.Environment, env)))
+        foreach (var resource in ctx.Model.Resources.Where(r => BelongsTo(r, env)))
         {
             var target = targets.FirstOrDefault(t => t.CanHandle(resource));
             if (target is not null)
@@ -79,6 +79,18 @@ internal static class CloudflarePipelineSteps
                 yield return (resource, target);
             }
         }
+    }
+
+    // A resource belongs to an environment if it is one of ours (ICloudflareResource, e.g. R2) or an
+    // existing Aspire resource we attached to the environment via annotation (e.g. a JS app for Pages).
+    private static bool BelongsTo(IResource resource, CloudflareEnvironmentResource env)
+    {
+        if (resource is ICloudflareResource cloudflareResource && ReferenceEquals(cloudflareResource.Environment, env))
+        {
+            return true;
+        }
+
+        return resource.Annotations.OfType<ICloudflareTargetAnnotation>().Any(a => ReferenceEquals(a.Environment, env));
     }
 
     private static async Task ValidateTokenAsync(CloudflareEnvironmentResource env, PipelineStepContext ctx)

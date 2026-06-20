@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Hosting for Cloudflare Pages</Title>
+    <Description>Cloudflare Pages hosting integration for .NET Aspire. Attach .PublishAsCloudflarePages(...) to an Aspire JavaScript app (AddViteApp/AddNodeApp) to build and deploy its output to Cloudflare Pages via wrangler. Builds on AvantiPoint.Aspire.Hosting.Cloudflare.</Description>
+    <PackageTags>aspire;cloudflare;pages;javascript;vite;wrangler;hosting;static-site</PackageTags>
+    <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.JavaScript" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests" />
+  </ItemGroup>
+
+</Project>

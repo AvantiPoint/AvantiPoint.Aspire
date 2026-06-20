@@ -70,6 +70,7 @@ public static class CloudflareEnvironmentExtensions
         });
 
         builder.Services.TryAddSingleton<CloudflareTokenValidator>();
+        builder.Services.TryAddSingleton<Cli.IWranglerCli, Cli.WranglerCli>();
     }
 
     private static IResourceBuilder<ParameterResource> CreateDefaultParameter(

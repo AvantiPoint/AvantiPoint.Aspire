@@ -10,11 +10,13 @@
   <Folder Name="/src/">
     <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj" />
+    <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.Pages/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Cloudflare.R2/AvantiPoint.Aspire.Cloudflare.R2.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests.csproj" />
+    <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests.csproj" />
   </Folder>
   <Folder Name="/samples/">
