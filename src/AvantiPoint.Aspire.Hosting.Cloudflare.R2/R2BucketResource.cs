@@ -6,7 +6,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.R2;
 /// <summary>
 /// An R2 bucket modeled as an Aspire resource. Exposes an S3-compatible connection string that
 /// points at the local MinIO emulator during <c>aspire run</c> (the default) or at the real R2
-/// account when <see cref="R2BucketExtensions.RunAsReal{T}"/> is used / during deploy.
+/// account when <see cref="R2HostingExtensions.RunAsReal"/> is used / during deploy.
 /// </summary>
 public sealed class R2BucketResource : Resource, IResourceWithConnectionString, IResourceWithWaitSupport
 {
