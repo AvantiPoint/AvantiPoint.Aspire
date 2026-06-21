@@ -3,7 +3,7 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <Title>AvantiPoint Aspire Hosting for Cloudflare R2</Title>
-    <Description>Cloudflare R2 hosting integration for .NET Aspire. Provisions R2 buckets via the Cloudflare API during deploy and runs a local MinIO S3 emulator during 'aspire run' so the dev loop needs no cloud credentials. Builds on AvantiPoint.Aspire.Hosting.Cloudflare.</Description>
+    <Description>Cloudflare R2 hosting integration for Aspire. Provisions R2 buckets via the Cloudflare API during deploy and runs a local MinIO S3 emulator during 'aspire run' so the dev loop needs no cloud credentials. Builds on AvantiPoint.Aspire.Hosting.Cloudflare.</Description>
     <PackageTags>aspire;cloudflare;r2;s3;object-storage;hosting;minio;emulator</PackageTags>
     <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
   </PropertyGroup>

@@ -3,7 +3,7 @@ title: "Introduction"
 ---
 
 
-AvantiPoint Aspire for Cloudflare lets you model your Cloudflare resources in your .NET Aspire AppHost and deploy to Cloudflare with `aspire deploy` — the same way the AWS integration targets AWS instead of Azure.
+AvantiPoint Aspire for Cloudflare lets you model your Cloudflare resources in your Aspire AppHost and deploy to Cloudflare with `aspire deploy` — the same way the AWS integration targets AWS instead of Azure.
 
 ## How it works
 

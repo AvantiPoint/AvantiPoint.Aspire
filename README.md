@@ -6,7 +6,7 @@
 
 📖 **[Documentation & getting-started guides](https://avantipoint.github.io/AvantiPoint.Aspire/)** — finding your Account/Zone IDs, scoping API tokens, R2 credentials, wrangler auth, and more.
 
-.NET Aspire hosting and client integrations that make Aspire a first-class way to **provision and deploy to [Cloudflare](https://www.cloudflare.com/)** — the same way the AWS integration targets AWS, instead of Azure.
+Hosting and client integrations that make [Aspire](https://aspire.dev) a first-class way to **provision and deploy to [Cloudflare](https://www.cloudflare.com/)** — the same way the AWS integration targets AWS, instead of Azure.
 
 `aspire deploy` is hijacked so your distributed application is published and deployed to Cloudflare:
 
