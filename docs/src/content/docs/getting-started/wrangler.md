@@ -1,4 +1,7 @@
-# How wrangler authenticates
+---
+title: "How wrangler authenticates"
+---
+
 
 The integration shells out to [**wrangler**](https://developers.cloudflare.com/workers/wrangler/) — Cloudflare's CLI — to deploy **Pages** and **Containers**. (R2 provisioning and custom-domain DNS use the REST API directly and don't need wrangler.)
 
@@ -22,8 +25,10 @@ wrangler --version
 
 The integration calls whatever `wrangler` is on your `PATH`. If wrangler is missing when a Pages/Container deploy runs, you'll get a clear error pointing you here.
 
-> [!NOTE]
-> wrangler is only needed for `aspire deploy` of Pages/Containers. Local `aspire run` and R2-only workflows don't use it.
+:::note
+wrangler is only needed for `aspire deploy` of Pages/Containers. Local `aspire run` and R2-only workflows don't use it.
+:::
+
 
 ## Token scopes for wrangler
 

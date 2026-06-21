@@ -1,4 +1,7 @@
-# Cloudflare Workers
+---
+title: "Cloudflare Workers"
+---
+
 
 Run and deploy a hand-authored [Cloudflare Worker](https://developers.cloudflare.com/workers/) (its own `wrangler.toml`/`wrangler.jsonc` + source) as part of your Aspire app.
 

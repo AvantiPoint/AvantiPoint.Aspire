@@ -1,4 +1,7 @@
-# Quickstart
+---
+title: "Quickstart"
+---
+
 
 This ties the pieces together: an R2 bucket, a .NET API that uses it, and a JavaScript frontend on Pages.
 

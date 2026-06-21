@@ -1,4 +1,7 @@
-# Custom Domains
+---
+title: "Custom Domains"
+---
+
 
 Attach a custom hostname to a Container or Pages app with `WithCustomDomain`. Call it **after** `PublishAsCloudflareContainer` / `PublishAsCloudflarePages`.
 
@@ -26,5 +29,6 @@ builder.AddViteApp("web", "../web")
 - The [**Zone ID**](../getting-started/account-and-zone-ids.md) for the domain.
 - API token permissions **DNS: Edit** and **Zone: Read** on that zone — see [API Tokens](../getting-started/api-tokens.md). The integration automatically requires these scopes once you use `WithCustomDomain`.
 
-> [!NOTE]
-> The domain (zone) must already exist in your Cloudflare account. `WithCustomDomain` configures records within that zone; it does not register domains.
+:::note
+The domain (zone) must already exist in your Cloudflare account. `WithCustomDomain` configures records within that zone; it does not register domains.
+:::

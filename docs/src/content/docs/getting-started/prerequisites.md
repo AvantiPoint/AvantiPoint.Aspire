@@ -1,4 +1,7 @@
-# Prerequisites
+---
+title: "Prerequisites"
+---
+
 
 ## A Cloudflare account
 
@@ -14,8 +17,10 @@ You'll need a [Cloudflare account](https://dash.cloudflare.com/sign-up). For **c
 | **wrangler** | Deploying Pages and Containers (`aspire deploy`) | `npm install -g wrangler` |
 | **Node.js** | Building/running JavaScript apps for Pages | <https://nodejs.org> |
 
-> [!TIP]
-> For a **local R2-only dev loop** you don't need wrangler, a Cloudflare token, or even an account — just Docker. The emulator handles everything until you `aspire deploy`.
+:::tip
+For a **local R2-only dev loop** you don't need wrangler, a Cloudflare token, or even an account — just Docker. The emulator handles everything until you `aspire deploy`.
+:::
+
 
 ## Install the packages
 

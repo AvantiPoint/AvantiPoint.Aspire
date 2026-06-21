@@ -1,0 +1,51 @@
+---
+title: AvantiPoint Aspire for Cloudflare
+description: Provision and deploy your .NET Aspire applications to Cloudflare — R2, Workers, Containers and Pages.
+template: splash
+hero:
+  tagline: Provision and deploy your .NET Aspire applications to Cloudflare — instead of Azure.
+  image:
+    file: ../../assets/logo.png
+    alt: AvantiPoint
+  actions:
+    - text: Get started
+      link: getting-started/introduction/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/AvantiPoint/AvantiPoint.Aspire
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+`aspire deploy` is hijacked so your distributed app ships to Cloudflare — the same way the AWS integration targets AWS instead of Azure.
+
+<CardGrid>
+  <Card title="R2 object storage" icon="cloud-download">
+    Provision buckets via the Cloudflare API, with a local **MinIO** emulator for a
+    credential-free dev loop. Plus a client that registers a R2-tuned `IAmazonS3`.
+  </Card>
+  <Card title="Workers" icon="rocket">
+    Run hand-authored Workers locally with `wrangler dev` (no account needed) and
+    deploy them with `aspire deploy`.
+  </Card>
+  <Card title="Containers" icon="seti:docker">
+    Build a container image from your .NET project and run it on Cloudflare
+    Containers — config and connection strings injected automatically.
+  </Card>
+  <Card title="Pages" icon="laptop">
+    Attach to your Aspire JavaScript app and deploy the build output to Cloudflare
+    Pages, with custom-domain support.
+  </Card>
+</CardGrid>
+
+## Start here
+
+<CardGrid>
+  <LinkCard title="Introduction" href="getting-started/introduction/" description="How the integration works and what you'll set up." />
+  <LinkCard title="Account ID & Zone ID" href="getting-started/account-and-zone-ids/" description="Find the Cloudflare identifiers you need." />
+  <LinkCard title="API Tokens & Scopes" href="getting-started/api-tokens/" description="Create a token scoped to the services you deploy." />
+  <LinkCard title="Quickstart" href="getting-started/quickstart/" description="Wire R2, an API and a frontend together." />
+</CardGrid>

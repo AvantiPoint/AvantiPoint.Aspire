@@ -1,4 +1,7 @@
-# Cloudflare Containers
+---
+title: "Cloudflare Containers"
+---
+
 
 Deploy a .NET project as a [Cloudflare Container](https://developers.cloudflare.com/containers/) — fronted by a Worker and a Durable Object, with the image built and pushed by `wrangler`.
 
@@ -54,8 +57,10 @@ builder.AddProject<Projects.Api>("api")
 
 At deploy, the R2 connection string resolves to the **real** R2 endpoint and credentials, so the container reaches R2 in production with no code change.
 
-> [!NOTE]
-> Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
+:::note
+Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
+:::
+
 
 ## Custom domains
 

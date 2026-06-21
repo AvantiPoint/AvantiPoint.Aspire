@@ -1,4 +1,7 @@
-# Cloudflare Pages
+---
+title: "Cloudflare Pages"
+---
+
 
 Cloudflare Pages hosting **attaches to a JavaScript app that Aspire already models** — it is not a standalone "point at a folder" resource. You add your frontend with the standard Aspire JavaScript APIs, then mark it for Pages.
 

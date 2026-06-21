@@ -1,4 +1,7 @@
-# Account ID & Zone ID
+---
+title: "Account ID & Zone ID"
+---
+
 
 Cloudflare uses two identifiers you'll provide to the integration.
 
@@ -26,8 +29,10 @@ A **Zone ID** identifies a single domain in your account. You only need it for *
 2. On the domain's **Overview** tab, find the **API** section (lower-right).
 3. Under **Zone ID**, select *Click to copy*.
 
-> [!NOTE]
-> The Zone ID is **per-domain**. If you attach custom domains across multiple zones, you'll pass the matching Zone ID for each hostname.
+:::note
+The Zone ID is **per-domain**. If you attach custom domains across multiple zones, you'll pass the matching Zone ID for each hostname.
+:::
+
 
 ## Where these are used
 

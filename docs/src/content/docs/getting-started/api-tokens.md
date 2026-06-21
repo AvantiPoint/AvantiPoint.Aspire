@@ -1,9 +1,14 @@
-# API Tokens & Scopes
+---
+title: "API Tokens & Scopes"
+---
+
 
 The integration (and `wrangler`) authenticate to Cloudflare with an **API token**. This is the single most important piece to get right: the token must carry the permissions for the services you deploy — no more, no less.
 
-> [!IMPORTANT]
-> This API token is **not** the same as the R2 S3 credentials your app uses at runtime. Those are separate — see [R2 S3 Credentials](r2-credentials.md).
+:::note
+This API token is **not** the same as the R2 S3 credentials your app uses at runtime. Those are separate — see [R2 S3 Credentials](r2-credentials.md).
+:::
+
 
 ## Create a token
 
@@ -28,8 +33,10 @@ The integration only requires the permissions for the resources actually in your
 | **Custom domains** (`WithCustomDomain`) | DNS | Edit | Zone |
 | **Custom domains** (`WithCustomDomain`) | Zone | Read | Zone |
 
-> [!NOTE]
-> Cloudflare groups permissions into **Account**, **Zone**, and **User** categories, each granted at **Edit** or **Read**. Permission-group *names* are cosmetic and can change in the dashboard; if a name differs, search for the closest match in the right category. The authoritative, current list is the [API token permissions reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/).
+:::note
+Cloudflare groups permissions into **Account**, **Zone**, and **User** categories, each granted at **Edit** or **Read**. Permission-group *names* are cosmetic and can change in the dashboard; if a name differs, search for the closest match in the right category. The authoritative, current list is the [API token permissions reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/).
+:::
+
 
 ## Minimal tokens by scenario
 

@@ -1,0 +1,40 @@
+/* AvantiPoint brand theming for Starlight.
+   Brand mark: an electric-blue geometric "A". Accent = AvantiPoint blue. */
+
+:root {
+  /* Dark theme (Starlight default) */
+  --sl-color-accent-low: #14148f;
+  --sl-color-accent: #4040f7;
+  --sl-color-accent-high: #c9c9fd;
+
+  --sl-color-white: #ffffff;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #dcdcfe;
+  --sl-color-accent: #2222e0;
+  --sl-color-accent-high: #15156e;
+}
+
+/* A subtle brand wash behind the landing hero. */
+.hero {
+  --hero-glow: color-mix(in srgb, var(--sl-color-accent) 16%, transparent);
+  background:
+    radial-gradient(60% 80% at 80% -10%, var(--hero-glow), transparent 60%);
+}
+
+/* Crisp, slightly larger logo. */
+.site-title img,
+header .site-title img {
+  height: 1.9rem;
+}
+
+/* Make the hero logo feel intentional. */
+.hero img {
+  filter: drop-shadow(0 8px 28px color-mix(in srgb, var(--sl-color-accent) 30%, transparent));
+}
+
+/* Slightly heavier weight for primary CTAs to match the bold brand mark. */
+.action.primary {
+  font-weight: 600;
+}

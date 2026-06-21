@@ -5,7 +5,6 @@ on:
     branches: [master]
     paths:
       - 'docs/**'
-      - '.config/dotnet-tools.json'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -21,32 +20,32 @@ concurrency:
 
 jobs:
   build:
-    name: Build docs
+    name: Build docs (Astro Starlight)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v6.4.0
         with:
-          fetch-depth: 0
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5.3.0
-        with:
-          global-json-file: global.json
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v6.0.0
-
-      - name: Restore tools
-        run: dotnet tool restore
-
-      - name: Build site (DocFX)
-        run: dotnet docfx docs/docfx.json
+      - name: Build site
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5.0.0
         with:
-          path: docs/_site
+          path: docs/dist
 
   deploy:
     name: Deploy to GitHub Pages

@@ -1,4 +1,7 @@
-# R2 S3 Credentials
+---
+title: "R2 S3 Credentials"
+---
+
 
 R2 has **two** kinds of credentials, and it's important not to confuse them:
 
@@ -38,5 +41,6 @@ The [`AvantiPoint.Aspire.Cloudflare.R2`](../guides/r2.md) client registers an `I
 builder.AddR2Client("uploads");   // inject IAmazonS3 anywhere
 ```
 
-> [!TIP]
-> Least privilege: give the app **Object Read & Write** scoped to just the buckets it uses. Reserve bucket creation/deletion for the provisioning API token.
+:::tip
+Least privilege: give the app **Object Read & Write** scoped to just the buckets it uses. Reserve bucket creation/deletion for the provisioning API token.
+:::
