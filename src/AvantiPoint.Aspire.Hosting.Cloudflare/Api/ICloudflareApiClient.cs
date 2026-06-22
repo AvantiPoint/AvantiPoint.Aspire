@@ -53,4 +53,10 @@ public interface ICloudflareApiClient
 
     /// <summary>Deletes an AI Gateway by id. No-op if it does not exist.</summary>
     Task DeleteAIGatewayAsync(string apiToken, string accountId, string gatewayId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Vectorize index. Idempotent: an existing index with the same name is returned as-is.</summary>
+    Task<VectorizeIndex> CreateVectorizeIndexAsync(string apiToken, string accountId, CreateVectorizeIndexRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Vectorize index by name. No-op if it does not exist.</summary>
+    Task DeleteVectorizeIndexAsync(string apiToken, string accountId, string indexName, CancellationToken cancellationToken = default);
 }

@@ -219,6 +219,43 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         }
     }
 
+    public async Task<VectorizeIndex> CreateVectorizeIndexAsync(string apiToken, string accountId, CreateVectorizeIndexRequest body, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/vectorize/v2/indexes", apiToken);
+        request.Content = JsonContent.Create(body);
+
+        var envelope = await SendRawAsync<VectorizeIndex>(request, cancellationToken).ConfigureAwait(false);
+        if (envelope.Success && envelope.Result is not null)
+        {
+            return envelope.Result;
+        }
+
+        // Treat an already-existing index as success (idempotent provisioning).
+        if (envelope.Errors.Any(e => e.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase)))
+        {
+            logger.LogInformation("Vectorize index '{Index}' already exists; reusing it.", body.Name);
+            return new VectorizeIndex { Name = body.Name };
+        }
+
+        throw CloudflareApiException.FromResponse("create Vectorize index", envelope.Errors);
+    }
+
+    public async Task DeleteVectorizeIndexAsync(string apiToken, string accountId, string indexName, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/vectorize/v2/indexes/{indexName}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete Vectorize index", envelope.Errors);
+        }
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

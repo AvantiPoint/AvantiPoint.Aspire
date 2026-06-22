@@ -43,6 +43,7 @@ export default defineConfig({
             'guides/r2',
             'guides/d1',
             'guides/ai',
+            'guides/vectorize',
             'guides/workers',
             'guides/containers',
             'guides/pages',

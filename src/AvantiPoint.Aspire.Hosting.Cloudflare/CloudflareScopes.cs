@@ -34,4 +34,7 @@ public static class CloudflareScopes
 
     /// <summary>Required to create/manage AI Gateways.</summary>
     public const string AIGatewayEdit = "AI Gateway Write";
+
+    /// <summary>Required to create/manage and query Vectorize indexes.</summary>
+    public const string VectorizeEdit = "Vectorize Write";
 }

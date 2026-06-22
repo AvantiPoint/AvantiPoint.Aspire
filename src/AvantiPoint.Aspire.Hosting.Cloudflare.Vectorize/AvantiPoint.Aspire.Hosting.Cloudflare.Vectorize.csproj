@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Hosting for Cloudflare Vectorize</Title>
+    <Description>Cloudflare Vectorize hosting integration for Aspire. Provisions a Vectorize index via the Cloudflare API during deploy and, with .RunAsEmulator(), backs it with an in-memory vector store during 'aspire run' so the dev loop needs no cloud credentials. Pairs with AvantiPoint.Aspire.Cloudflare.Vectorize.</Description>
+    <PackageTags>aspire;cloudflare;vectorize;vector-database;embeddings;rag;hosting;emulator</PackageTags>
+    <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests" />
+  </ItemGroup>
+
+</Project>

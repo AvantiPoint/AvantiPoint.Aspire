@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Aspire.Hosting.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Cloudflare.Vectorize/AvantiPoint.Aspire.Cloudflare.Vectorize.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -147,6 +147,33 @@ public sealed class CreateD1DatabaseRequest
     public string? PrimaryLocationHint { get; init; }
 }
 
+/// <summary>A Vectorize index as returned by the Vectorize API.</summary>
+public sealed class VectorizeIndex
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Vectorize index.</summary>
+public sealed class CreateVectorizeIndexRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("config")]
+    public VectorizeIndexConfig Config { get; init; } = new();
+}
+
+/// <summary>The dimensions + distance metric of a Vectorize index.</summary>
+public sealed class VectorizeIndexConfig
+{
+    [JsonPropertyName("dimensions")]
+    public int Dimensions { get; init; }
+
+    [JsonPropertyName("metric")]
+    public string Metric { get; init; } = "cosine";
+}
+
 /// <summary>An AI Gateway as returned by the AI Gateway API.</summary>
 public sealed class AIGateway
 {
