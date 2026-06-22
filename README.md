@@ -29,7 +29,8 @@ Cross-cutting:
 | `AvantiPoint.Aspire.Hosting.Cloudflare` | Core hosting integration: the Cloudflare deploy environment, the publish/deploy pipeline hijack, token/scope validation, the Container target, and custom domains. |
 | `AvantiPoint.Aspire.Hosting.Cloudflare.R2` | R2 bucket hosting: provisioning via the Cloudflare API plus a local MinIO S3 emulator for `aspire run`. |
 | `AvantiPoint.Aspire.Hosting.Cloudflare.Pages` | Cloudflare Pages hosting: `.PublishAsCloudflarePages(...)` attaches to an Aspire JavaScript app (`AddViteApp`/`AddNodeApp`) and deploys its build output. |
-| `AvantiPoint.Aspire.Cloudflare.R2` | R2 **client** integration: registers a R2-tuned `IAmazonS3` from the Aspire-injected connection string. |
+| `AvantiPoint.Aspire.Cloudflare.R2` | R2 **client** integration: registers a R2-tuned `IAmazonS3` (and `IR2Client`) from the Aspire-injected connection string. |
+| `AvantiPoint.Aspire.Hosting.Extensions` | General Aspire host helpers, e.g. `AddDeploymentParameter` — parameters required at deploy but optional in local development. |
 
 ## Quickstart
 
@@ -38,7 +39,7 @@ Cross-cutting:
 var builder = DistributedApplication.CreateBuilder(args);
 
 builder.AddCloudflareEnvironment();           // resources below resolve it automatically
-var zone = builder.AddParameter("zone-id");   // Zone ID as config, not a literal
+var zone = builder.AddDeploymentParameter("zone-id");   // Zone ID as config, not a literal
 
 var uploads = builder.AddR2Bucket("uploads");
 

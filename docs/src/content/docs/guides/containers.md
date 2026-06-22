@@ -65,7 +65,7 @@ Values are resolved at deploy time and embedded in the generated Worker (which C
 ## Custom domains
 
 ```csharp
-var zone = builder.AddParameter("zone-id");
+var zone = builder.AddDeploymentParameter("zone-id");
 
 builder.AddProject<Projects.Api>("api")
     .PublishAsCloudflareContainer()

@@ -33,7 +33,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 builder.AddCloudflareEnvironment();
 
 // The Zone ID is config, not source — supply it as a parameter.
-var zone = builder.AddParameter("zone-id");
+var zone = builder.AddDeploymentParameter("zone-id");
 
 // An R2 bucket. Local: MinIO emulator. Deploy: real R2.
 var uploads = builder.AddR2Bucket("uploads");

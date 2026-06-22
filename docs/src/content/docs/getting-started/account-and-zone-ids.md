@@ -41,6 +41,6 @@ The Zone ID is **per-domain**. If you attach custom domains across multiple zone
 builder.AddCloudflareEnvironment();
 
 // Zone id: supply it as a parameter and attach it per custom domain.
-var zone = builder.AddParameter("zone-id");
+var zone = builder.AddDeploymentParameter("zone-id");
 api.WithCustomDomain("api.example.com", zone);
 ```

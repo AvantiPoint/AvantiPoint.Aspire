@@ -51,7 +51,7 @@ In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it.
 ## Custom domains
 
 ```csharp
-var zone = builder.AddParameter("zone-id");
+var zone = builder.AddDeploymentParameter("zone-id");
 
 builder.AddViteApp("web", "../web")
     .PublishAsCloudflarePages()

@@ -8,7 +8,7 @@ Attach a custom hostname to a Container or Pages app with `WithCustomDomain`. Ca
 The Zone ID is account-specific configuration, so pass it as an Aspire **parameter** rather than hard-coding it:
 
 ```csharp
-var zone = builder.AddParameter("zone-id"); // resolved from config / user-secrets / env
+var zone = builder.AddDeploymentParameter("zone-id"); // resolved from config / user-secrets / env
 
 var api = builder.AddProject<Projects.Api>("api")
     .PublishAsCloudflareContainer()
@@ -20,6 +20,16 @@ builder.AddViteApp("web", "../web")
 ```
 
 A literal overload — `WithCustomDomain("api.example.com", "<zone-id>")` — also exists for quick samples, but prefer the parameter for real deployments.
+
+:::tip[Deployment parameters]
+`AddDeploymentParameter` (from the **`AvantiPoint.Aspire.Hosting.Extensions`** package) is a parameter that's **only required when you publish/deploy** — during `aspire run` it resolves to an empty/default value, so a Zone ID you don't have locally never blocks your inner loop. At `aspire deploy` it behaves like a normal required `AddParameter`.
+
+```csharp
+using AvantiPoint.Aspire.Hosting.Extensions;
+
+var zone = builder.AddDeploymentParameter("zone-id");
+```
+:::
 
 `WithCustomDomain` is repeatable — call it multiple times to attach multiple hostnames.
 

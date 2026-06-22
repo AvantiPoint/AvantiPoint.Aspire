@@ -34,6 +34,9 @@ Add the hosting packages your app needs to your **AppHost** project:
 dotnet add package AvantiPoint.Aspire.Hosting.Cloudflare
 dotnet add package AvantiPoint.Aspire.Hosting.Cloudflare.R2
 dotnet add package AvantiPoint.Aspire.Hosting.Cloudflare.Pages
+
+# Optional helpers (e.g. AddDeploymentParameter for deploy-only config like a Zone ID)
+dotnet add package AvantiPoint.Aspire.Hosting.Extensions
 ```
 
 And the **client** package in any service that talks to R2:
