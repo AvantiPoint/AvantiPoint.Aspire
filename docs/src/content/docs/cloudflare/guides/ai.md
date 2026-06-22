@@ -26,6 +26,17 @@ var ai = builder.AddCloudflareAI("ai", o =>
 The first Ollama model pull downloads several GB. It is cached in a data volume, so you only pay it once.
 :::
 
+#### Container vs. host-installed Ollama
+
+`.RunAsEmulator()` runs Ollama as a **container** (Docker required) — self-contained and consistent with the other emulators. If you'd rather use an Ollama **installed on your machine** (for example to use a native GPU without container passthrough, or to avoid Docker), call `.RunOnHost()` instead:
+
+```csharp
+var ai = builder.AddCloudflareAI("ai", o => { /* models */ })
+    .RunOnHost();   // attach to a host-installed Ollama instead of a container
+```
+
+Both give the same credential-free local dev loop and the same `IChatClient`/`IEmbeddingGenerator`; only the source of the Ollama server differs.
+
 ### Routing through an AI Gateway
 
 Set a `GatewayId` to route through [AI Gateway](https://developers.cloudflare.com/ai-gateway/) — caching, logging, rate limiting, and multi-provider models (`anthropic/claude-*`, `openai/*`, `workers-ai/@cf/*`). The gateway is provisioned at deploy.
