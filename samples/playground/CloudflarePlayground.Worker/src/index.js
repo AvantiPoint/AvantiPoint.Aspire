@@ -6,7 +6,7 @@ export default {
     return Response.json({
       worker: "cloudflare-playground-worker",
       path: url.pathname,
-      message: "Hello from a Cloudflare Worker, orchestrated by .NET Aspire.",
+      message: "Hello from a Cloudflare Worker, orchestrated by Aspire.",
     });
   },
 };

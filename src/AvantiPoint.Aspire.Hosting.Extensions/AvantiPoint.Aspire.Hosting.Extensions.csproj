@@ -3,7 +3,7 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <Title>AvantiPoint Aspire Hosting Extensions</Title>
-    <Description>General-purpose helpers for .NET Aspire app hosts, including deployment-only parameters that are required at publish/deploy time but optional during local development.</Description>
+    <Description>General-purpose helpers for Aspire app hosts, including deployment-only parameters that are required at publish/deploy time but optional during local development.</Description>
     <PackageTags>aspire;hosting;extensions;parameters;deployment</PackageTags>
   </PropertyGroup>
 
