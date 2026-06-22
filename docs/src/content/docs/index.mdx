@@ -1,17 +1,21 @@
 ---
-title: AvantiPoint Aspire for Cloudflare
-description: Provision and deploy your Aspire applications to Cloudflare — R2, Workers, Containers and Pages.
+title: AvantiPoint Aspire
+description: A family of AvantiPoint integrations for .NET Aspire — provision and deploy to providers beyond Azure, starting with Cloudflare.
 template: splash
 hero:
-  tagline: Provision and deploy your Aspire applications to Cloudflare — instead of Azure.
+  tagline: Aspire integrations by AvantiPoint — provision and deploy your apps to real cloud providers, starting with Cloudflare.
   image:
     file: ../../assets/logo.png
     alt: AvantiPoint
   actions:
     - text: Get started
-      link: getting-started/introduction/
+      link: cloudflare/getting-started/introduction/
       icon: right-arrow
       variant: primary
+    - text: Overview
+      link: overview/
+      icon: open-book
+      variant: secondary
     - text: View on GitHub
       link: https://github.com/AvantiPoint/AvantiPoint.Aspire
       icon: external
@@ -20,32 +24,64 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-`aspire deploy` is hijacked so your distributed app ships to Cloudflare — the same way the AWS integration targets AWS instead of Azure.
+**AvantiPoint Aspire** is a family of [.NET Aspire](https://aspire.dev) integrations that let you model, provision, and deploy real cloud resources from your AppHost — beyond the built-in Azure path. The first integration targets **Cloudflare**; more providers are planned.
+
+## Integrations
+
+<CardGrid>
+  <LinkCard
+    title="Cloudflare →"
+    href="cloudflare/getting-started/introduction/"
+    description="Provision and deploy to Cloudflare: R2, D1, AI, Vectorize, KV, Queues, Workers, Containers, Pages, Hyperdrive, and custom domains. aspire deploy is hijacked to ship to Cloudflare instead of Azure."
+  />
+  <Card title="More coming" icon="add-document">
+    The repo is intentionally named `AvantiPoint.Aspire` so further provider
+    integrations can be added as sibling areas over time.
+  </Card>
+</CardGrid>
+
+## Cloudflare at a glance
+
+Every service targets the real Cloudflare service by default, and most offer a credential-free local dev loop via `.RunAsEmulator()`.
 
 <CardGrid>
   <Card title="R2 object storage" icon="cloud-download">
-    Provision buckets via the Cloudflare API, with a local **MinIO** emulator for a
-    credential-free dev loop. Plus a client that registers a R2-tuned `IAmazonS3`.
+    S3-compatible buckets + an `IR2Client`. Local **MinIO** emulator.
+  </Card>
+  <Card title="D1 database" icon="seti:db">
+    Serverless SQLite + an `ID1Client`. Local **SQLite** emulator.
+  </Card>
+  <Card title="AI" icon="comment-alt">
+    `IChatClient` / `IEmbeddingGenerator` over Workers AI & AI Gateway. Local **Ollama** emulator.
+  </Card>
+  <Card title="Vectorize" icon="puzzle">
+    Vector database for embeddings / RAG + an `IVectorizeClient`. In-memory emulator.
+  </Card>
+  <Card title="Workers KV" icon="list-format">
+    Key-value store + an `ICloudflareKVClient`. In-memory emulator.
+  </Card>
+  <Card title="Queues" icon="random">
+    Message queue + an `IQueueClient`. In-memory emulator.
   </Card>
   <Card title="Workers" icon="rocket">
-    Run hand-authored Workers locally with `wrangler dev` (no account needed) and
-    deploy them with `aspire deploy`.
+    Run hand-authored Workers locally with `wrangler dev`; deploy with `aspire deploy`.
   </Card>
   <Card title="Containers" icon="seti:docker">
-    Build a container image from your .NET project and run it on Cloudflare
-    Containers — config and connection strings injected automatically.
+    Build a container image from your .NET project and run it on Cloudflare Containers.
   </Card>
   <Card title="Pages" icon="laptop">
-    Attach to your Aspire JavaScript app and deploy the build output to Cloudflare
-    Pages, with custom-domain support.
+    Attach to your Aspire JavaScript app and deploy the build output to Pages.
+  </Card>
+  <Card title="Hyperdrive" icon="setting">
+    Accelerate a production database for Workers — provisioned at deploy.
   </Card>
 </CardGrid>
 
 ## Start here
 
 <CardGrid>
-  <LinkCard title="Introduction" href="getting-started/introduction/" description="How the integration works and what you'll set up." />
-  <LinkCard title="Account ID & Zone ID" href="getting-started/account-and-zone-ids/" description="Find the Cloudflare identifiers you need." />
-  <LinkCard title="API Tokens & Scopes" href="getting-started/api-tokens/" description="Create a token scoped to the services you deploy." />
-  <LinkCard title="Quickstart" href="getting-started/quickstart/" description="Wire R2, an API and a frontend together." />
+  <LinkCard title="Overview" href="overview/" description="What AvantiPoint Aspire is and the conventions shared across integrations." />
+  <LinkCard title="Cloudflare: Introduction" href="cloudflare/getting-started/introduction/" description="How the Cloudflare integration works and what you'll set up." />
+  <LinkCard title="API Tokens & Scopes" href="cloudflare/getting-started/api-tokens/" description="Create a token scoped to the services you deploy." />
+  <LinkCard title="Quickstart" href="cloudflare/getting-started/quickstart/" description="Wire R2, an API and a frontend together." />
 </CardGrid>

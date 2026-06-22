@@ -53,5 +53,5 @@ The HTTP backend resolves the namespace id from its title on first use, so you n
 
 ## Credentials
 
-- **API token**: needs *Workers KV Storage: Edit* — see [API Tokens](../getting-started/api-tokens.md). The client reuses the environment's token by default; scope it with `.WithAccessToken(parameter)` if you prefer.
+- **API token**: needs *Workers KV Storage: Edit* — see [API Tokens](../../getting-started/api-tokens/). The client reuses the environment's token by default; scope it with `.WithAccessToken(parameter)` if you prefer.
 - **Local dev with `.RunAsEmulator()`:** none.

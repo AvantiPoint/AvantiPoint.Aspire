@@ -45,8 +45,8 @@ In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it.
 
 ## Requirements
 
-- **wrangler** installed — see [How wrangler authenticates](../getting-started/wrangler.md).
-- API token with *Cloudflare Pages: Edit* — see [API Tokens](../getting-started/api-tokens.md).
+- **wrangler** installed — see [How wrangler authenticates](../../getting-started/wrangler/).
+- API token with *Cloudflare Pages: Edit* — see [API Tokens](../../getting-started/api-tokens/).
 
 ## Custom domains
 
@@ -59,4 +59,4 @@ builder.AddViteApp("web", "../web")
     .WithCustomDomain(host, zone);
 ```
 
-Custom domains require *DNS: Edit* and *Zone: Read* on the relevant zone, and the [Zone ID](../getting-started/account-and-zone-ids.md).
+Custom domains require *DNS: Edit* and *Zone: Read* on the relevant zone, and the [Zone ID](../../getting-started/account-and-zone-ids/).

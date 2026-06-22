@@ -65,5 +65,5 @@ Pulling against **real** Queues requires the queue to have an [HTTP pull consume
 
 ## Credentials
 
-- **API token**: needs *Queues: Edit* — see [API Tokens](../getting-started/api-tokens.md). The client reuses the environment's token by default; scope it with `.WithAccessToken(parameter)` if you prefer.
+- **API token**: needs *Queues: Edit* — see [API Tokens](../../getting-started/api-tokens/). The client reuses the environment's token by default; scope it with `.WithAccessToken(parameter)` if you prefer.
 - **Local dev with `.RunAsEmulator()`:** none.

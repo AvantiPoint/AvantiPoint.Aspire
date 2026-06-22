@@ -46,6 +46,6 @@ A hand-authored Worker owns its configuration, so add **R2/KV/D1 bindings, route
 
 ## Requirements
 
-- **wrangler** and **Node.js** installed — see [How wrangler authenticates](../getting-started/wrangler.md).
-- For deploy: an API token with *Workers Scripts: Edit* — see [API Tokens](../getting-started/api-tokens.md).
+- **wrangler** and **Node.js** installed — see [How wrangler authenticates](../../getting-started/wrangler/).
+- For deploy: an API token with *Workers Scripts: Edit* — see [API Tokens](../../getting-started/api-tokens/).
 - Local `wrangler dev` needs **no** Cloudflare credentials.
