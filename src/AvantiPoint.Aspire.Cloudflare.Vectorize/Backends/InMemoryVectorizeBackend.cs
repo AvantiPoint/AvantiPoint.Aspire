@@ -7,15 +7,17 @@ namespace AvantiPoint.Aspire.Cloudflare.Vectorize.Backends;
 /// same metric semantics as Vectorize: cosine / dot-product rank highest-first, euclidean ranks
 /// lowest-distance-first.
 /// </summary>
-internal sealed class InMemoryVectorizeBackend(string metric) : IVectorizeBackend
+internal sealed class InMemoryVectorizeBackend(string metric, int dimensions) : IVectorizeBackend
 {
     private readonly ConcurrentDictionary<string, VectorRecord> _store = new();
     private readonly string _metric = metric;
+    private readonly int _dimensions = dimensions;
 
     public Task UpsertAsync(IReadOnlyList<VectorRecord> records, CancellationToken cancellationToken)
     {
         foreach (var record in records)
         {
+            ValidateDimensions(record.Values.Length, $"vector '{record.Id}'");
             _store[record.Id] = record;
         }
 
@@ -24,6 +26,8 @@ internal sealed class InMemoryVectorizeBackend(string metric) : IVectorizeBacken
 
     public Task<IReadOnlyList<VectorMatch>> QueryAsync(ReadOnlyMemory<float> vector, int topK, bool returnValues, bool returnMetadata, CancellationToken cancellationToken)
     {
+        ValidateDimensions(vector.Length, "query vector");
+
         // Materialize the query vector to an array so it can be used inside the scoring lambda (a Span
         // ref-local can't be captured).
         var query = vector.ToArray();
@@ -65,6 +69,17 @@ internal sealed class InMemoryVectorizeBackend(string metric) : IVectorizeBacken
         }
 
         return Task.CompletedTask;
+    }
+
+    // Real Vectorize indexes are fixed-dimension and reject mismatches, so the emulator does too —
+    // otherwise a wrong-length vector would silently pass local testing and fail after deployment.
+    private void ValidateDimensions(int length, string what)
+    {
+        if (_dimensions > 0 && length != _dimensions)
+        {
+            throw new ArgumentException(
+                $"The {what} has {length} dimensions but the index expects {_dimensions}.");
+        }
     }
 
     private double Score(ReadOnlySpan<float> a, ReadOnlySpan<float> b)

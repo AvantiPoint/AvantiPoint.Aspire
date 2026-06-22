@@ -63,7 +63,10 @@ internal sealed class HttpD1Backend : ID1Backend
             Content = JsonContent.Create(new D1QueryRequest
             {
                 Sql = statement.Sql,
-                Params = statement.Parameters.Select(p => p?.ToString()).ToArray(),
+                // Pass the original parameter values so they serialize as their natural JSON types
+                // (number/bool/string/null) — stringifying would diverge from the SQLite emulator
+                // (e.g. numbers bound as text, byte[] becoming "System.Byte[]").
+                Params = statement.Parameters,
             }),
         };
 
@@ -160,7 +163,7 @@ internal sealed class HttpD1Backend : ID1Backend
         public string Sql { get; init; } = string.Empty;
 
         [JsonPropertyName("params")]
-        public string?[] Params { get; init; } = [];
+        public object?[] Params { get; init; } = [];
     }
 
     private sealed class D1Envelope

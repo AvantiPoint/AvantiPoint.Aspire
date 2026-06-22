@@ -69,7 +69,7 @@ public static class VectorizeClientExtensions
         IVectorizeBackend backend;
         if (settings.IsInMemory)
         {
-            backend = new InMemoryVectorizeBackend(settings.Metric);
+            backend = new InMemoryVectorizeBackend(settings.Metric, settings.Dimensions);
         }
         else
         {

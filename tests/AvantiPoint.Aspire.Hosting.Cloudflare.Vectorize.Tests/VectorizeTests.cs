@@ -96,7 +96,7 @@ public class InMemoryVectorizeBackendTests
     public async Task Cosine_Query_Returns_Nearest_Vector_First()
     {
         var ct = TestContext.Current.CancellationToken;
-        IVectorizeClient client = new VectorizeClient(new InMemoryVectorizeBackend("cosine"), "docs", 3);
+        IVectorizeClient client = new VectorizeClient(new InMemoryVectorizeBackend("cosine", 3), "docs", 3);
 
         await client.UpsertAsync(
         [
@@ -116,7 +116,7 @@ public class InMemoryVectorizeBackendTests
     public async Task Upsert_Get_And_Delete_RoundTrip()
     {
         var ct = TestContext.Current.CancellationToken;
-        IVectorizeClient client = new VectorizeClient(new InMemoryVectorizeBackend("cosine"), "docs", 2);
+        IVectorizeClient client = new VectorizeClient(new InMemoryVectorizeBackend("cosine", 2), "docs", 2);
 
         await client.UpsertAsync(
         [
@@ -128,5 +128,15 @@ public class InMemoryVectorizeBackendTests
 
         await client.DeleteAsync(["x"], ct);
         Assert.Empty(await client.GetByIdsAsync(["x"], ct));
+    }
+
+    [Fact]
+    public async Task Rejects_Vector_With_Wrong_Dimensions()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        IVectorizeClient client = new VectorizeClient(new InMemoryVectorizeBackend("cosine", 3), "docs", 3);
+
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            client.UpsertAsync([new VectorRecord("a", new float[] { 1f, 0f })], ct));
     }
 }
