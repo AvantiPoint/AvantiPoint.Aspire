@@ -6,8 +6,9 @@
   --sl-color-accent-low: #14148f;
   --sl-color-accent: #4040f7;
   --sl-color-accent-high: #c9c9fd;
-
-  --sl-color-white: #ffffff;
+  /* NOTE: don't override --sl-color-white / --sl-color-black here. Starlight uses them as
+     theme-aware high-contrast *text* tokens (white in dark theme, near-black in light theme).
+     Hardcoding white breaks light-theme contrast — e.g. invisible search-input / theme-select text. */
 }
 
 :root[data-theme='light'] {
