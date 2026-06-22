@@ -10,7 +10,7 @@ export default defineConfig({
     starlight({
       title: 'AvantiPoint Aspire',
       description:
-        'A family of AvantiPoint integrations for .NET Aspire — provision and deploy to providers beyond Azure, starting with Cloudflare.',
+        'A family of AvantiPoint integrations for Aspire — provision and deploy to providers beyond Azure, starting with Cloudflare.',
       logo: { src: './src/assets/logo.png', alt: 'AvantiPoint' },
       favicon: '/favicon.png',
       customCss: ['./src/styles/brand.css'],

@@ -1,10 +1,10 @@
 ---
 title: "AvantiPoint Aspire"
-description: "A family of AvantiPoint integrations for .NET Aspire — provision and deploy to providers beyond Azure."
+description: "A family of AvantiPoint integrations for Aspire — provision and deploy to providers beyond Azure."
 ---
 
 
-**AvantiPoint Aspire** is a family of integrations for [.NET Aspire](https://aspire.dev) by AvantiPoint. Each integration plugs into Aspire's model and `aspire run` / `aspire deploy` pipeline so you can provision and deploy real cloud resources — without being limited to the built-in Azure path.
+**AvantiPoint Aspire** is a family of integrations for [Aspire](https://aspire.dev) by AvantiPoint. Each integration plugs into Aspire's model and `aspire run` / `aspire deploy` pipeline so you can provision and deploy real cloud resources — without being limited to the built-in Azure path.
 
 The packages share a few conventions, so once you've learned one integration the others feel familiar:
 
@@ -17,8 +17,6 @@ The packages share a few conventions, so once you've learned one integration the
 | Integration | Status | What it does |
 | --- | --- | --- |
 | **[Cloudflare](../cloudflare/getting-started/introduction/)** | Available | Provision and deploy to Cloudflare — R2, D1, AI, Vectorize, KV, Queues, Workers, Containers, Pages, Hyperdrive, and custom domains. |
-
-More integrations are planned. The repository is intentionally named `AvantiPoint.Aspire` (not Cloudflare-specific) so additional providers can be added as sibling integrations over time.
 
 ## Shared building blocks
 
