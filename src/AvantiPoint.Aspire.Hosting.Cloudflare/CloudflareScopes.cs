@@ -25,4 +25,25 @@ public static class CloudflareScopes
 
     /// <summary>Required (read) to resolve a zone for custom domains.</summary>
     public const string ZoneRead = "Zone Read";
+
+    /// <summary>Required to create/manage and query D1 databases.</summary>
+    public const string D1Edit = "D1 Write";
+
+    /// <summary>Required to call Workers AI (chat/embeddings).</summary>
+    public const string WorkersAIRead = "Workers AI Read";
+
+    /// <summary>Required to create/manage AI Gateways.</summary>
+    public const string AIGatewayEdit = "AI Gateway Write";
+
+    /// <summary>Required to create/manage and query Vectorize indexes.</summary>
+    public const string VectorizeEdit = "Vectorize Write";
+
+    /// <summary>Required to create/manage and use Workers KV namespaces.</summary>
+    public const string WorkersKVEdit = "Workers KV Storage Write";
+
+    /// <summary>Required to create/manage and use Queues.</summary>
+    public const string QueuesEdit = "Queues Write";
+
+    /// <summary>Required to create/manage Hyperdrive configurations.</summary>
+    public const string HyperdriveEdit = "Hyperdrive Write";
 }

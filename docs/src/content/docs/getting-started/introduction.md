@@ -13,7 +13,7 @@ When you add a **Cloudflare environment** to your AppHost, the integration hooks
 2. **Publish** — build artifacts are produced (container images, generated `wrangler.jsonc`, the JS build output).
 3. **Deploy** — resources are created/updated on Cloudflare: R2 buckets via the REST API, Workers/Containers and Pages via `wrangler`.
 
-During local `aspire run`, R2 is backed by a local **MinIO** emulator, so the inner dev loop needs no Cloudflare credentials at all.
+During local `aspire run`, services that support `.RunAsEmulator()` run against a local emulator instead of Cloudflare — R2 against **MinIO**, D1 against a local **SQLite** file — so the inner dev loop needs no Cloudflare credentials at all.
 
 ## What you'll set up
 

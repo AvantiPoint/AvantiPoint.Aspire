@@ -1,4 +1,5 @@
 using Amazon.S3;
+using AvantiPoint.Aspire.Cloudflare.D1;
 using AvantiPoint.Aspire.Cloudflare.R2;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Registers IR2Client (and IAmazonS3) configured for R2 from the "uploads" connection string injected
 // by the AppHost. Locally this points at the MinIO emulator; in production at real R2 — no code change.
 builder.AddR2Client("uploads");
+
+// Registers ID1Client from the "catalog" connection string. Locally (RunAsEmulator) this is a SQLite
+// file; in production it is the D1 HTTP API — the same query code runs against both.
+builder.AddD1Client("catalog");
 
 // Allow the Pages frontend (different origin) to call this API.
 builder.Services.AddCors(options =>
@@ -49,6 +54,15 @@ app.MapGet("/files/{key}", async (string key, IR2Client r2, CancellationToken ct
     {
         return Results.NotFound();
     }
+});
+
+// A page-view counter backed by D1 — the same ID1Client code runs against local SQLite and real D1.
+app.MapPost("/visits", async (ID1Client d1, CancellationToken ct) =>
+{
+    await d1.ExecuteAsync("CREATE TABLE IF NOT EXISTS visits (id INTEGER PRIMARY KEY, at TEXT)", parameters: null, ct);
+    await d1.ExecuteAsync("INSERT INTO visits (at) VALUES (?)", [DateTimeOffset.UtcNow.ToString("o")], ct);
+    var count = await d1.QueryFirstOrDefaultAsync<long>("SELECT COUNT(*) FROM visits", parameters: null, ct);
+    return Results.Ok(new { visits = count });
 });
 
 app.Run();

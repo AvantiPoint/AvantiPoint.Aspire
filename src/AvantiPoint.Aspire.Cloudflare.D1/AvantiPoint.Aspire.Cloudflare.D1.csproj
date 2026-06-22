@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Client for Cloudflare D1</Title>
+    <Description>An Aspire client integration for Cloudflare D1. Registers an ID1Client from the Aspire-injected connection string, with a health check. The same query/execute API works unchanged against a local SQLite file (dev) and the D1 HTTP query API (deployed).</Description>
+    <PackageTags>aspire;cloudflare;d1;sqlite;database;client</PackageTags>
+    <IsAspireClientIntegration>true</IsAspireClientIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+  </ItemGroup>
+
+</Project>

@@ -5,8 +5,8 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.R2;
 
 /// <summary>
 /// An R2 bucket modeled as an Aspire resource. Exposes an S3-compatible connection string that
-/// points at the local MinIO emulator during <c>aspire run</c> (the default) or at the real R2
-/// account when <see cref="R2HostingExtensions.RunAsReal"/> is used / during deploy.
+/// points at the real R2 account by default (in run and deploy), or at the local MinIO emulator
+/// during <c>aspire run</c> when <see cref="R2HostingExtensions.RunAsEmulator"/> is used.
 /// </summary>
 public sealed class R2BucketResource : Resource, IResourceWithConnectionString, IResourceWithWaitSupport, ICloudflareResource
 {
@@ -26,7 +26,7 @@ public sealed class R2BucketResource : Resource, IResourceWithConnectionString, 
     /// <summary>Optional R2 location hint (e.g. <c>weur</c>).</summary>
     public string? LocationHint { get; internal set; }
 
-    /// <summary>True when this bucket is served by the local MinIO emulator (run mode default).</summary>
+    /// <summary>True when this bucket is served by the local MinIO emulator (opt-in via <c>RunAsEmulator()</c>).</summary>
     public bool UseEmulator { get; internal set; }
 
     /// <summary>When true, <c>aspire deploy --destroy</c> will delete the real R2 bucket. Off by default (data-loss guard).</summary>

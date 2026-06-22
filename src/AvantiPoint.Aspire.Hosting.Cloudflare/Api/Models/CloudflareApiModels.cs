@@ -123,6 +123,172 @@ public sealed class PagesDomainRequest
     public string Name { get; init; } = string.Empty;
 }
 
+/// <summary>A D1 database as returned by the D1 API.</summary>
+public sealed class D1Database
+{
+    [JsonPropertyName("uuid")]
+    public string Uuid { get; init; } = string.Empty;
+
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("version")]
+    public string? Version { get; init; }
+}
+
+/// <summary>Request body for creating a D1 database.</summary>
+public sealed class CreateD1DatabaseRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("primary_location_hint")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? PrimaryLocationHint { get; init; }
+}
+
+/// <summary>A Hyperdrive configuration as returned by the Hyperdrive API.</summary>
+public sealed class HyperdriveConfig
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Hyperdrive configuration.</summary>
+public sealed class CreateHyperdriveConfigRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("origin")]
+    public HyperdriveOrigin Origin { get; init; } = new();
+
+    [JsonPropertyName("caching")]
+    public HyperdriveCaching Caching { get; init; } = new();
+}
+
+/// <summary>The upstream database an Hyperdrive configuration accelerates.</summary>
+public sealed class HyperdriveOrigin
+{
+    [JsonPropertyName("scheme")]
+    public string Scheme { get; init; } = "postgres";
+
+    [JsonPropertyName("host")]
+    public string Host { get; init; } = string.Empty;
+
+    [JsonPropertyName("port")]
+    public int Port { get; init; } = 5432;
+
+    [JsonPropertyName("database")]
+    public string Database { get; init; } = string.Empty;
+
+    [JsonPropertyName("user")]
+    public string User { get; init; } = string.Empty;
+
+    [JsonPropertyName("password")]
+    public string Password { get; init; } = string.Empty;
+}
+
+/// <summary>Hyperdrive caching options.</summary>
+public sealed class HyperdriveCaching
+{
+    [JsonPropertyName("disabled")]
+    public bool Disabled { get; init; }
+}
+
+/// <summary>A Workers KV namespace as returned by the KV API.</summary>
+public sealed class KvNamespace
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Workers KV namespace.</summary>
+public sealed class CreateKvNamespaceRequest
+{
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = string.Empty;
+}
+
+/// <summary>A Queue as returned by the Queues API.</summary>
+public sealed class CloudflareQueue
+{
+    [JsonPropertyName("queue_id")]
+    public string QueueId { get; init; } = string.Empty;
+
+    [JsonPropertyName("queue_name")]
+    public string QueueName { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Queue.</summary>
+public sealed class CreateQueueRequest
+{
+    [JsonPropertyName("queue_name")]
+    public string QueueName { get; init; } = string.Empty;
+}
+
+/// <summary>A Vectorize index as returned by the Vectorize API.</summary>
+public sealed class VectorizeIndex
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Vectorize index.</summary>
+public sealed class CreateVectorizeIndexRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("config")]
+    public VectorizeIndexConfig Config { get; init; } = new();
+}
+
+/// <summary>The dimensions + distance metric of a Vectorize index.</summary>
+public sealed class VectorizeIndexConfig
+{
+    [JsonPropertyName("dimensions")]
+    public int Dimensions { get; init; }
+
+    [JsonPropertyName("metric")]
+    public string Metric { get; init; } = "cosine";
+}
+
+/// <summary>An AI Gateway as returned by the AI Gateway API.</summary>
+public sealed class AIGateway
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating an AI Gateway (minimal required fields).</summary>
+public sealed class CreateAIGatewayRequest
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+
+    [JsonPropertyName("cache_ttl")]
+    public int CacheTtl { get; init; }
+
+    [JsonPropertyName("collect_logs")]
+    public bool CollectLogs { get; init; } = true;
+
+    [JsonPropertyName("rate_limiting_interval")]
+    public int RateLimitingInterval { get; init; }
+
+    [JsonPropertyName("rate_limiting_limit")]
+    public int RateLimitingLimit { get; init; }
+
+    [JsonPropertyName("rate_limiting_technique")]
+    public string RateLimitingTechnique { get; init; } = "fixed";
+}
+
 /// <summary>Request body for creating an R2 bucket.</summary>
 public sealed class CreateR2BucketRequest
 {

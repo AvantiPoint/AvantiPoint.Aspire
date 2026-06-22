@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Hosting for Cloudflare Hyperdrive</Title>
+    <Description>Cloudflare Hyperdrive hosting integration for Aspire. Provisions a Hyperdrive configuration at 'aspire deploy' that accelerates a (typically third-party) production database, and surfaces the config id for a Worker binding. Hosting-only — Hyperdrive is consumed via a Worker binding, not over HTTP, so there is no .NET client. The local dev loop uses your existing Aspire database resource unchanged.</Description>
+    <PackageTags>aspire;cloudflare;hyperdrive;postgres;database;hosting</PackageTags>
+    <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests" />
+  </ItemGroup>
+
+</Project>

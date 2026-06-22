@@ -9,8 +9,9 @@ using Microsoft.Extensions.Logging;
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.R2.Provisioning;
 
 /// <summary>
-/// Tracks R2 buckets that should be provisioned against a real Cloudflare account during
-/// <c>aspire run</c> (i.e. <c>RunAsReal</c>), and provisions them once before the app starts.
+/// Tracks R2 buckets that target real Cloudflare R2 during <c>aspire run</c> (the default), and
+/// provisions them once before the app starts. Buckets switched to the local MinIO emulator with
+/// <c>RunAsEmulator()</c> are skipped.
 /// </summary>
 internal sealed class R2RealProvisioningAnnotation : IResourceAnnotation
 {
@@ -47,7 +48,9 @@ internal static class R2RealProvisioning
         IServiceProvider services,
         CancellationToken cancellationToken)
     {
-        if (annotation.Buckets.Count == 0)
+        // Buckets switched to the emulator with RunAsEmulator() are backed by MinIO — skip them.
+        var realBuckets = annotation.Buckets.Where(b => !b.UseEmulator).ToList();
+        if (realBuckets.Count == 0)
         {
             return;
         }
@@ -61,7 +64,7 @@ internal static class R2RealProvisioning
 
         await validator.ValidateAsync(token, environment.RequiredScopes, cancellationToken).ConfigureAwait(false);
 
-        foreach (var bucket in annotation.Buckets)
+        foreach (var bucket in realBuckets)
         {
             logger?.LogInformation("Provisioning real R2 bucket '{Bucket}'...", bucket.BucketName);
             await apiClient.CreateR2BucketAsync(token, accountId, new CreateR2BucketRequest

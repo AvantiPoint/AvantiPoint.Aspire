@@ -7,7 +7,7 @@ This ties the pieces together: an R2 bucket, a .NET API that uses it, and a Java
 
 ## 1. Set your credentials
 
-For local `aspire run` against the MinIO emulator, **nothing is required**. For deploying (or `.RunAsReal()`), set:
+For local `aspire run` against the MinIO emulator (`.RunAsEmulator()`), **nothing is required**. For deploying (or running against real R2), set:
 
 ```bash
 export CLOUDFLARE_API_TOKEN="<your scoped token>"
@@ -37,8 +37,8 @@ var zone    = builder.AddDeploymentParameter("zone-id");
 var apiHost = builder.AddDeploymentParameter("api-hostname");
 var webHost = builder.AddDeploymentParameter("web-hostname");
 
-// An R2 bucket. Local: MinIO emulator. Deploy: real R2.
-var uploads = builder.AddR2Bucket("uploads");
+// An R2 bucket. RunAsEmulator() → local MinIO during `aspire run`; deploy always uses real R2.
+var uploads = builder.AddR2Bucket("uploads").RunAsEmulator();
 
 // A .NET API that reads/writes the bucket (becomes a Cloudflare Container on deploy).
 var api = builder.AddProject<Projects.Api>("api")
@@ -82,7 +82,7 @@ app.MapGet("/data", async (IR2Client r2) =>
 aspire run
 ```
 
-MinIO starts, the bucket is created in it, and your services run against it — no Cloudflare credentials needed.
+Because the bucket uses `.RunAsEmulator()`, MinIO starts, the bucket is created in it, and your services run against it — no Cloudflare credentials needed.
 
 ## 5. Deploy to Cloudflare
 

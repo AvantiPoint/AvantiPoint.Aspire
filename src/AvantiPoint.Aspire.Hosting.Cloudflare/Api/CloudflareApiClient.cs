@@ -141,6 +141,238 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         logger.LogInformation("Upserted CNAME '{Name}' -> '{Content}'.", name, content);
     }
 
+    public async Task<D1Database> CreateD1DatabaseAsync(string apiToken, string accountId, CreateD1DatabaseRequest body, CancellationToken cancellationToken = default)
+    {
+        // D1 has no "create or get" semantics — a second create makes a second database with the same
+        // name — so look up by name first to stay idempotent.
+        var existing = await GetD1DatabaseByNameAsync(apiToken, accountId, body.Name, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            logger.LogInformation("D1 database '{Database}' already exists; reusing it.", body.Name);
+            return existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/d1/database", apiToken);
+        request.Content = JsonContent.Create(body);
+
+        var result = await SendAsync<D1Database>(request, "create D1 database", cancellationToken).ConfigureAwait(false);
+        return result ?? new D1Database { Name = body.Name };
+    }
+
+    public async Task<D1Database?> GetD1DatabaseByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/d1/database?name={Uri.EscapeDataString(name)}", apiToken);
+        var databases = await SendAsync<List<D1Database>>(request, "list D1 databases", cancellationToken).ConfigureAwait(false);
+        return databases?.FirstOrDefault(d => string.Equals(d.Name, name, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteD1DatabaseAsync(string apiToken, string accountId, string databaseId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/d1/database/{databaseId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete D1 database", envelope.Errors);
+        }
+    }
+
+    public async Task<AIGateway> CreateAIGatewayAsync(string apiToken, string accountId, CreateAIGatewayRequest body, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/ai-gateway/gateways", apiToken);
+        request.Content = JsonContent.Create(body);
+
+        var envelope = await SendRawAsync<AIGateway>(request, cancellationToken).ConfigureAwait(false);
+        if (envelope.Success && envelope.Result is not null)
+        {
+            return envelope.Result;
+        }
+
+        // Treat an already-existing gateway as success (idempotent provisioning).
+        if (envelope.Errors.Any(e => e.Message.Contains("already", StringComparison.OrdinalIgnoreCase)))
+        {
+            logger.LogInformation("AI Gateway '{Gateway}' already exists; reusing it.", body.Id);
+            return new AIGateway { Id = body.Id };
+        }
+
+        throw CloudflareApiException.FromResponse("create AI Gateway", envelope.Errors);
+    }
+
+    public async Task DeleteAIGatewayAsync(string apiToken, string accountId, string gatewayId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/ai-gateway/gateways/{gatewayId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete AI Gateway", envelope.Errors);
+        }
+    }
+
+    public async Task<VectorizeIndex> CreateVectorizeIndexAsync(string apiToken, string accountId, CreateVectorizeIndexRequest body, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/vectorize/v2/indexes", apiToken);
+        request.Content = JsonContent.Create(body);
+
+        var envelope = await SendRawAsync<VectorizeIndex>(request, cancellationToken).ConfigureAwait(false);
+        if (envelope.Success && envelope.Result is not null)
+        {
+            return envelope.Result;
+        }
+
+        // Treat an already-existing index as success (idempotent provisioning).
+        if (envelope.Errors.Any(e => e.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase)))
+        {
+            logger.LogInformation("Vectorize index '{Index}' already exists; reusing it.", body.Name);
+            return new VectorizeIndex { Name = body.Name };
+        }
+
+        throw CloudflareApiException.FromResponse("create Vectorize index", envelope.Errors);
+    }
+
+    public async Task DeleteVectorizeIndexAsync(string apiToken, string accountId, string indexName, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/vectorize/v2/indexes/{indexName}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete Vectorize index", envelope.Errors);
+        }
+    }
+
+    public async Task<KvNamespace> CreateKvNamespaceAsync(string apiToken, string accountId, CreateKvNamespaceRequest body, CancellationToken cancellationToken = default)
+    {
+        var existing = await GetKvNamespaceByTitleAsync(apiToken, accountId, body.Title, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            logger.LogInformation("KV namespace '{Namespace}' already exists; reusing it.", body.Title);
+            return existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/storage/kv/namespaces", apiToken);
+        request.Content = JsonContent.Create(body);
+        var result = await SendAsync<KvNamespace>(request, "create KV namespace", cancellationToken).ConfigureAwait(false);
+        return result ?? new KvNamespace { Title = body.Title };
+    }
+
+    public async Task<KvNamespace?> GetKvNamespaceByTitleAsync(string apiToken, string accountId, string title, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/storage/kv/namespaces?per_page=100", apiToken);
+        var namespaces = await SendAsync<List<KvNamespace>>(request, "list KV namespaces", cancellationToken).ConfigureAwait(false);
+        return namespaces?.FirstOrDefault(n => string.Equals(n.Title, title, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteKvNamespaceAsync(string apiToken, string accountId, string namespaceId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/storage/kv/namespaces/{namespaceId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete KV namespace", envelope.Errors);
+        }
+    }
+
+    public async Task<CloudflareQueue> CreateQueueAsync(string apiToken, string accountId, CreateQueueRequest body, CancellationToken cancellationToken = default)
+    {
+        var existing = await GetQueueByNameAsync(apiToken, accountId, body.QueueName, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            logger.LogInformation("Queue '{Queue}' already exists; reusing it.", body.QueueName);
+            return existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/queues", apiToken);
+        request.Content = JsonContent.Create(body);
+        var result = await SendAsync<CloudflareQueue>(request, "create Queue", cancellationToken).ConfigureAwait(false);
+        return result ?? new CloudflareQueue { QueueName = body.QueueName };
+    }
+
+    public async Task<CloudflareQueue?> GetQueueByNameAsync(string apiToken, string accountId, string queueName, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/queues", apiToken);
+        var queues = await SendAsync<List<CloudflareQueue>>(request, "list Queues", cancellationToken).ConfigureAwait(false);
+        return queues?.FirstOrDefault(q => string.Equals(q.QueueName, queueName, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteQueueAsync(string apiToken, string accountId, string queueId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/queues/{queueId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete Queue", envelope.Errors);
+        }
+    }
+
+    public async Task<HyperdriveConfig> CreateHyperdriveConfigAsync(string apiToken, string accountId, CreateHyperdriveConfigRequest body, CancellationToken cancellationToken = default)
+    {
+        // Idempotent: update the existing config (e.g. rotated credentials) rather than creating a duplicate.
+        var existing = await GetHyperdriveConfigByNameAsync(apiToken, accountId, body.Name, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            using var update = CreateRequest(HttpMethod.Put, $"accounts/{accountId}/hyperdrive/configs/{existing.Id}", apiToken);
+            update.Content = JsonContent.Create(body);
+            var updated = await SendAsync<HyperdriveConfig>(update, "update Hyperdrive config", cancellationToken).ConfigureAwait(false);
+            return updated ?? existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/hyperdrive/configs", apiToken);
+        request.Content = JsonContent.Create(body);
+        var result = await SendAsync<HyperdriveConfig>(request, "create Hyperdrive config", cancellationToken).ConfigureAwait(false);
+        return result ?? new HyperdriveConfig { Name = body.Name };
+    }
+
+    public async Task<HyperdriveConfig?> GetHyperdriveConfigByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/hyperdrive/configs", apiToken);
+        var configs = await SendAsync<List<HyperdriveConfig>>(request, "list Hyperdrive configs", cancellationToken).ConfigureAwait(false);
+        return configs?.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteHyperdriveConfigAsync(string apiToken, string accountId, string configId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/hyperdrive/configs/{configId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete Hyperdrive config", envelope.Errors);
+        }
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

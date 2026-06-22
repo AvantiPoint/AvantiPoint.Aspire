@@ -35,4 +35,55 @@ public interface ICloudflareApiClient
 
     /// <summary>Creates or updates a proxied CNAME record in the zone (upsert by name).</summary>
     Task UpsertCnameRecordAsync(string apiToken, string zoneId, string name, string content, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates a D1 database. Idempotent: if a database with the same name already exists it is
+    /// returned as-is (D1 would otherwise create a second database with the same name).
+    /// </summary>
+    Task<D1Database> CreateD1DatabaseAsync(string apiToken, string accountId, CreateD1DatabaseRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a D1 database by name, or <c>null</c> if none exists.</summary>
+    Task<D1Database?> GetD1DatabaseByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a D1 database by its id. No-op if it does not exist.</summary>
+    Task DeleteD1DatabaseAsync(string apiToken, string accountId, string databaseId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates an AI Gateway. Idempotent: an existing gateway with the same id is returned as-is.</summary>
+    Task<AIGateway> CreateAIGatewayAsync(string apiToken, string accountId, CreateAIGatewayRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes an AI Gateway by id. No-op if it does not exist.</summary>
+    Task DeleteAIGatewayAsync(string apiToken, string accountId, string gatewayId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Vectorize index. Idempotent: an existing index with the same name is returned as-is.</summary>
+    Task<VectorizeIndex> CreateVectorizeIndexAsync(string apiToken, string accountId, CreateVectorizeIndexRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Vectorize index by name. No-op if it does not exist.</summary>
+    Task DeleteVectorizeIndexAsync(string apiToken, string accountId, string indexName, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Workers KV namespace. Idempotent: an existing namespace with the same title is returned as-is.</summary>
+    Task<KvNamespace> CreateKvNamespaceAsync(string apiToken, string accountId, CreateKvNamespaceRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a Workers KV namespace by title, or <c>null</c> if none exists.</summary>
+    Task<KvNamespace?> GetKvNamespaceByTitleAsync(string apiToken, string accountId, string title, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Workers KV namespace by id. No-op if it does not exist.</summary>
+    Task DeleteKvNamespaceAsync(string apiToken, string accountId, string namespaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Queue. Idempotent: an existing queue with the same name is returned as-is.</summary>
+    Task<CloudflareQueue> CreateQueueAsync(string apiToken, string accountId, CreateQueueRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a Queue by name, or <c>null</c> if none exists.</summary>
+    Task<CloudflareQueue?> GetQueueByNameAsync(string apiToken, string accountId, string queueName, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Queue by id. No-op if it does not exist.</summary>
+    Task DeleteQueueAsync(string apiToken, string accountId, string queueId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Hyperdrive configuration. Idempotent: an existing config with the same name is updated.</summary>
+    Task<HyperdriveConfig> CreateHyperdriveConfigAsync(string apiToken, string accountId, CreateHyperdriveConfigRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a Hyperdrive configuration by name, or <c>null</c> if none exists.</summary>
+    Task<HyperdriveConfig?> GetHyperdriveConfigByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Hyperdrive configuration by id. No-op if it does not exist.</summary>
+    Task DeleteHyperdriveConfigAsync(string apiToken, string accountId, string configId, CancellationToken cancellationToken = default);
 }

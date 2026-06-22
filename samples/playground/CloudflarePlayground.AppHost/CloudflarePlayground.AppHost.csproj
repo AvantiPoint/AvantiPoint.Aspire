@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../../src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="../../../src/AvantiPoint.Aspire.Hosting.Cloudflare.D1/AvantiPoint.Aspire.Hosting.Cloudflare.D1.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="../../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Pages/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="../CloudflarePlayground.Api/CloudflarePlayground.Api.csproj" />
     <ProjectReference Include="../CloudflarePlayground.Seeder/CloudflarePlayground.Seeder.csproj" />
