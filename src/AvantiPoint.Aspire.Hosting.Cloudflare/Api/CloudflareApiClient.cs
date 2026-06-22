@@ -256,6 +256,82 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         }
     }
 
+    public async Task<KvNamespace> CreateKvNamespaceAsync(string apiToken, string accountId, CreateKvNamespaceRequest body, CancellationToken cancellationToken = default)
+    {
+        var existing = await GetKvNamespaceByTitleAsync(apiToken, accountId, body.Title, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            logger.LogInformation("KV namespace '{Namespace}' already exists; reusing it.", body.Title);
+            return existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/storage/kv/namespaces", apiToken);
+        request.Content = JsonContent.Create(body);
+        var result = await SendAsync<KvNamespace>(request, "create KV namespace", cancellationToken).ConfigureAwait(false);
+        return result ?? new KvNamespace { Title = body.Title };
+    }
+
+    public async Task<KvNamespace?> GetKvNamespaceByTitleAsync(string apiToken, string accountId, string title, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/storage/kv/namespaces?per_page=100", apiToken);
+        var namespaces = await SendAsync<List<KvNamespace>>(request, "list KV namespaces", cancellationToken).ConfigureAwait(false);
+        return namespaces?.FirstOrDefault(n => string.Equals(n.Title, title, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteKvNamespaceAsync(string apiToken, string accountId, string namespaceId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/storage/kv/namespaces/{namespaceId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete KV namespace", envelope.Errors);
+        }
+    }
+
+    public async Task<CloudflareQueue> CreateQueueAsync(string apiToken, string accountId, CreateQueueRequest body, CancellationToken cancellationToken = default)
+    {
+        var existing = await GetQueueByNameAsync(apiToken, accountId, body.QueueName, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            logger.LogInformation("Queue '{Queue}' already exists; reusing it.", body.QueueName);
+            return existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/queues", apiToken);
+        request.Content = JsonContent.Create(body);
+        var result = await SendAsync<CloudflareQueue>(request, "create Queue", cancellationToken).ConfigureAwait(false);
+        return result ?? new CloudflareQueue { QueueName = body.QueueName };
+    }
+
+    public async Task<CloudflareQueue?> GetQueueByNameAsync(string apiToken, string accountId, string queueName, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/queues", apiToken);
+        var queues = await SendAsync<List<CloudflareQueue>>(request, "list Queues", cancellationToken).ConfigureAwait(false);
+        return queues?.FirstOrDefault(q => string.Equals(q.QueueName, queueName, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteQueueAsync(string apiToken, string accountId, string queueId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/queues/{queueId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete Queue", envelope.Errors);
+        }
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

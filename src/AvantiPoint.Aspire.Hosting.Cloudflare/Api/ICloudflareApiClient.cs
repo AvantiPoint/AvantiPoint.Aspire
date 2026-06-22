@@ -59,4 +59,22 @@ public interface ICloudflareApiClient
 
     /// <summary>Deletes a Vectorize index by name. No-op if it does not exist.</summary>
     Task DeleteVectorizeIndexAsync(string apiToken, string accountId, string indexName, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Workers KV namespace. Idempotent: an existing namespace with the same title is returned as-is.</summary>
+    Task<KvNamespace> CreateKvNamespaceAsync(string apiToken, string accountId, CreateKvNamespaceRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a Workers KV namespace by title, or <c>null</c> if none exists.</summary>
+    Task<KvNamespace?> GetKvNamespaceByTitleAsync(string apiToken, string accountId, string title, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Workers KV namespace by id. No-op if it does not exist.</summary>
+    Task DeleteKvNamespaceAsync(string apiToken, string accountId, string namespaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Queue. Idempotent: an existing queue with the same name is returned as-is.</summary>
+    Task<CloudflareQueue> CreateQueueAsync(string apiToken, string accountId, CreateQueueRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a Queue by name, or <c>null</c> if none exists.</summary>
+    Task<CloudflareQueue?> GetQueueByNameAsync(string apiToken, string accountId, string queueName, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Queue by id. No-op if it does not exist.</summary>
+    Task DeleteQueueAsync(string apiToken, string accountId, string queueId, CancellationToken cancellationToken = default);
 }

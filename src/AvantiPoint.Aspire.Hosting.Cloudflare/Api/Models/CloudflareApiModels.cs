@@ -147,6 +147,40 @@ public sealed class CreateD1DatabaseRequest
     public string? PrimaryLocationHint { get; init; }
 }
 
+/// <summary>A Workers KV namespace as returned by the KV API.</summary>
+public sealed class KvNamespace
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Workers KV namespace.</summary>
+public sealed class CreateKvNamespaceRequest
+{
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = string.Empty;
+}
+
+/// <summary>A Queue as returned by the Queues API.</summary>
+public sealed class CloudflareQueue
+{
+    [JsonPropertyName("queue_id")]
+    public string QueueId { get; init; } = string.Empty;
+
+    [JsonPropertyName("queue_name")]
+    public string QueueName { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Queue.</summary>
+public sealed class CreateQueueRequest
+{
+    [JsonPropertyName("queue_name")]
+    public string QueueName { get; init; } = string.Empty;
+}
+
 /// <summary>A Vectorize index as returned by the Vectorize API.</summary>
 public sealed class VectorizeIndex
 {

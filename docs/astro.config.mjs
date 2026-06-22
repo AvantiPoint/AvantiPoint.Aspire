@@ -44,6 +44,8 @@ export default defineConfig({
             'guides/d1',
             'guides/ai',
             'guides/vectorize',
+            'guides/kv',
+            'guides/queues',
             'guides/workers',
             'guides/containers',
             'guides/pages',

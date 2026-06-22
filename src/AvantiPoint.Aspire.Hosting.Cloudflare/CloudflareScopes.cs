@@ -37,4 +37,10 @@ public static class CloudflareScopes
 
     /// <summary>Required to create/manage and query Vectorize indexes.</summary>
     public const string VectorizeEdit = "Vectorize Write";
+
+    /// <summary>Required to create/manage and use Workers KV namespaces.</summary>
+    public const string WorkersKVEdit = "Workers KV Storage Write";
+
+    /// <summary>Required to create/manage and use Queues.</summary>
+    public const string QueuesEdit = "Queues Write";
 }

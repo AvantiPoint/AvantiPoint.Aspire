@@ -17,13 +17,15 @@ Hosting and client integrations that make [Aspire](https://aspire.dev) a first-c
 - **D1 databases** — provisioned via the Cloudflare API, queried from .NET through `ID1Client`. Add `.RunAsEmulator()` and the database is a local **SQLite** file during `aspire run` (D1 is SQLite under the hood); deployed, the same query code runs against the D1 HTTP API.
 - **AI (Workers AI / AI Gateway)** — a `Microsoft.Extensions.AI` `IChatClient`/`IEmbeddingGenerator` over Cloudflare's OpenAI-compatible AI endpoints. Add `.RunAsEmulator()` and a local **Ollama** server backs it during `aspire run`; deployed, the same code runs against Workers AI or an AI Gateway (incl. `anthropic/claude-*`).
 - **Vectorize** — a vector database for embeddings/RAG, used from .NET through `IVectorizeClient` (upsert/query/delete). Add `.RunAsEmulator()` for an in-memory store during `aspire run`; deployed, the same code runs against the Vectorize v2 HTTP API.
+- **Workers KV** — a key-value store, used from .NET through `ICloudflareKVClient` (get/put/delete/list). `.RunAsEmulator()` gives an in-memory store during `aspire run`; deployed, the Workers KV HTTP API.
+- **Queues** — a message queue, used from .NET through `IQueueClient` (send/pull/ack/retry). `.RunAsEmulator()` gives an in-memory queue during `aspire run`; deployed, the Queues HTTP API.
 
 Cross-cutting:
 
 - **API-token first** — the Cloudflare API token is an Aspire secret parameter, and its permission scopes are validated up front (fail-fast) before anything is provisioned.
 - **Custom domains** — attach a custom domain (with your Zone Id) to a Container or Pages app during deploy.
 
-> Status: active development. R2 (hosting + client + MinIO emulator), D1 (hosting + client + SQLite emulator), AI (hosting + client + Ollama emulator), Vectorize (hosting + client + in-memory emulator), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
+> Status: active development. R2, D1, AI, Vectorize, KV, and Queues (each hosting + client, with a local emulator via `.RunAsEmulator()`), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
 
 ## Packages
 
@@ -39,6 +41,10 @@ Cross-cutting:
 | `AvantiPoint.Aspire.Cloudflare.AI` | AI **client** integration: registers `Microsoft.Extensions.AI` `IChatClient`/`IEmbeddingGenerator` (Ollama locally, Cloudflare deployed) from the Aspire-injected connection string. |
 | `AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize` | Vectorize hosting: provisioning via the Cloudflare API plus an in-memory vector store (`.RunAsEmulator()`) for `aspire run`. |
 | `AvantiPoint.Aspire.Cloudflare.Vectorize` | Vectorize **client** integration: registers an `IVectorizeClient` (in-memory locally, the Vectorize v2 HTTP API deployed) from the Aspire-injected connection string. |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.KV` | Workers KV hosting: provisioning via the Cloudflare API plus an in-memory store (`.RunAsEmulator()`) for `aspire run`. |
+| `AvantiPoint.Aspire.Cloudflare.KV` | Workers KV **client** integration: registers an `ICloudflareKVClient` (in-memory locally, the KV HTTP API deployed). |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.Queues` | Queues hosting: provisioning via the Cloudflare API plus an in-memory queue (`.RunAsEmulator()`) for `aspire run`. |
+| `AvantiPoint.Aspire.Cloudflare.Queues` | Queues **client** integration: registers an `IQueueClient` (in-memory locally, the Queues HTTP API deployed). |
 | `AvantiPoint.Aspire.Hosting.Extensions` | General Aspire host helpers, e.g. `AddDeploymentParameter` — parameters required at deploy but optional in local development. |
 
 ## Quickstart
