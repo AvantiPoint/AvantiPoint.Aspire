@@ -29,38 +29,47 @@ using AvantiPoint.Aspire.Hosting.Cloudflare.R2;
 var builder = DistributedApplication.CreateBuilder(args);
 
 // The Cloudflare deploy environment. Reads CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID.
-var cloudflare = builder.AddCloudflareEnvironment();
+// Resources below resolve it automatically — no need to pass it around.
+builder.AddCloudflareEnvironment();
+
+// The Zone ID is config, not source — supply it as a parameter.
+var zone = builder.AddParameter("zone-id");
 
 // An R2 bucket. Local: MinIO emulator. Deploy: real R2.
-var uploads = cloudflare.AddR2Bucket("uploads");
+var uploads = builder.AddR2Bucket("uploads");
 
 // A .NET API that reads/writes the bucket (becomes a Cloudflare Container on deploy).
 var api = builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)
-    .PublishAsCloudflareContainer(cloudflare)
-    .WithCustomDomain(zoneId: "<ZONE_ID>", hostname: "api.example.com");
+    .PublishAsCloudflareContainer()
+    .WithCustomDomain("api.example.com", zone);
 
 // A Vite frontend deployed to Cloudflare Pages.
 builder.AddViteApp("web", "../web")
     .WithReference(api)
-    .PublishAsCloudflarePages(cloudflare)
-    .WithCustomDomain(zoneId: "<ZONE_ID>", hostname: "www.example.com");
+    .PublishAsCloudflarePages()
+    .WithCustomDomain("www.example.com", zone);
 
 builder.Build().Run();
 ```
+
+:::tip
+Each resource resolves the single Cloudflare environment for you. With more than one environment, use the explicit overloads (e.g. `environment.AddR2Bucket(...)`, `PublishAsCloudflareContainer(environment)`).
+:::
 
 ## 3. Consume R2 in your service
 
 In the API (or any service) project:
 
 ```csharp
-builder.AddR2Client("uploads");   // registers IAmazonS3 configured for R2
+builder.AddR2Client("uploads");   // registers IR2Client (and IAmazonS3) configured for R2
 ```
 
 ```csharp
-app.MapGet("/data", async (IAmazonS3 s3, R2ClientSettings settings) =>
+// IR2Client is bound to the bucket — no bucket name to pass around.
+app.MapGet("/data", async (IR2Client r2) =>
 {
-    var obj = await s3.GetObjectAsync(settings.BucketName, "data.json");
+    var obj = await r2.GetObjectAsync("data.json");
     return Results.Stream(obj.ResponseStream, "application/json");
 });
 ```

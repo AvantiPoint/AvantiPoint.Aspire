@@ -54,6 +54,25 @@ public static class CloudflareEnvironmentExtensions
     }
 
     /// <summary>
+    /// Resolves the single Cloudflare environment in the application. Throws a helpful error if none
+    /// has been added, or if there are several (in which case the caller must specify which one).
+    /// Used by the convenience overloads that don't take an explicit environment.
+    /// </summary>
+    internal static IResourceBuilder<CloudflareEnvironmentResource> GetCloudflareEnvironment(this IDistributedApplicationBuilder builder)
+    {
+        var environments = builder.Resources.OfType<CloudflareEnvironmentResource>().ToList();
+        return environments.Count switch
+        {
+            1 => builder.CreateResourceBuilder(environments[0]),
+            0 => throw new InvalidOperationException(
+                "No Cloudflare environment found. Call builder.AddCloudflareEnvironment() before adding Cloudflare resources."),
+            _ => throw new InvalidOperationException(
+                "Multiple Cloudflare environments found. Use the overload that takes the specific environment " +
+                "(e.g. environment.AddR2Bucket(...) or PublishAsCloudflareContainer(environment))."),
+        };
+    }
+
+    /// <summary>
     /// Registers the shared services used by the Cloudflare hosting integration. Idempotent: safe to
     /// call from multiple <c>Add*</c> methods (core environment, R2 hosting, etc.).
     /// </summary>

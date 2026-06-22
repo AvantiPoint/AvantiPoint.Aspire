@@ -5,15 +5,21 @@ title: "Custom Domains"
 
 Attach a custom hostname to a Container or Pages app with `WithCustomDomain`. Call it **after** `PublishAsCloudflareContainer` / `PublishAsCloudflarePages`.
 
+The Zone ID is account-specific configuration, so pass it as an Aspire **parameter** rather than hard-coding it:
+
 ```csharp
+var zone = builder.AddParameter("zone-id"); // resolved from config / user-secrets / env
+
 var api = builder.AddProject<Projects.Api>("api")
-    .PublishAsCloudflareContainer(cloudflare)
-    .WithCustomDomain(zoneId: "<ZONE_ID>", hostname: "api.example.com");
+    .PublishAsCloudflareContainer()
+    .WithCustomDomain("api.example.com", zone);
 
 builder.AddViteApp("web", "../web")
-    .PublishAsCloudflarePages(cloudflare)
-    .WithCustomDomain(zoneId: "<ZONE_ID>", hostname: "www.example.com");
+    .PublishAsCloudflarePages()
+    .WithCustomDomain("www.example.com", zone);
 ```
+
+A literal overload — `WithCustomDomain("api.example.com", "<zone-id>")` — also exists for quick samples, but prefer the parameter for real deployments.
 
 `WithCustomDomain` is repeatable — call it multiple times to attach multiple hostnames.
 

@@ -61,8 +61,9 @@ internal sealed class PagesPublishTarget(ILogger<PagesPublishTarget> logger, IWr
             var apiClient = context.Services.GetRequiredService<ICloudflareApiClient>();
             foreach (var domain in customDomains)
             {
+                var zoneId = await domain.GetZoneIdAsync(cancellationToken).ConfigureAwait(false);
                 await apiClient.AttachPagesDomainAsync(context.ApiToken, context.AccountId, annotation.ProjectName, domain.Hostname, cancellationToken).ConfigureAwait(false);
-                await apiClient.UpsertCnameRecordAsync(context.ApiToken, domain.ZoneId, domain.Hostname, $"{annotation.ProjectName}.pages.dev", cancellationToken).ConfigureAwait(false);
+                await apiClient.UpsertCnameRecordAsync(context.ApiToken, zoneId, domain.Hostname, $"{annotation.ProjectName}.pages.dev", cancellationToken).ConfigureAwait(false);
             }
         }
     }

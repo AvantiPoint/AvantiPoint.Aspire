@@ -20,7 +20,23 @@ public static class R2HostingExtensions
     public const string SecretKeyEnvVar = "R2_SECRET_ACCESS_KEY";
 
     /// <summary>
-    /// Adds an R2 bucket to the Cloudflare environment. During <c>aspire run</c> the bucket is
+    /// Adds an R2 bucket, using the single Cloudflare environment added to the application. Add one with
+    /// <see cref="CloudflareEnvironmentExtensions.AddCloudflareEnvironment"/> first.
+    /// </summary>
+    /// <param name="builder">The distributed application builder.</param>
+    /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
+    /// <param name="bucketName">The R2 bucket name; defaults to <paramref name="name"/>.</param>
+    public static IResourceBuilder<R2BucketResource> AddR2Bucket(
+        this IDistributedApplicationBuilder builder,
+        string name,
+        string? bucketName = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        return builder.GetCloudflareEnvironment().AddR2Bucket(name, bucketName);
+    }
+
+    /// <summary>
+    /// Adds an R2 bucket to a specific Cloudflare environment. During <c>aspire run</c> the bucket is
     /// backed by a local MinIO S3 emulator (no Cloudflare credentials required); during
     /// <c>aspire publish</c>/<c>deploy</c> it is provisioned against the real Cloudflare account.
     /// Call <see cref="RunAsReal"/> to use a real R2 bucket during <c>aspire run</c> as well.

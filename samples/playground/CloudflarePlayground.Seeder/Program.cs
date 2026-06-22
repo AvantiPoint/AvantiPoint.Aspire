@@ -1,5 +1,3 @@
-using Amazon.S3;
-using Amazon.S3.Model;
 using AvantiPoint.Aspire.Cloudflare.R2;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,8 +13,7 @@ builder.AddR2Client("uploads");
 using var host = builder.Build();
 
 var logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Seeder");
-var s3 = host.Services.GetRequiredService<IAmazonS3>();
-var settings = host.Services.GetRequiredService<R2ClientSettings>();
+var r2 = host.Services.GetRequiredService<IR2Client>();
 
 // The data the API will serve and the frontend will render.
 const string Key = "data.json";
@@ -32,14 +29,8 @@ const string Data = """
 }
 """;
 
-logger.LogInformation("Uploading '{Key}' to R2 bucket '{Bucket}'...", Key, settings.BucketName);
+logger.LogInformation("Uploading '{Key}' to R2 bucket '{Bucket}'...", Key, r2.BucketName);
 
-await s3.PutObjectAsync(new PutObjectRequest
-{
-    BucketName = settings.BucketName,
-    Key = Key,
-    ContentBody = Data,
-    ContentType = "application/json",
-});
+await r2.PutObjectAsync(Key, Data, "application/json");
 
-logger.LogInformation("Seed complete: '{Key}' uploaded to '{Bucket}'.", Key, settings.BucketName);
+logger.LogInformation("Seed complete: '{Key}' uploaded to '{Bucket}'.", Key, r2.BucketName);

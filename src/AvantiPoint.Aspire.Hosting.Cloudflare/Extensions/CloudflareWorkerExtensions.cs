@@ -11,6 +11,20 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 public static class CloudflareWorkerExtensions
 {
     /// <summary>
+    /// Adds a Cloudflare Worker, using the single Cloudflare environment added to the application.
+    /// Add one with <see cref="CloudflareEnvironmentExtensions.AddCloudflareEnvironment"/> first.
+    /// </summary>
+    public static IResourceBuilder<CloudflareWorkerResource> AddCloudflareWorker(
+        this IDistributedApplicationBuilder builder,
+        string name,
+        string workerDirectory,
+        Action<CloudflareWorkerOptions>? configure = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        return builder.GetCloudflareEnvironment().AddCloudflareWorker(name, workerDirectory, configure);
+    }
+
+    /// <summary>
     /// Adds a Cloudflare Worker from a project directory (containing its own wrangler config and source).
     /// During <c>aspire run</c> it runs locally with <c>wrangler dev</c> (Miniflare); during <c>aspire deploy</c>
     /// it is deployed with <c>wrangler deploy</c>. Bindings, routes and custom domains are managed in the

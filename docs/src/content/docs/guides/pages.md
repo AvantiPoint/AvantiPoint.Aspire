@@ -9,7 +9,7 @@ Cloudflare Pages hosting **attaches to a JavaScript app that Aspire already mode
 
 ```csharp
 builder.AddViteApp("web", "../web")        // or AddNodeApp / AddJavaScriptApp
-    .PublishAsCloudflarePages(cloudflare);
+    .PublishAsCloudflarePages();
 ```
 
 - **`aspire run`** → the app runs as its normal dev server (e.g. Vite).
@@ -19,7 +19,7 @@ builder.AddViteApp("web", "../web")        // or AddNodeApp / AddJavaScriptApp
 
 ```csharp
 builder.AddViteApp("web", "../web")
-    .PublishAsCloudflarePages(cloudflare, options =>
+    .PublishAsCloudflarePages(options =>
     {
         options.ProjectName = "my-site";     // defaults to a sanitized resource name
         options.OutputDirectory = "dist";    // build output dir (Vite default)
@@ -34,11 +34,11 @@ builder.AddViteApp("web", "../web")
 Inject the API's URL so the frontend can call it:
 
 ```csharp
-var api = builder.AddProject<Projects.Api>("api").PublishAsCloudflareContainer(cloudflare);
+var api = builder.AddProject<Projects.Api>("api").PublishAsCloudflareContainer();
 
 builder.AddViteApp("web", "../web")
     .WithEnvironment("VITE_API_URL", api.GetEndpoint("http"))
-    .PublishAsCloudflarePages(cloudflare);
+    .PublishAsCloudflarePages();
 ```
 
 In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it.
@@ -51,9 +51,11 @@ In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it.
 ## Custom domains
 
 ```csharp
+var zone = builder.AddParameter("zone-id");
+
 builder.AddViteApp("web", "../web")
-    .PublishAsCloudflarePages(cloudflare)
-    .WithCustomDomain(zoneId: "<ZONE_ID>", hostname: "www.example.com");
+    .PublishAsCloudflarePages()
+    .WithCustomDomain("www.example.com", zone);
 ```
 
 Custom domains require *DNS: Edit* and *Zone: Read* on the relevant zone, and the [Zone ID](../getting-started/account-and-zone-ids.md).

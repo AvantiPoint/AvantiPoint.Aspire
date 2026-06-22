@@ -13,9 +13,22 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.Pages;
 public static class CloudflarePagesExtensions
 {
     /// <summary>
-    /// Deploys this JavaScript app (e.g. created with <c>AddViteApp</c>/<c>AddNodeApp</c>) to Cloudflare
-    /// Pages during <c>aspire deploy</c>. The app's build is run during publish and the output directory
-    /// is uploaded with <c>wrangler pages deploy</c>.
+    /// Deploys this JavaScript app to Cloudflare Pages, using the single Cloudflare environment added to
+    /// the application. Add one with <c>AddCloudflareEnvironment</c> first.
+    /// </summary>
+    public static IResourceBuilder<T> PublishAsCloudflarePages<T>(
+        this IResourceBuilder<T> app,
+        Action<CloudflarePagesOptions>? configure = null)
+        where T : JavaScriptAppResource
+    {
+        ArgumentNullException.ThrowIfNull(app);
+        return app.PublishAsCloudflarePages(app.ApplicationBuilder.GetCloudflareEnvironment(), configure);
+    }
+
+    /// <summary>
+    /// Deploys this JavaScript app (e.g. created with <c>AddViteApp</c>/<c>AddNodeApp</c>) to a specific
+    /// Cloudflare environment during <c>aspire deploy</c>. The app's build is run during publish and the
+    /// output directory is uploaded with <c>wrangler pages deploy</c>.
     /// </summary>
     public static IResourceBuilder<T> PublishAsCloudflarePages<T>(
         this IResourceBuilder<T> app,

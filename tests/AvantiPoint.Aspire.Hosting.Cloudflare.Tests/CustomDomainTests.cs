@@ -11,17 +11,31 @@ public class CustomDomainTests
         => builder.AddResource(new ProjectResource("api"));
 
     [Fact]
-    public void WithCustomDomain_Adds_Annotation()
+    public async Task WithCustomDomain_Adds_Annotation_With_Literal_ZoneId()
     {
         var builder = DistributedApplication.CreateBuilder(Array.Empty<string>());
-        var cf = builder.AddCloudflareEnvironment();
-        var api = AddApi(builder).PublishAsCloudflareContainer(cf);
+        builder.AddCloudflareEnvironment();
+        var api = AddApi(builder).PublishAsCloudflareContainer();
 
-        api.WithCustomDomain("zone-123", "api.example.com");
+        api.WithCustomDomain("api.example.com", "zone-123");
 
         var domain = Assert.Single(api.Resource.Annotations.OfType<CustomDomainAnnotation>());
-        Assert.Equal("zone-123", domain.ZoneId);
         Assert.Equal("api.example.com", domain.Hostname);
+        Assert.Equal("zone-123", await domain.GetZoneIdAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task WithCustomDomain_Accepts_ZoneId_Parameter()
+    {
+        var builder = DistributedApplication.CreateBuilder(Array.Empty<string>());
+        builder.AddCloudflareEnvironment();
+        var zoneId = builder.AddParameter("zone-id", "zone-from-param");
+        var api = AddApi(builder).PublishAsCloudflareContainer();
+
+        api.WithCustomDomain("api.example.com", zoneId);
+
+        var domain = Assert.Single(api.Resource.Annotations.OfType<CustomDomainAnnotation>());
+        Assert.Equal("zone-from-param", await domain.GetZoneIdAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -29,7 +43,7 @@ public class CustomDomainTests
     {
         var builder = DistributedApplication.CreateBuilder(Array.Empty<string>());
         var cf = builder.AddCloudflareEnvironment();
-        AddApi(builder).PublishAsCloudflareContainer(cf).WithCustomDomain("zone-123", "api.example.com");
+        AddApi(builder).PublishAsCloudflareContainer().WithCustomDomain("api.example.com", "zone-123");
 
         Assert.Contains(CloudflareScopes.DnsRecordsEdit, cf.Resource.RequiredScopes);
         Assert.Contains(CloudflareScopes.ZoneRead, cf.Resource.RequiredScopes);
@@ -39,11 +53,11 @@ public class CustomDomainTests
     public void WithCustomDomain_Is_Repeatable()
     {
         var builder = DistributedApplication.CreateBuilder(Array.Empty<string>());
-        var cf = builder.AddCloudflareEnvironment();
+        builder.AddCloudflareEnvironment();
 
-        var api = AddApi(builder).PublishAsCloudflareContainer(cf)
-            .WithCustomDomain("zone-123", "api.example.com")
-            .WithCustomDomain("zone-123", "api2.example.com");
+        var api = AddApi(builder).PublishAsCloudflareContainer()
+            .WithCustomDomain("api.example.com", "zone-123")
+            .WithCustomDomain("api2.example.com", "zone-123");
 
         Assert.Equal(2, api.Resource.Annotations.OfType<CustomDomainAnnotation>().Count());
     }
@@ -56,6 +70,6 @@ public class CustomDomainTests
 
         var api = builder.CreateResourceBuilder(builder.Resources.OfType<ProjectResource>().Single());
 
-        Assert.Throws<InvalidOperationException>(() => api.WithCustomDomain("zone-123", "api.example.com"));
+        Assert.Throws<InvalidOperationException>(() => api.WithCustomDomain("api.example.com", "zone-123"));
     }
 }

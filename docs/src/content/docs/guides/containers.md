@@ -8,10 +8,10 @@ Deploy a .NET project as a [Cloudflare Container](https://developers.cloudflare.
 ## Deploy a project as a container
 
 ```csharp
-var cloudflare = builder.AddCloudflareEnvironment();
+builder.AddCloudflareEnvironment();
 
 builder.AddProject<Projects.Api>("api")
-    .PublishAsCloudflareContainer(cloudflare);
+    .PublishAsCloudflareContainer();
 ```
 
 - **`aspire run`** → the project runs locally as a normal Aspire project.
@@ -28,7 +28,7 @@ builder.AddProject<Projects.Api>("api")
 ## Options
 
 ```csharp
-.PublishAsCloudflareContainer(cloudflare, options =>
+.PublishAsCloudflareContainer(options =>
 {
     options.WorkerName = "orders-api";   // defaults to a sanitized resource name
     options.Port = 8080;                 // the app is configured to listen here
@@ -52,7 +52,7 @@ The project's resolved environment variables — connection strings from `WithRe
 builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)               // an R2 bucket — its connection string is injected
     .WithEnvironment("FEATURE_FLAG", "on")
-    .PublishAsCloudflareContainer(cloudflare);
+    .PublishAsCloudflareContainer();
 ```
 
 At deploy, the R2 connection string resolves to the **real** R2 endpoint and credentials, so the container reaches R2 in production with no code change.
@@ -65,9 +65,11 @@ Values are resolved at deploy time and embedded in the generated Worker (which C
 ## Custom domains
 
 ```csharp
+var zone = builder.AddParameter("zone-id");
+
 builder.AddProject<Projects.Api>("api")
-    .PublishAsCloudflareContainer(cloudflare)
-    .WithCustomDomain(zoneId: "<ZONE_ID>", hostname: "api.example.com");
+    .PublishAsCloudflareContainer()
+    .WithCustomDomain("api.example.com", zone);
 ```
 
 See [Custom Domains](custom-domains.md).

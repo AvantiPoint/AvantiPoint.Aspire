@@ -6,9 +6,9 @@ title: "Cloudflare Workers"
 Run and deploy a hand-authored [Cloudflare Worker](https://developers.cloudflare.com/workers/) (its own `wrangler.toml`/`wrangler.jsonc` + source) as part of your Aspire app.
 
 ```csharp
-var cloudflare = builder.AddCloudflareEnvironment();
+builder.AddCloudflareEnvironment();
 
-cloudflare.AddCloudflareWorker("worker", "../MyWorker");
+builder.AddCloudflareWorker("worker", "../MyWorker");
 ```
 
 - **`aspire run`** → the Worker runs **locally** with `wrangler dev` (Cloudflare's Miniflare runtime) — **no Cloudflare account required**. It appears in the Aspire dashboard like any other resource.
@@ -24,7 +24,7 @@ cloudflare.AddCloudflareWorker("worker", "../MyWorker");
 ## Options
 
 ```csharp
-cloudflare.AddCloudflareWorker("worker", "../MyWorker", options =>
+builder.AddCloudflareWorker("worker", "../MyWorker", options =>
 {
     options.Port = 8787; // the local `wrangler dev` port during `aspire run`
 });

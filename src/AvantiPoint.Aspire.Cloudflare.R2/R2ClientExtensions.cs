@@ -52,15 +52,19 @@ public static class R2ClientExtensions
 
         var client = CreateClient(settings);
 
+        var r2Client = new R2Client(client, settings.BucketName ?? string.Empty);
+
         if (serviceKey is null)
         {
             builder.Services.AddSingleton<IAmazonS3>(client);
             builder.Services.AddSingleton(settings);
+            builder.Services.AddSingleton<IR2Client>(r2Client);
         }
         else
         {
             builder.Services.AddKeyedSingleton<IAmazonS3>(serviceKey, client);
             builder.Services.AddKeyedSingleton(serviceKey, settings);
+            builder.Services.AddKeyedSingleton<IR2Client>(serviceKey, r2Client);
         }
 
         if (!settings.DisableHealthChecks)

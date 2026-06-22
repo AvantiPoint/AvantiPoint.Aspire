@@ -37,26 +37,30 @@ Cross-cutting:
 // AppHost
 var builder = DistributedApplication.CreateBuilder(args);
 
-var cloudflare = builder.AddCloudflareEnvironment("cloudflare");
+builder.AddCloudflareEnvironment();           // resources below resolve it automatically
+var zone = builder.AddParameter("zone-id");   // Zone ID as config, not a literal
 
-var uploads = cloudflare.AddR2Bucket("uploads");
+var uploads = builder.AddR2Bucket("uploads");
 
 var api = builder.AddProject<Projects.Api>("api")
-    .PublishAsCloudflareContainer(cloudflare)
     .WithReference(uploads)
-    .WithCustomDomain(zoneId: "<zone-id>", hostname: "api.example.com");
+    .PublishAsCloudflareContainer()
+    .WithCustomDomain("api.example.com", zone);
 
 // Pages attaches to a JavaScript app Aspire already models — not a raw folder.
 builder.AddViteApp("web", "../Web")
-    .PublishAsCloudflarePages(cloudflare)
-    .WithCustomDomain(zoneId: "<zone-id>", hostname: "www.example.com");
+    .PublishAsCloudflarePages()
+    .WithCustomDomain("www.example.com", zone);
 
 builder.Build().Run();
 ```
 
 ```csharp
 // Consuming service
-builder.AddR2Client("uploads"); // registers IAmazonS3 configured for R2 (works against MinIO locally)
+builder.AddR2Client("uploads");               // registers IR2Client (and IAmazonS3) for R2
+
+// IR2Client is bound to the bucket — no bucket name to pass around:
+app.MapGet("/data", (IR2Client r2) => r2.GetObjectAsync("data.json"));
 ```
 
 Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (env vars or user-secrets) before `aspire deploy`.

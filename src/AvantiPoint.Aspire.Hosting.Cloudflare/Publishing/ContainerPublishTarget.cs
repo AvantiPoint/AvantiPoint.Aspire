@@ -100,8 +100,9 @@ internal sealed class ContainerPublishTarget(ILogger<ContainerPublishTarget> log
             var apiClient = context.Services.GetRequiredService<ICloudflareApiClient>();
             foreach (var domain in customDomains)
             {
+                var zoneId = await domain.GetZoneIdAsync(cancellationToken).ConfigureAwait(false);
                 await apiClient.AttachWorkersCustomDomainAsync(
-                    context.ApiToken, context.AccountId, domain.ZoneId, domain.Hostname, annotation.WorkerName,
+                    context.ApiToken, context.AccountId, zoneId, domain.Hostname, annotation.WorkerName,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }
