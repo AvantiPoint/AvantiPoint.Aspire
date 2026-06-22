@@ -21,9 +21,6 @@ export default defineConfig({
           href: 'https://github.com/AvantiPoint/AvantiPoint.Aspire',
         },
       ],
-      editLink: {
-        baseUrl: 'https://github.com/AvantiPoint/AvantiPoint.Aspire/edit/master/docs/',
-      },
       sidebar: [
         'overview',
         {
