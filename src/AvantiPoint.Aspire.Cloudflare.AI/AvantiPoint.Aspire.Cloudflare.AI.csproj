@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Client for Cloudflare AI</Title>
+    <Description>An Aspire client integration for Cloudflare AI. Registers Microsoft.Extensions.AI IChatClient and IEmbeddingGenerator from the Aspire-injected connection string. The same code runs against a local Ollama server (dev) and Cloudflare Workers AI / AI Gateway (deployed) — both OpenAI-compatible.</Description>
+    <PackageTags>aspire;cloudflare;ai;workers-ai;ai-gateway;ollama;client;microsoft-extensions-ai;ichatclient;openai</PackageTags>
+    <IsAspireClientIntegration>true</IsAspireClientIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
+    <PackageReference Include="OpenAI" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+  </ItemGroup>
+
+</Project>

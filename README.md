@@ -15,13 +15,14 @@ Hosting and client integrations that make [Aspire](https://aspire.dev) a first-c
 - **JavaScript frontends → Cloudflare Pages** — your build output directory is deployed to Pages.
 - **R2 buckets** — provisioned via the Cloudflare API, with S3-compatible connection details flowed back to your apps. Add `.RunAsEmulator()` and a local **MinIO** emulator backs the bucket during `aspire run`, so the inner dev loop needs no cloud credentials.
 - **D1 databases** — provisioned via the Cloudflare API, queried from .NET through `ID1Client`. Add `.RunAsEmulator()` and the database is a local **SQLite** file during `aspire run` (D1 is SQLite under the hood); deployed, the same query code runs against the D1 HTTP API.
+- **AI (Workers AI / AI Gateway)** — a `Microsoft.Extensions.AI` `IChatClient`/`IEmbeddingGenerator` over Cloudflare's OpenAI-compatible AI endpoints. Add `.RunAsEmulator()` and a local **Ollama** server backs it during `aspire run`; deployed, the same code runs against Workers AI or an AI Gateway (incl. `anthropic/claude-*`).
 
 Cross-cutting:
 
 - **API-token first** — the Cloudflare API token is an Aspire secret parameter, and its permission scopes are validated up front (fail-fast) before anything is provisioned.
 - **Custom domains** — attach a custom domain (with your Zone Id) to a Container or Pages app during deploy.
 
-> Status: active development. R2 (hosting + client + MinIO emulator), D1 (hosting + client + SQLite emulator), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
+> Status: active development. R2 (hosting + client + MinIO emulator), D1 (hosting + client + SQLite emulator), AI (hosting + client + Ollama emulator), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
 
 ## Packages
 
@@ -33,6 +34,8 @@ Cross-cutting:
 | `AvantiPoint.Aspire.Hosting.Cloudflare.Pages` | Cloudflare Pages hosting: `.PublishAsCloudflarePages(...)` attaches to an Aspire JavaScript app (`AddViteApp`/`AddNodeApp`) and deploys its build output. |
 | `AvantiPoint.Aspire.Cloudflare.R2` | R2 **client** integration: registers a R2-tuned `IAmazonS3` (and `IR2Client`) from the Aspire-injected connection string. |
 | `AvantiPoint.Aspire.Cloudflare.D1` | D1 **client** integration: registers an `ID1Client` (SQLite locally, the D1 HTTP API deployed) from the Aspire-injected connection string. |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.AI` | Cloudflare AI hosting: models a Workers AI / AI Gateway resource and runs a local Ollama server (`.RunAsEmulator()`) for `aspire run`. |
+| `AvantiPoint.Aspire.Cloudflare.AI` | AI **client** integration: registers `Microsoft.Extensions.AI` `IChatClient`/`IEmbeddingGenerator` (Ollama locally, Cloudflare deployed) from the Aspire-injected connection string. |
 | `AvantiPoint.Aspire.Hosting.Extensions` | General Aspire host helpers, e.g. `AddDeploymentParameter` — parameters required at deploy but optional in local development. |
 
 ## Quickstart

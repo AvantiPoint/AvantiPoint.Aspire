@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Hosting for Cloudflare AI</Title>
+    <Description>Cloudflare AI hosting integration for Aspire. Models a Cloudflare AI resource (Workers AI / AI Gateway) and, with .RunAsEmulator(), runs a local Ollama server during 'aspire run' so the dev loop needs no cloud credentials. Pairs with AvantiPoint.Aspire.Cloudflare.AI (Microsoft.Extensions.AI IChatClient/IEmbeddingGenerator).</Description>
+    <PackageTags>aspire;cloudflare;ai;workers-ai;ai-gateway;ollama;hosting;emulator;llm</PackageTags>
+    <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests" />
+  </ItemGroup>
+
+</Project>

@@ -182,6 +182,43 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         }
     }
 
+    public async Task<AIGateway> CreateAIGatewayAsync(string apiToken, string accountId, CreateAIGatewayRequest body, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/ai-gateway/gateways", apiToken);
+        request.Content = JsonContent.Create(body);
+
+        var envelope = await SendRawAsync<AIGateway>(request, cancellationToken).ConfigureAwait(false);
+        if (envelope.Success && envelope.Result is not null)
+        {
+            return envelope.Result;
+        }
+
+        // Treat an already-existing gateway as success (idempotent provisioning).
+        if (envelope.Errors.Any(e => e.Message.Contains("already", StringComparison.OrdinalIgnoreCase)))
+        {
+            logger.LogInformation("AI Gateway '{Gateway}' already exists; reusing it.", body.Id);
+            return new AIGateway { Id = body.Id };
+        }
+
+        throw CloudflareApiException.FromResponse("create AI Gateway", envelope.Errors);
+    }
+
+    public async Task DeleteAIGatewayAsync(string apiToken, string accountId, string gatewayId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/ai-gateway/gateways/{gatewayId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete AI Gateway", envelope.Errors);
+        }
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

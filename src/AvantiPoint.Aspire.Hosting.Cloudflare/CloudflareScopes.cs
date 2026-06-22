@@ -28,4 +28,10 @@ public static class CloudflareScopes
 
     /// <summary>Required to create/manage and query D1 databases.</summary>
     public const string D1Edit = "D1 Write";
+
+    /// <summary>Required to call Workers AI (chat/embeddings).</summary>
+    public const string WorkersAIRead = "Workers AI Read";
+
+    /// <summary>Required to create/manage AI Gateways.</summary>
+    public const string AIGatewayEdit = "AI Gateway Write";
 }

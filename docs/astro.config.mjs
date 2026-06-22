@@ -42,6 +42,7 @@ export default defineConfig({
           items: [
             'guides/r2',
             'guides/d1',
+            'guides/ai',
             'guides/workers',
             'guides/containers',
             'guides/pages',

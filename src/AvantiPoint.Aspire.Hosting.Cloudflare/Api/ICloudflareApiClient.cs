@@ -47,4 +47,10 @@ public interface ICloudflareApiClient
 
     /// <summary>Deletes a D1 database by its id. No-op if it does not exist.</summary>
     Task DeleteD1DatabaseAsync(string apiToken, string accountId, string databaseId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates an AI Gateway. Idempotent: an existing gateway with the same id is returned as-is.</summary>
+    Task<AIGateway> CreateAIGatewayAsync(string apiToken, string accountId, CreateAIGatewayRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes an AI Gateway by id. No-op if it does not exist.</summary>
+    Task DeleteAIGatewayAsync(string apiToken, string accountId, string gatewayId, CancellationToken cancellationToken = default);
 }

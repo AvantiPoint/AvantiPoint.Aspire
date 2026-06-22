@@ -147,6 +147,35 @@ public sealed class CreateD1DatabaseRequest
     public string? PrimaryLocationHint { get; init; }
 }
 
+/// <summary>An AI Gateway as returned by the AI Gateway API.</summary>
+public sealed class AIGateway
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating an AI Gateway (minimal required fields).</summary>
+public sealed class CreateAIGatewayRequest
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+
+    [JsonPropertyName("cache_ttl")]
+    public int CacheTtl { get; init; }
+
+    [JsonPropertyName("collect_logs")]
+    public bool CollectLogs { get; init; } = true;
+
+    [JsonPropertyName("rate_limiting_interval")]
+    public int RateLimitingInterval { get; init; }
+
+    [JsonPropertyName("rate_limiting_limit")]
+    public int RateLimitingLimit { get; init; }
+
+    [JsonPropertyName("rate_limiting_technique")]
+    public string RateLimitingTechnique { get; init; } = "fixed";
+}
+
 /// <summary>Request body for creating an R2 bucket.</summary>
 public sealed class CreateR2BucketRequest
 {

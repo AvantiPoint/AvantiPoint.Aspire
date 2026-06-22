@@ -19,9 +19,11 @@
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.R2" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Pages" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.D1" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.AI" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests" />
   </ItemGroup>
 
