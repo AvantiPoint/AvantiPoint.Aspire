@@ -61,10 +61,11 @@ public static class CloudflareAIExtensions
     }
 
     /// <summary>
-    /// Serves this AI resource from a local <b>Ollama</b> server during <c>aspire run</c> (no Cloudflare
-    /// credentials required). The configured local models are pulled automatically. Ignored during
-    /// <c>aspire publish</c>/<c>deploy</c>, which always use real Cloudflare AI. Mirrors the
-    /// <c>RunAsEmulator()</c> convention of Aspire's Azure integrations.
+    /// Serves this AI resource from a local <b>Ollama container</b> during <c>aspire run</c> (Docker
+    /// required, no Cloudflare credentials). The configured local models are pulled automatically and
+    /// persisted in a volume. Ignored during <c>aspire publish</c>/<c>deploy</c>, which always use real
+    /// Cloudflare AI. Mirrors the <c>RunAsEmulator()</c> convention of Aspire's Azure integrations.
+    /// See <see cref="RunOnHost"/> to use a host-installed Ollama instead of a container.
     /// </summary>
     /// <param name="ai">The AI resource builder.</param>
     /// <param name="configureOllama">Optional configuration of the shared Ollama container (GPU, ports, ...).</param>
@@ -79,9 +80,32 @@ public static class CloudflareAIExtensions
             return ai; // publish/deploy always uses real Cloudflare AI
         }
 
-        var endpoint = OllamaEmulator.GetOrAdd(ai, configureOllama);
         ai.Resource.UseEmulator = true;
-        ai.Resource.EmulatorEndpoint = endpoint;
+        ai.Resource.EmulatorEndpoint = OllamaEmulator.GetOrAddContainer(ai, configureOllama);
+        return ai;
+    }
+
+    /// <summary>
+    /// Serves this AI resource from a <b>host-installed Ollama</b> during <c>aspire run</c> — the same
+    /// credential-free local dev loop as <see cref="RunAsEmulator"/>, but attaching to Ollama running
+    /// natively on the host (no container/Docker), which is useful for native GPU access. The configured
+    /// local models are pulled automatically. Ignored during <c>aspire publish</c>/<c>deploy</c>.
+    /// </summary>
+    /// <param name="ai">The AI resource builder.</param>
+    /// <param name="configureOllama">Optional configuration of the shared host Ollama (ports, ...).</param>
+    public static IResourceBuilder<CloudflareAIResource> RunOnHost(
+        this IResourceBuilder<CloudflareAIResource> ai,
+        Action<IResourceBuilder<OllamaExecutableResource>>? configureOllama = null)
+    {
+        ArgumentNullException.ThrowIfNull(ai);
+
+        if (!ai.ApplicationBuilder.ExecutionContext.IsRunMode)
+        {
+            return ai; // publish/deploy always uses real Cloudflare AI
+        }
+
+        ai.Resource.UseEmulator = true;
+        ai.Resource.EmulatorEndpoint = OllamaEmulator.GetOrAddHost(ai, configureOllama);
         return ai;
     }
 

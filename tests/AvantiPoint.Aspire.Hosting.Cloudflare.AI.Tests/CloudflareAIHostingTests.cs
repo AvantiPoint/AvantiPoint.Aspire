@@ -85,6 +85,21 @@ public class CloudflareAIHostingTests
     }
 
     [Fact]
+    public void RunOnHost_Uses_Host_Ollama_And_Ollama_ConnectionString()
+    {
+        var builder = CreateRunModeBuilder();
+        var cf = builder.AddCloudflareEnvironment();
+
+        var ai = cf.AddCloudflareAI("ai").RunOnHost();
+
+        Assert.True(ai.Resource.UseEmulator);
+        // A host (executable) Ollama resource is added, not a container.
+        Assert.Single(builder.Resources.OfType<OllamaExecutableResource>());
+        Assert.Empty(builder.Resources.OfType<OllamaResource>());
+        Assert.Contains("Provider=Ollama", ai.Resource.ConnectionStringExpression.ValueExpression);
+    }
+
+    [Fact]
     public void Multiple_AI_Resources_Share_One_Ollama()
     {
         var builder = CreateRunModeBuilder();
