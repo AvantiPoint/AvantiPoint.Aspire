@@ -17,7 +17,7 @@ Your **Account ID** identifies your Cloudflare account. It's required for all pr
 
 It also appears in the dashboard URL: `https://dash.cloudflare.com/<ACCOUNT_ID>`.
 
-The integration reads it from the `CLOUDFLARE_ACCOUNT_ID` environment variable (see [Quickstart](quickstart.md)).
+The integration reads it from the `CLOUDFLARE_ACCOUNT_ID` environment variable (see [Quickstart](../quickstart/)).
 
 ## Zone ID
 

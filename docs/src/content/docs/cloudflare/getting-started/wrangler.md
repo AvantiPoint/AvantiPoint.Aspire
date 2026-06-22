@@ -11,8 +11,8 @@ You do **not** run `wrangler login`. The integration passes your credentials to 
 
 | Variable | Value |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Your [scoped API token](api-tokens.md). |
-| `CLOUDFLARE_ACCOUNT_ID` | Your [account ID](account-and-zone-ids.md). |
+| `CLOUDFLARE_API_TOKEN` | Your [scoped API token](../api-tokens/). |
+| `CLOUDFLARE_ACCOUNT_ID` | Your [account ID](../account-and-zone-ids/). |
 
 These are the same values the rest of the integration uses, so setting them once is enough. When you run `aspire deploy`, the integration sets them on the wrangler process for you.
 
@@ -37,4 +37,4 @@ The token needs the permissions for whatever wrangler deploys:
 - **Pages:** *Cloudflare Pages: Edit*
 - **Workers / Containers:** *Workers Scripts: Edit*
 
-These are the same rows from [API Tokens & Scopes](api-tokens.md) — one token covers both the integration's REST calls and wrangler.
+These are the same rows from [API Tokens & Scopes](../api-tokens/) — one token covers both the integration's REST calls and wrangler.

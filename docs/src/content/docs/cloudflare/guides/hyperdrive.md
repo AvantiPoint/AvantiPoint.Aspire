@@ -41,7 +41,7 @@ Options: `.WithCachingDisabled()`, `.AllowDeletion()` (permit destroy).
 
 ## Binding it to a Worker
 
-Workers consume Hyperdrive through a binding. For a hand-authored [Worker](workers.md), associate the config so the provisioned id is surfaced at deploy:
+Workers consume Hyperdrive through a binding. For a hand-authored [Worker](../workers/), associate the config so the provisioned id is surfaced at deploy:
 
 ```csharp
 var hd = builder.AddPostgres("pg").PublishAsHyperdrive("hd", pgProd);
@@ -60,5 +60,5 @@ At deploy the integration logs the binding snippet to add to the Worker's `wrang
 
 ## Credentials
 
-- **API token**: needs *Hyperdrive: Edit* — see [API Tokens](../getting-started/api-tokens.md).
+- **API token**: needs *Hyperdrive: Edit* — see [API Tokens](../../getting-started/api-tokens/).
 - The **production database connection string** must point at the real/external database, never the local dev container — supply it as a deployment parameter or external connection-string resource.

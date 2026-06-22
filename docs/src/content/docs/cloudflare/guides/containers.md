@@ -41,8 +41,8 @@ builder.AddProject<Projects.Api>("api")
 ## Requirements
 
 - **Docker** running locally (wrangler builds the image).
-- **wrangler** installed — see [How wrangler authenticates](../getting-started/wrangler.md).
-- API token with *Workers Scripts: Edit* — see [API Tokens](../getting-started/api-tokens.md).
+- **wrangler** installed — see [How wrangler authenticates](../../getting-started/wrangler/).
+- API token with *Workers Scripts: Edit* — see [API Tokens](../../getting-started/api-tokens/).
 
 ## Environment & configuration
 
@@ -73,4 +73,4 @@ builder.AddProject<Projects.Api>("api")
     .WithCustomDomain(host, zone);
 ```
 
-See [Custom Domains](custom-domains.md).
+See [Custom Domains](../custom-domains/).

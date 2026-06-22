@@ -7,7 +7,7 @@ R2 has **two** kinds of credentials, and it's important not to confuse them:
 
 | Credential | Used by | Purpose |
 | --- | --- | --- |
-| **API token** (Bearer) | The integration + `wrangler` | *Provisioning* — creating buckets, deploying. See [API Tokens](api-tokens.md). |
+| **API token** (Bearer) | The integration + `wrangler` | *Provisioning* — creating buckets, deploying. See [API Tokens](../api-tokens/). |
 | **R2 S3 credentials** (Access Key ID + Secret Access Key) | Your application at runtime | *Data access* — reading/writing objects over the S3-compatible API. |
 
 This page covers the second kind.
@@ -35,7 +35,7 @@ https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 
 ## How the client uses them
 
-The [`AvantiPoint.Aspire.Cloudflare.R2`](../guides/r2.md) client registers an `IAmazonS3` configured for R2 (`ForcePathStyle`, region `auto`, the right checksum settings). It reads the connection string the AppHost injects — which points at MinIO locally and at the real R2 endpoint (with these credentials) in production. **Your application code is identical in both cases:**
+The [`AvantiPoint.Aspire.Cloudflare.R2`](../../guides/r2/) client registers an `IAmazonS3` configured for R2 (`ForcePathStyle`, region `auto`, the right checksum settings). It reads the connection string the AppHost injects — which points at MinIO locally and at the real R2 endpoint (with these credentials) in production. **Your application code is identical in both cases:**
 
 ```csharp
 builder.AddR2Client("uploads");   // inject IAmazonS3 anywhere

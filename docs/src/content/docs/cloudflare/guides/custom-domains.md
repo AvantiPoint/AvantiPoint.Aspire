@@ -40,8 +40,8 @@ Literal overloads — `WithCustomDomain("api.example.com", "<zone-id>")` — als
 
 ## Requirements
 
-- The [**Zone ID**](../getting-started/account-and-zone-ids.md) for the domain.
-- API token permissions **DNS: Edit** and **Zone: Read** on that zone — see [API Tokens](../getting-started/api-tokens.md). The integration automatically requires these scopes once you use `WithCustomDomain`.
+- The [**Zone ID**](../../getting-started/account-and-zone-ids/) for the domain.
+- API token permissions **DNS: Edit** and **Zone: Read** on that zone — see [API Tokens](../../getting-started/api-tokens/). The integration automatically requires these scopes once you use `WithCustomDomain`.
 
 :::note
 The domain (zone) must already exist in your Cloudflare account. `WithCustomDomain` configures records within that zone; it does not register domains.

@@ -83,5 +83,5 @@ All three are OpenAI-compatible, so the `OpenAI`-backed `IChatClient`/`IEmbeddin
 
 ## Credentials
 
-- **API token** (runtime + gateway provisioning): needs *Workers AI: Read* (and *AI Gateway: Edit* if you use a gateway) — see [API Tokens](../getting-started/api-tokens.md). By default the client reuses the environment's Cloudflare API token; scope it with `.WithAccessToken(parameter)` if you prefer.
+- **API token** (runtime + gateway provisioning): needs *Workers AI: Read* (and *AI Gateway: Edit* if you use a gateway) — see [API Tokens](../../getting-started/api-tokens/). By default the client reuses the environment's Cloudflare API token; scope it with `.WithAccessToken(parameter)` if you prefer.
 - **Local dev with `.RunAsEmulator()`:** none — Ollama runs locally with no key.

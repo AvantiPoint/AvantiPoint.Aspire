@@ -3,7 +3,7 @@ title: "Vectorize"
 ---
 
 
-[Vectorize](https://developers.cloudflare.com/vectorize/) is Cloudflare's vector database — store embeddings and query for nearest neighbours (semantic search, RAG). It pairs naturally with the [AI](ai.md) integration: generate embeddings with `IEmbeddingGenerator`, store and search them with `IVectorizeClient`.
+[Vectorize](https://developers.cloudflare.com/vectorize/) is Cloudflare's vector database — store embeddings and query for nearest neighbours (semantic search, RAG). It pairs naturally with the [AI](../ai/) integration: generate embeddings with `IEmbeddingGenerator`, store and search them with `IVectorizeClient`.
 
 ## Add an index (hosting)
 
@@ -68,5 +68,5 @@ Real Vectorize mutations (upsert/delete) are **asynchronous (eventually consiste
 
 ## Credentials
 
-- **API token**: needs *Vectorize: Edit* — see [API Tokens](../getting-started/api-tokens.md). By default the client reuses the environment's Cloudflare API token; scope it with `.WithAccessToken(parameter)` if you prefer.
+- **API token**: needs *Vectorize: Edit* — see [API Tokens](../../getting-started/api-tokens/). By default the client reuses the environment's Cloudflare API token; scope it with `.WithAccessToken(parameter)` if you prefer.
 - **Local dev with `.RunAsEmulator()`:** none.

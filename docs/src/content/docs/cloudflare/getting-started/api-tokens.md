@@ -6,7 +6,7 @@ title: "API Tokens & Scopes"
 The integration (and `wrangler`) authenticate to Cloudflare with an **API token**. This is the single most important piece to get right: the token must carry the permissions for the services you deploy — no more, no less.
 
 :::note
-This API token is **not** the same as the R2 S3 credentials your app uses at runtime. Those are separate — see [R2 S3 Credentials](r2-credentials.md).
+This API token is **not** the same as the R2 S3 credentials your app uses at runtime. Those are separate — see [R2 S3 Credentials](../r2-credentials/).
 :::
 
 
@@ -18,7 +18,7 @@ This API token is **not** the same as the R2 S3 credentials your app uses at run
 4. Set **Account Resources** to your account, and **Zone Resources** to the specific zone(s) only if you use custom domains.
 5. Create the token and **copy it now** — Cloudflare shows the secret only once.
 
-Provide it to the integration via the `CLOUDFLARE_API_TOKEN` environment variable (or an Aspire parameter — see [Quickstart](quickstart.md)).
+Provide it to the integration via the `CLOUDFLARE_API_TOKEN` environment variable (or an Aspire parameter — see [Quickstart](../quickstart/)).
 
 ## Which permissions do I need?
 
