@@ -79,21 +79,44 @@ internal sealed class HttpKvBackend : IKvBackend
     public async Task<IReadOnlyList<string>> ListKeysAsync(string? prefix, CancellationToken cancellationToken)
     {
         var nsId = await ResolveNamespaceIdAsync(cancellationToken).ConfigureAwait(false);
-        var path = $"accounts/{_accountId}/storage/kv/namespaces/{nsId}/keys";
-        if (!string.IsNullOrEmpty(prefix))
-        {
-            path += $"?prefix={Uri.EscapeDataString(prefix)}";
-        }
+        var keys = new List<string>();
+        string? cursor = null;
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, path);
-        using var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<List<KeyDto>>>(cancellationToken).ConfigureAwait(false);
-        if (envelope is null || !envelope.Success)
+        // KV /keys is paginated (default 1000 per page); follow the cursor until it is empty so callers
+        // get every matching key, not just the first page.
+        do
         {
-            throw new InvalidOperationException($"KV list keys failed: {envelope?.Errors.FirstOrDefault()?.Message ?? response.StatusCode.ToString()}");
-        }
+            var path = $"accounts/{_accountId}/storage/kv/namespaces/{nsId}/keys";
+            var query = new List<string>();
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                query.Add($"prefix={Uri.EscapeDataString(prefix)}");
+            }
 
-        return (envelope.Result ?? []).Select(k => k.Name).ToList();
+            if (!string.IsNullOrEmpty(cursor))
+            {
+                query.Add($"cursor={Uri.EscapeDataString(cursor)}");
+            }
+
+            if (query.Count > 0)
+            {
+                path += "?" + string.Join('&', query);
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, path);
+            using var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var envelope = await response.Content.ReadFromJsonAsync<KeysEnvelope>(cancellationToken).ConfigureAwait(false);
+            if (envelope is null || !envelope.Success)
+            {
+                throw new InvalidOperationException($"KV list keys failed: {envelope?.Errors.FirstOrDefault()?.Message ?? response.StatusCode.ToString()}");
+            }
+
+            keys.AddRange(envelope.Result.Select(k => k.Name));
+            cursor = envelope.ResultInfo?.Cursor;
+        }
+        while (!string.IsNullOrEmpty(cursor));
+
+        return keys;
     }
 
     private string ValuePath(string namespaceId, string key)
@@ -157,6 +180,27 @@ internal sealed class HttpKvBackend : IKvBackend
     {
         [JsonPropertyName("name")]
         public string Name { get; init; } = string.Empty;
+    }
+
+    private sealed class KeysEnvelope
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; init; }
+
+        [JsonPropertyName("errors")]
+        public List<ErrorDto> Errors { get; init; } = [];
+
+        [JsonPropertyName("result")]
+        public List<KeyDto> Result { get; init; } = [];
+
+        [JsonPropertyName("result_info")]
+        public ResultInfoDto? ResultInfo { get; init; }
+    }
+
+    private sealed class ResultInfoDto
+    {
+        [JsonPropertyName("cursor")]
+        public string? Cursor { get; init; }
     }
 
     private sealed class Envelope<T>

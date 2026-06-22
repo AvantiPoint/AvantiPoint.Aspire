@@ -49,6 +49,20 @@ public class CloudflareAIHostingTests
     }
 
     [Fact]
+    public void Gateway_Prefixes_Bare_WorkersAI_Models()
+    {
+        var builder = CreateRunModeBuilder();
+        var cf = builder.AddCloudflareEnvironment();
+
+        // Default models are bare @cf/... ids; via a gateway they must be provider-prefixed.
+        var ai = cf.AddCloudflareAI("ai", o => o.GatewayId = "gw");
+
+        var expr = ai.Resource.ConnectionStringExpression.ValueExpression;
+        Assert.Contains("ChatModel=workers-ai/@cf/", expr);
+        Assert.Contains("EmbeddingModel=workers-ai/@cf/", expr);
+    }
+
+    [Fact]
     public void RunAsEmulator_Adds_Ollama_And_Uses_Ollama_ConnectionString()
     {
         var builder = CreateRunModeBuilder();

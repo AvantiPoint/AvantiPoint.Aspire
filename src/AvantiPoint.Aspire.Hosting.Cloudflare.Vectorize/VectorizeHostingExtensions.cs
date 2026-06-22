@@ -2,6 +2,7 @@ using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Publishing;
+using AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Provisioning;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Publishing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -57,7 +58,15 @@ public static class VectorizeHostingExtensions
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ICloudflarePublishTarget, VectorizePublishTarget>());
 
         var resource = new VectorizeIndexResource(name, environment.Resource, indexName ?? name, dimensions, metric);
-        return builder.AddResource(resource);
+        var index = builder.AddResource(resource);
+
+        // In run mode the real index is provisioned on start (skipped for indexes using the emulator).
+        if (builder.ExecutionContext.IsRunMode)
+        {
+            VectorizeRealProvisioning.Register(builder, environment.Resource, resource);
+        }
+
+        return index;
     }
 
     /// <summary>

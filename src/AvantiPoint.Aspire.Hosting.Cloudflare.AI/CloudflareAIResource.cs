@@ -55,11 +55,21 @@ public sealed class CloudflareAIResource : Resource, IResourceWithConnectionStri
 
         if (Options.GatewayId is { Length: > 0 } gatewayId)
         {
+            // The AI Gateway /compat endpoint routes by provider-prefixed model ids, so bare Workers AI
+            // ids (@cf/...) must be prefixed with "workers-ai/". Already-prefixed ids (anthropic/..., etc.)
+            // are left untouched.
+            var gatewayChatModel = ToGatewayModel(chatModel);
+            var gatewayEmbeddingModel = ToGatewayModel(embeddingModel);
             return ReferenceExpression.Create(
-                $"Provider=AIGateway;Endpoint=https://gateway.ai.cloudflare.com/v1/{accountId}/{gatewayId}/compat;Key={token};ChatModel={chatModel};EmbeddingModel={embeddingModel}");
+                $"Provider=AIGateway;Endpoint=https://gateway.ai.cloudflare.com/v1/{accountId}/{gatewayId}/compat;Key={token};ChatModel={gatewayChatModel};EmbeddingModel={gatewayEmbeddingModel}");
         }
 
         return ReferenceExpression.Create(
             $"Provider=WorkersAI;Endpoint=https://api.cloudflare.com/client/v4/accounts/{accountId}/ai/v1;Key={token};ChatModel={chatModel};EmbeddingModel={embeddingModel}");
     }
+
+    // AI Gateway's OpenAI-compatible endpoint routes by provider-prefixed model id. Bare Workers AI ids
+    // (@cf/...) are prefixed with "workers-ai/"; ids that already carry a provider prefix are unchanged.
+    private static string ToGatewayModel(string model)
+        => model.StartsWith("@cf/", StringComparison.OrdinalIgnoreCase) ? $"workers-ai/{model}" : model;
 }
