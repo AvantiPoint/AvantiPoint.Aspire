@@ -52,10 +52,11 @@ In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it.
 
 ```csharp
 var zone = builder.AddDeploymentParameter("zone-id");
+var host = builder.AddDeploymentParameter("web-hostname");
 
 builder.AddViteApp("web", "../web")
     .PublishAsCloudflarePages()
-    .WithCustomDomain("www.example.com", zone);
+    .WithCustomDomain(host, zone);
 ```
 
 Custom domains require *DNS: Edit* and *Zone: Read* on the relevant zone, and the [Zone ID](../getting-started/account-and-zone-ids.md).

@@ -66,10 +66,11 @@ Values are resolved at deploy time and embedded in the generated Worker (which C
 
 ```csharp
 var zone = builder.AddDeploymentParameter("zone-id");
+var host = builder.AddDeploymentParameter("api-hostname");
 
 builder.AddProject<Projects.Api>("api")
     .PublishAsCloudflareContainer()
-    .WithCustomDomain("api.example.com", zone);
+    .WithCustomDomain(host, zone);
 ```
 
 See [Custom Domains](custom-domains.md).

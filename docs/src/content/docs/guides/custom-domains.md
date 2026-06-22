@@ -5,30 +5,28 @@ title: "Custom Domains"
 
 Attach a custom hostname to a Container or Pages app with `WithCustomDomain`. Call it **after** `PublishAsCloudflareContainer` / `PublishAsCloudflarePages`.
 
-The Zone ID is account-specific configuration, so pass it as an Aspire **parameter** rather than hard-coding it:
-
-```csharp
-var zone = builder.AddDeploymentParameter("zone-id"); // resolved from config / user-secrets / env
-
-var api = builder.AddProject<Projects.Api>("api")
-    .PublishAsCloudflareContainer()
-    .WithCustomDomain("api.example.com", zone);
-
-builder.AddViteApp("web", "../web")
-    .PublishAsCloudflarePages()
-    .WithCustomDomain("www.example.com", zone);
-```
-
-A literal overload — `WithCustomDomain("api.example.com", "<zone-id>")` — also exists for quick samples, but prefer the parameter for real deployments.
-
-:::tip[Deployment parameters]
-`AddDeploymentParameter` (from the **`AvantiPoint.Aspire.Hosting.Extensions`** package) is a parameter that's **only required when you publish/deploy** — during `aspire run` it resolves to an empty/default value, so a Zone ID you don't have locally never blocks your inner loop. At `aspire deploy` it behaves like a normal required `AddParameter`.
+Both the **hostname** and the **Zone ID** are deploy-specific configuration, so pass them as Aspire **parameters** rather than hard-coding them:
 
 ```csharp
 using AvantiPoint.Aspire.Hosting.Extensions;
 
-var zone = builder.AddDeploymentParameter("zone-id");
+var zone    = builder.AddDeploymentParameter("zone-id");
+var apiHost = builder.AddDeploymentParameter("api-hostname");
+var webHost = builder.AddDeploymentParameter("web-hostname");
+
+var api = builder.AddProject<Projects.Api>("api")
+    .PublishAsCloudflareContainer()
+    .WithCustomDomain(apiHost, zone);
+
+builder.AddViteApp("web", "../web")
+    .PublishAsCloudflarePages()
+    .WithCustomDomain(webHost, zone);
 ```
+
+Literal overloads — `WithCustomDomain("api.example.com", "<zone-id>")` — also exist for quick samples, and you can mix (parameter hostname + literal zone, or vice versa). Prefer parameters for real deployments.
+
+:::tip[Why `AddDeploymentParameter`?]
+`AddDeploymentParameter` (from the **`AvantiPoint.Aspire.Hosting.Extensions`** package) is a parameter that's **only required when you publish/deploy** — during `aspire run` it resolves to an empty/default value, so domains and zone ids you don't have locally never block your inner loop. At `aspire deploy` it behaves like a normal required `AddParameter`. That's exactly the shape of custom-domain config: irrelevant in dev, required to deploy.
 :::
 
 `WithCustomDomain` is repeatable — call it multiple times to attach multiple hostnames.

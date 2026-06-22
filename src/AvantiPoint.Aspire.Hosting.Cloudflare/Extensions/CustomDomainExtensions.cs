@@ -6,28 +6,55 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 public static class CustomDomainExtensions
 {
     /// <summary>
-    /// Attaches a custom domain to this resource (a Cloudflare Container or Pages app), with the Zone Id
-    /// supplied as an Aspire parameter (recommended — keeps the id out of source). Call after
-    /// <c>PublishAsCloudflareContainer</c> / <c>PublishAsCloudflarePages</c>. Repeatable.
+    /// Attaches a custom domain to this resource (a Cloudflare Container or Pages app), with both the
+    /// hostname and Zone Id supplied as Aspire parameters (recommended — keeps deploy-specific config out
+    /// of source). Pair with <c>AddDeploymentParameter</c> so they're only required at deploy time. Call
+    /// after <c>PublishAsCloudflareContainer</c> / <c>PublishAsCloudflarePages</c>. Repeatable.
     /// </summary>
-    /// <param name="builder">The resource builder (must already target a Cloudflare environment).</param>
-    /// <param name="hostname">The fully-qualified hostname, e.g. <c>api.example.com</c>.</param>
-    /// <param name="zoneId">A parameter resolving to the Cloudflare Zone ID that owns <paramref name="hostname"/>.</param>
+    public static IResourceBuilder<T> WithCustomDomain<T>(
+        this IResourceBuilder<T> builder,
+        IResourceBuilder<ParameterResource> hostname,
+        IResourceBuilder<ParameterResource> zoneId)
+        where T : IResource
+    {
+        ArgumentNullException.ThrowIfNull(hostname);
+        ArgumentNullException.ThrowIfNull(zoneId);
+        RequireCustomDomainScopes(builder);
+        builder.Resource.Annotations.Add(new CustomDomainAnnotation(hostname.Resource, zoneId.Resource));
+        return builder;
+    }
+
+    /// <summary>Attaches a custom domain with a parameter hostname and a literal Zone Id.</summary>
+    public static IResourceBuilder<T> WithCustomDomain<T>(
+        this IResourceBuilder<T> builder,
+        IResourceBuilder<ParameterResource> hostname,
+        string zoneId)
+        where T : IResource
+    {
+        ArgumentNullException.ThrowIfNull(hostname);
+        ArgumentException.ThrowIfNullOrWhiteSpace(zoneId);
+        RequireCustomDomainScopes(builder);
+        builder.Resource.Annotations.Add(new CustomDomainAnnotation(hostname.Resource, zoneId));
+        return builder;
+    }
+
+    /// <summary>Attaches a custom domain with a literal hostname and a parameter Zone Id.</summary>
     public static IResourceBuilder<T> WithCustomDomain<T>(
         this IResourceBuilder<T> builder,
         string hostname,
         IResourceBuilder<ParameterResource> zoneId)
         where T : IResource
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(hostname);
         ArgumentNullException.ThrowIfNull(zoneId);
-        RequireCustomDomainScopes(builder, hostname);
+        RequireCustomDomainScopes(builder);
         builder.Resource.Annotations.Add(new CustomDomainAnnotation(hostname, zoneId.Resource));
         return builder;
     }
 
     /// <summary>
-    /// Attaches a custom domain using a literal Zone ID. Prefer the parameter overload for real
-    /// deployments so the id isn't hard-coded; this is handy for quick samples.
+    /// Attaches a custom domain using literal values. Prefer the parameter overloads for real deployments
+    /// so hostnames/zone ids aren't hard-coded; this is handy for quick samples.
     /// </summary>
     public static IResourceBuilder<T> WithCustomDomain<T>(
         this IResourceBuilder<T> builder,
@@ -35,17 +62,17 @@ public static class CustomDomainExtensions
         string zoneId)
         where T : IResource
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(hostname);
         ArgumentException.ThrowIfNullOrWhiteSpace(zoneId);
-        RequireCustomDomainScopes(builder, hostname);
+        RequireCustomDomainScopes(builder);
         builder.Resource.Annotations.Add(new CustomDomainAnnotation(hostname, zoneId));
         return builder;
     }
 
-    private static void RequireCustomDomainScopes<T>(IResourceBuilder<T> builder, string hostname)
+    private static void RequireCustomDomainScopes<T>(IResourceBuilder<T> builder)
         where T : IResource
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentException.ThrowIfNullOrWhiteSpace(hostname);
 
         if (!builder.Resource.TryGetLastAnnotation<ICloudflareTargetAnnotation>(out var target))
         {

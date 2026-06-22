@@ -3,32 +3,56 @@ using Aspire.Hosting.ApplicationModel;
 namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 
 /// <summary>
-/// Associates a custom domain (hostname + zone) with a deployable resource (Container or Pages).
-/// The deploy pipeline configures DNS/SSL for it. The zone id may be a literal or an Aspire parameter
-/// (so it doesn't have to be hard-coded). Repeatable.
+/// Associates a custom domain (hostname + zone) with a deployable resource (Container or Pages). Both the
+/// hostname and the zone id may be a literal or an Aspire parameter, so neither needs to be hard-coded.
+/// The deploy pipeline configures DNS/SSL for it. Repeatable.
 /// </summary>
 internal sealed class CustomDomainAnnotation : IResourceAnnotation
 {
-    private readonly string? _literalZoneId;
-    private readonly ParameterResource? _zoneIdParameter;
+    // Each value is either a string (literal) or a ParameterResource (resolved at deploy time).
+    private readonly object _hostname;
+    private readonly object _zoneId;
 
     public CustomDomainAnnotation(string hostname, string zoneId)
     {
-        Hostname = hostname;
-        _literalZoneId = zoneId;
+        _hostname = hostname;
+        _zoneId = zoneId;
     }
 
     public CustomDomainAnnotation(string hostname, ParameterResource zoneId)
     {
-        Hostname = hostname;
-        _zoneIdParameter = zoneId;
+        _hostname = hostname;
+        _zoneId = zoneId;
     }
 
-    public string Hostname { get; }
+    public CustomDomainAnnotation(ParameterResource hostname, ParameterResource zoneId)
+    {
+        _hostname = hostname;
+        _zoneId = zoneId;
+    }
+
+    public CustomDomainAnnotation(ParameterResource hostname, string zoneId)
+    {
+        _hostname = hostname;
+        _zoneId = zoneId;
+    }
+
+    /// <summary>The hostname as a reference expression (resolves the parameter, or the literal).</summary>
+    public ReferenceExpression HostnameExpression => ToExpression(_hostname);
+
+    /// <summary>Resolves the hostname (from the parameter at deploy time, or the literal value).</summary>
+    public ValueTask<string> GetHostnameAsync(CancellationToken cancellationToken) => ResolveAsync(_hostname, cancellationToken);
 
     /// <summary>Resolves the zone id (from the parameter at deploy time, or the literal value).</summary>
-    public async ValueTask<string> GetZoneIdAsync(CancellationToken cancellationToken)
-        => _zoneIdParameter is not null
-            ? await _zoneIdParameter.GetValueAsync(cancellationToken).ConfigureAwait(false) ?? string.Empty
-            : _literalZoneId ?? string.Empty;
+    public ValueTask<string> GetZoneIdAsync(CancellationToken cancellationToken) => ResolveAsync(_zoneId, cancellationToken);
+
+    private static ReferenceExpression ToExpression(object value)
+        => value is ParameterResource parameter
+            ? ReferenceExpression.Create($"{parameter}")
+            : ReferenceExpression.Create($"{(string)value}");
+
+    private static async ValueTask<string> ResolveAsync(object value, CancellationToken cancellationToken)
+        => value is ParameterResource parameter
+            ? await parameter.GetValueAsync(cancellationToken).ConfigureAwait(false) ?? string.Empty
+            : (string)value;
 }

@@ -32,8 +32,10 @@ var builder = DistributedApplication.CreateBuilder(args);
 // Resources below resolve it automatically — no need to pass it around.
 builder.AddCloudflareEnvironment();
 
-// The Zone ID is config, not source — supply it as a parameter.
-var zone = builder.AddDeploymentParameter("zone-id");
+// Domains and the Zone ID are deploy-time config, not source — supply them as parameters.
+var zone    = builder.AddDeploymentParameter("zone-id");
+var apiHost = builder.AddDeploymentParameter("api-hostname");
+var webHost = builder.AddDeploymentParameter("web-hostname");
 
 // An R2 bucket. Local: MinIO emulator. Deploy: real R2.
 var uploads = builder.AddR2Bucket("uploads");
@@ -42,13 +44,13 @@ var uploads = builder.AddR2Bucket("uploads");
 var api = builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)
     .PublishAsCloudflareContainer()
-    .WithCustomDomain("api.example.com", zone);
+    .WithCustomDomain(apiHost, zone);
 
 // A Vite frontend deployed to Cloudflare Pages.
 builder.AddViteApp("web", "../web")
     .WithReference(api)
     .PublishAsCloudflarePages()
-    .WithCustomDomain("www.example.com", zone);
+    .WithCustomDomain(webHost, zone);
 
 builder.Build().Run();
 ```

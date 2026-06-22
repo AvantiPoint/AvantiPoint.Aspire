@@ -101,8 +101,9 @@ internal sealed class ContainerPublishTarget(ILogger<ContainerPublishTarget> log
             foreach (var domain in customDomains)
             {
                 var zoneId = await domain.GetZoneIdAsync(cancellationToken).ConfigureAwait(false);
+                var hostname = await domain.GetHostnameAsync(cancellationToken).ConfigureAwait(false);
                 await apiClient.AttachWorkersCustomDomainAsync(
-                    context.ApiToken, context.AccountId, zoneId, domain.Hostname, annotation.WorkerName,
+                    context.ApiToken, context.AccountId, zoneId, hostname, annotation.WorkerName,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }

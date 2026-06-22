@@ -39,19 +39,23 @@ Cross-cutting:
 var builder = DistributedApplication.CreateBuilder(args);
 
 builder.AddCloudflareEnvironment();           // resources below resolve it automatically
-var zone = builder.AddDeploymentParameter("zone-id");   // Zone ID as config, not a literal
+
+// Deploy-time config (Zone ID + hostnames) as parameters — absent in dev, required at deploy.
+var zone    = builder.AddDeploymentParameter("zone-id");
+var apiHost = builder.AddDeploymentParameter("api-hostname");
+var webHost = builder.AddDeploymentParameter("web-hostname");
 
 var uploads = builder.AddR2Bucket("uploads");
 
 var api = builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)
     .PublishAsCloudflareContainer()
-    .WithCustomDomain("api.example.com", zone);
+    .WithCustomDomain(apiHost, zone);
 
 // Pages attaches to a JavaScript app Aspire already models — not a raw folder.
 builder.AddViteApp("web", "../Web")
     .PublishAsCloudflarePages()
-    .WithCustomDomain("www.example.com", zone);
+    .WithCustomDomain(webHost, zone);
 
 builder.Build().Run();
 ```

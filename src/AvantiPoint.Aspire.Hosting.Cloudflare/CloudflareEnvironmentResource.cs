@@ -43,34 +43,35 @@ public sealed class CloudflareEnvironmentResource : Resource, IComputeEnvironmen
     // IComputeEnvironmentResource — resolves the public address of a compute resource (Container)
     // deployed to this environment, so other resources can reference it (e.g. a Pages app calling the API).
     ReferenceExpression IComputeEnvironmentResource.GetHostAddressExpression(EndpointReference endpointReference)
-        => ReferenceExpression.Create($"{HostFor(endpointReference.Resource)}");
+        => HostExpressionFor(endpointReference.Resource);
 
     ReferenceExpression IComputeEnvironmentResource.GetEndpointPropertyExpression(EndpointReferenceExpression endpointReferenceExpression)
     {
-        var host = HostFor(endpointReferenceExpression.Endpoint.Resource);
+        var host = HostExpressionFor(endpointReferenceExpression.Endpoint.Resource);
         return endpointReferenceExpression.Property switch
         {
             EndpointProperty.Port or EndpointProperty.TargetPort => ReferenceExpression.Create($"443"),
             EndpointProperty.Scheme => ReferenceExpression.Create($"https"),
             EndpointProperty.TlsEnabled => ReferenceExpression.Create($"true"),
-            EndpointProperty.Host or EndpointProperty.IPV4Host => ReferenceExpression.Create($"{host}"),
+            EndpointProperty.Host or EndpointProperty.IPV4Host => host,
             EndpointProperty.HostAndPort => ReferenceExpression.Create($"{host}:443"),
             _ => ReferenceExpression.Create($"https://{host}"),
         };
     }
 
-    // The public hostname for a deployed resource: its custom domain if one is configured, otherwise a
-    // workers.dev placeholder. (Accurate workers.dev URLs require the account subdomain; custom domains
-    // give a deterministic address — see WithCustomDomain.)
-    private static string HostFor(IResource resource)
+    // The public hostname for a deployed resource: its custom domain if one is configured (which may be a
+    // parameter, so this returns an expression), otherwise a workers.dev placeholder. (Accurate workers.dev
+    // URLs require the account subdomain; custom domains give a deterministic address — see WithCustomDomain.)
+    private static ReferenceExpression HostExpressionFor(IResource resource)
     {
         var customDomain = resource.Annotations.OfType<CustomDomainAnnotation>().FirstOrDefault();
         if (customDomain is not null)
         {
-            return customDomain.Hostname;
+            return customDomain.HostnameExpression;
         }
 
         var container = resource.Annotations.OfType<CloudflareContainerAnnotation>().FirstOrDefault();
-        return container is not null ? $"{container.WorkerName}.workers.dev" : $"{resource.Name}.workers.dev";
+        var name = container?.WorkerName ?? resource.Name;
+        return ReferenceExpression.Create($"{name}.workers.dev");
     }
 }

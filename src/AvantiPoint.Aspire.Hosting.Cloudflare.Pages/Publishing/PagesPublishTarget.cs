@@ -62,8 +62,9 @@ internal sealed class PagesPublishTarget(ILogger<PagesPublishTarget> logger, IWr
             foreach (var domain in customDomains)
             {
                 var zoneId = await domain.GetZoneIdAsync(cancellationToken).ConfigureAwait(false);
-                await apiClient.AttachPagesDomainAsync(context.ApiToken, context.AccountId, annotation.ProjectName, domain.Hostname, cancellationToken).ConfigureAwait(false);
-                await apiClient.UpsertCnameRecordAsync(context.ApiToken, zoneId, domain.Hostname, $"{annotation.ProjectName}.pages.dev", cancellationToken).ConfigureAwait(false);
+                var hostname = await domain.GetHostnameAsync(cancellationToken).ConfigureAwait(false);
+                await apiClient.AttachPagesDomainAsync(context.ApiToken, context.AccountId, annotation.ProjectName, hostname, cancellationToken).ConfigureAwait(false);
+                await apiClient.UpsertCnameRecordAsync(context.ApiToken, zoneId, hostname, $"{annotation.ProjectName}.pages.dev", cancellationToken).ConfigureAwait(false);
             }
         }
     }

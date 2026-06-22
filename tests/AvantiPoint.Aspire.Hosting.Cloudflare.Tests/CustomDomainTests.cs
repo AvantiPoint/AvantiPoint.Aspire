@@ -11,7 +11,7 @@ public class CustomDomainTests
         => builder.AddResource(new ProjectResource("api"));
 
     [Fact]
-    public async Task WithCustomDomain_Adds_Annotation_With_Literal_ZoneId()
+    public async Task WithCustomDomain_Literal_Resolves_Hostname_And_Zone()
     {
         var builder = DistributedApplication.CreateBuilder(Array.Empty<string>());
         builder.AddCloudflareEnvironment();
@@ -20,22 +20,28 @@ public class CustomDomainTests
         api.WithCustomDomain("api.example.com", "zone-123");
 
         var domain = Assert.Single(api.Resource.Annotations.OfType<CustomDomainAnnotation>());
-        Assert.Equal("api.example.com", domain.Hostname);
-        Assert.Equal("zone-123", await domain.GetZoneIdAsync(TestContext.Current.CancellationToken));
+        var ct = TestContext.Current.CancellationToken;
+        Assert.Equal("api.example.com", await domain.GetHostnameAsync(ct));
+        Assert.Equal("zone-123", await domain.GetZoneIdAsync(ct));
     }
 
     [Fact]
-    public async Task WithCustomDomain_Accepts_ZoneId_Parameter()
+    public async Task WithCustomDomain_Accepts_Hostname_And_Zone_Parameters()
     {
         var builder = DistributedApplication.CreateBuilder(Array.Empty<string>());
         builder.AddCloudflareEnvironment();
-        var zoneId = builder.AddParameter("zone-id", "zone-from-param");
+        var host = builder.AddParameter("api-hostname", "api.example.com");
+        var zone = builder.AddParameter("zone-id", "zone-from-param");
         var api = AddApi(builder).PublishAsCloudflareContainer();
 
-        api.WithCustomDomain("api.example.com", zoneId);
+        api.WithCustomDomain(host, zone);
 
         var domain = Assert.Single(api.Resource.Annotations.OfType<CustomDomainAnnotation>());
-        Assert.Equal("zone-from-param", await domain.GetZoneIdAsync(TestContext.Current.CancellationToken));
+        var ct = TestContext.Current.CancellationToken;
+        Assert.Equal("api.example.com", await domain.GetHostnameAsync(ct));
+        Assert.Equal("zone-from-param", await domain.GetZoneIdAsync(ct));
+        // The host expression references the parameter (so cross-resource references resolve it).
+        Assert.Contains("api-hostname", domain.HostnameExpression.ValueExpression);
     }
 
     [Fact]
