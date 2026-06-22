@@ -36,10 +36,9 @@ public static class R2HostingExtensions
     }
 
     /// <summary>
-    /// Adds an R2 bucket to a specific Cloudflare environment. During <c>aspire run</c> the bucket is
-    /// backed by a local MinIO S3 emulator (no Cloudflare credentials required); during
-    /// <c>aspire publish</c>/<c>deploy</c> it is provisioned against the real Cloudflare account.
-    /// Call <see cref="RunAsReal"/> to use a real R2 bucket during <c>aspire run</c> as well.
+    /// Adds an R2 bucket to a specific Cloudflare environment. By default the bucket targets <b>real R2</b>
+    /// (provisioned during <c>aspire run</c> and <c>aspire deploy</c>). Call <see cref="RunAsEmulator"/> to
+    /// back it with the local MinIO S3 emulator during <c>aspire run</c> (a credential-free inner loop).
     /// </summary>
     /// <param name="environment">The Cloudflare environment builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
@@ -60,13 +59,13 @@ public static class R2HostingExtensions
         var resource = new R2BucketResource(name, environment.Resource, bucketName ?? name);
         var bucket = builder.AddResource(resource);
 
+        // Real R2 by default; RunAsEmulator() opts into MinIO for run mode.
+        ConfigureReal(bucket);
+
+        // In run mode the real bucket is provisioned on start (skipped for buckets switched to the emulator).
         if (builder.ExecutionContext.IsRunMode)
         {
-            ConfigureEmulator(environment, bucket);
-        }
-        else
-        {
-            ConfigureReal(bucket);
+            R2RealProvisioning.Register(builder, environment.Resource, resource);
         }
 
         return bucket;
@@ -92,24 +91,21 @@ public static class R2HostingExtensions
     }
 
     /// <summary>
-    /// Provisions and uses a real Cloudflare R2 bucket during <c>aspire run</c> instead of the local
-    /// MinIO emulator. Requires a valid API token, account id and R2 S3 credentials
-    /// (<c>R2_ACCESS_KEY_ID</c> / <c>R2_SECRET_ACCESS_KEY</c>).
+    /// Backs this bucket with the local MinIO S3 emulator during <c>aspire run</c> (no Cloudflare
+    /// credentials required). Ignored during <c>aspire publish</c>/<c>deploy</c>, which always use real R2.
+    /// Mirrors the <c>RunAsEmulator()</c> convention of Aspire's Azure integrations.
     /// </summary>
-    public static IResourceBuilder<R2BucketResource> RunAsReal(this IResourceBuilder<R2BucketResource> bucket)
+    public static IResourceBuilder<R2BucketResource> RunAsEmulator(this IResourceBuilder<R2BucketResource> bucket)
     {
-        if (!bucket.Resource.UseEmulator && bucket.Resource.RealAccessKey is not null)
+        ArgumentNullException.ThrowIfNull(bucket);
+
+        if (!bucket.ApplicationBuilder.ExecutionContext.IsRunMode)
         {
-            return bucket; // already real
+            return bucket; // publish/deploy always uses real R2
         }
 
-        ConfigureReal(bucket);
-
-        if (bucket.ApplicationBuilder.ExecutionContext.IsRunMode)
-        {
-            R2RealProvisioning.Register(bucket.ApplicationBuilder, bucket.Resource.Environment, bucket.Resource);
-        }
-
+        var environment = bucket.ApplicationBuilder.CreateResourceBuilder(bucket.Resource.Environment);
+        ConfigureEmulator(environment, bucket);
         return bucket;
     }
 

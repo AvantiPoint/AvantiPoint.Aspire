@@ -141,6 +141,47 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         logger.LogInformation("Upserted CNAME '{Name}' -> '{Content}'.", name, content);
     }
 
+    public async Task<D1Database> CreateD1DatabaseAsync(string apiToken, string accountId, CreateD1DatabaseRequest body, CancellationToken cancellationToken = default)
+    {
+        // D1 has no "create or get" semantics — a second create makes a second database with the same
+        // name — so look up by name first to stay idempotent.
+        var existing = await GetD1DatabaseByNameAsync(apiToken, accountId, body.Name, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            logger.LogInformation("D1 database '{Database}' already exists; reusing it.", body.Name);
+            return existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/d1/database", apiToken);
+        request.Content = JsonContent.Create(body);
+
+        var result = await SendAsync<D1Database>(request, "create D1 database", cancellationToken).ConfigureAwait(false);
+        return result ?? new D1Database { Name = body.Name };
+    }
+
+    public async Task<D1Database?> GetD1DatabaseByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/d1/database?name={Uri.EscapeDataString(name)}", apiToken);
+        var databases = await SendAsync<List<D1Database>>(request, "list D1 databases", cancellationToken).ConfigureAwait(false);
+        return databases?.FirstOrDefault(d => string.Equals(d.Name, name, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteD1DatabaseAsync(string apiToken, string accountId, string databaseId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/d1/database/{databaseId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete D1 database", envelope.Errors);
+        }
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

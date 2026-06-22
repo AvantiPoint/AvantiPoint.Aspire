@@ -25,4 +25,7 @@ public static class CloudflareScopes
 
     /// <summary>Required (read) to resolve a zone for custom domains.</summary>
     public const string ZoneRead = "Zone Read";
+
+    /// <summary>Required to create/manage and query D1 databases.</summary>
+    public const string D1Edit = "D1 Write";
 }

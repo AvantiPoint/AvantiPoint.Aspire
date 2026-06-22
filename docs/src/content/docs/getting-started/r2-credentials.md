@@ -14,8 +14,8 @@ This page covers the second kind.
 
 ## When you need them
 
-- **Local dev (`aspire run`):** **Never.** The MinIO emulator supplies its own local credentials automatically.
-- **Real R2 (`aspire deploy`, or `.RunAsReal()`):** Your app needs S3 credentials to read/write objects. Provide them via the `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` environment variables (or Aspire parameters).
+- **Local dev with `.RunAsEmulator()`:** **Never.** The MinIO emulator supplies its own local credentials automatically.
+- **Real R2 (`aspire deploy`, or `aspire run` without `.RunAsEmulator()`):** Your app needs S3 credentials to read/write objects. Provide them via the `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` environment variables (or Aspire parameters).
 
 ## Create R2 S3 credentials
 

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>AvantiPoint Aspire Hosting for Cloudflare D1</Title>
+    <Description>Cloudflare D1 hosting integration for Aspire. Provisions D1 databases via the Cloudflare API during deploy and, with .RunAsEmulator(), backs the database with a local SQLite file during 'aspire run' so the dev loop needs no cloud credentials. Builds on AvantiPoint.Aspire.Hosting.Cloudflare.</Description>
+    <PackageTags>aspire;cloudflare;d1;sqlite;database;hosting;emulator</PackageTags>
+    <IsAspireHostingIntegration>true</IsAspireHostingIntegration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests" />
+  </ItemGroup>
+
+</Project>

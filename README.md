@@ -13,23 +13,26 @@ Hosting and client integrations that make [Aspire](https://aspire.dev) a first-c
 - **.NET APIs → Cloudflare Containers** — a container image is built from your `ProjectResource` and run on Cloudflare Containers.
 - **Cloudflare Workers** — run a hand-authored Worker locally with `wrangler dev` (no account needed) and deploy it with `aspire deploy`.
 - **JavaScript frontends → Cloudflare Pages** — your build output directory is deployed to Pages.
-- **R2 buckets** — provisioned via the Cloudflare API, with S3-compatible connection details flowed back to your apps. A local **MinIO** emulator runs during `aspire run` so the inner dev loop needs no cloud credentials.
+- **R2 buckets** — provisioned via the Cloudflare API, with S3-compatible connection details flowed back to your apps. Add `.RunAsEmulator()` and a local **MinIO** emulator backs the bucket during `aspire run`, so the inner dev loop needs no cloud credentials.
+- **D1 databases** — provisioned via the Cloudflare API, queried from .NET through `ID1Client`. Add `.RunAsEmulator()` and the database is a local **SQLite** file during `aspire run` (D1 is SQLite under the hood); deployed, the same query code runs against the D1 HTTP API.
 
 Cross-cutting:
 
 - **API-token first** — the Cloudflare API token is an Aspire secret parameter, and its permission scopes are validated up front (fail-fast) before anything is provisioned.
 - **Custom domains** — attach a custom domain (with your Zone Id) to a Container or Pages app during deploy.
 
-> Status: active development. R2 (hosting + client + MinIO emulator), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
+> Status: active development. R2 (hosting + client + MinIO emulator), D1 (hosting + client + SQLite emulator), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
 
 ## Packages
 
 | Package | Description |
 | --- | --- |
 | `AvantiPoint.Aspire.Hosting.Cloudflare` | Core hosting integration: the Cloudflare deploy environment, the publish/deploy pipeline hijack, token/scope validation, the Container target, and custom domains. |
-| `AvantiPoint.Aspire.Hosting.Cloudflare.R2` | R2 bucket hosting: provisioning via the Cloudflare API plus a local MinIO S3 emulator for `aspire run`. |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.R2` | R2 bucket hosting: provisioning via the Cloudflare API plus a local MinIO S3 emulator (`.RunAsEmulator()`) for `aspire run`. |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.D1` | D1 database hosting: provisioning via the Cloudflare API plus a local SQLite emulator (`.RunAsEmulator()`) for `aspire run`. |
 | `AvantiPoint.Aspire.Hosting.Cloudflare.Pages` | Cloudflare Pages hosting: `.PublishAsCloudflarePages(...)` attaches to an Aspire JavaScript app (`AddViteApp`/`AddNodeApp`) and deploys its build output. |
 | `AvantiPoint.Aspire.Cloudflare.R2` | R2 **client** integration: registers a R2-tuned `IAmazonS3` (and `IR2Client`) from the Aspire-injected connection string. |
+| `AvantiPoint.Aspire.Cloudflare.D1` | D1 **client** integration: registers an `ID1Client` (SQLite locally, the D1 HTTP API deployed) from the Aspire-injected connection string. |
 | `AvantiPoint.Aspire.Hosting.Extensions` | General Aspire host helpers, e.g. `AddDeploymentParameter` — parameters required at deploy but optional in local development. |
 
 ## Quickstart
@@ -45,7 +48,7 @@ var zone    = builder.AddDeploymentParameter("zone-id");
 var apiHost = builder.AddDeploymentParameter("api-hostname");
 var webHost = builder.AddDeploymentParameter("web-hostname");
 
-var uploads = builder.AddR2Bucket("uploads");
+var uploads = builder.AddR2Bucket("uploads").RunAsEmulator();   // local MinIO during `aspire run`
 
 var api = builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)

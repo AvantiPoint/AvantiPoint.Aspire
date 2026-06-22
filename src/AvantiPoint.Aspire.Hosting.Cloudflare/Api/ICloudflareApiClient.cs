@@ -35,4 +35,16 @@ public interface ICloudflareApiClient
 
     /// <summary>Creates or updates a proxied CNAME record in the zone (upsert by name).</summary>
     Task UpsertCnameRecordAsync(string apiToken, string zoneId, string name, string content, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates a D1 database. Idempotent: if a database with the same name already exists it is
+    /// returned as-is (D1 would otherwise create a second database with the same name).
+    /// </summary>
+    Task<D1Database> CreateD1DatabaseAsync(string apiToken, string accountId, CreateD1DatabaseRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a D1 database by name, or <c>null</c> if none exists.</summary>
+    Task<D1Database?> GetD1DatabaseByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a D1 database by its id. No-op if it does not exist.</summary>
+    Task DeleteD1DatabaseAsync(string apiToken, string accountId, string databaseId, CancellationToken cancellationToken = default);
 }

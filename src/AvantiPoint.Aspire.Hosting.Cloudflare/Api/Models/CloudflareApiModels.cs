@@ -123,6 +123,30 @@ public sealed class PagesDomainRequest
     public string Name { get; init; } = string.Empty;
 }
 
+/// <summary>A D1 database as returned by the D1 API.</summary>
+public sealed class D1Database
+{
+    [JsonPropertyName("uuid")]
+    public string Uuid { get; init; } = string.Empty;
+
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("version")]
+    public string? Version { get; init; }
+}
+
+/// <summary>Request body for creating a D1 database.</summary>
+public sealed class CreateD1DatabaseRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("primary_location_hint")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? PrimaryLocationHint { get; init; }
+}
+
 /// <summary>Request body for creating an R2 bucket.</summary>
 public sealed class CreateR2BucketRequest
 {

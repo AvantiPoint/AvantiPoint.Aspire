@@ -12,24 +12,24 @@ public class R2HostingTests
         => DistributedApplication.CreateBuilder(Array.Empty<string>());
 
     [Fact]
-    public void AddR2Bucket_RunMode_Adds_Minio_Emulator_Container()
+    public void RunAsEmulator_Adds_Minio_Emulator_Container()
     {
         var builder = CreateRunModeBuilder();
         var cf = builder.AddCloudflareEnvironment();
 
-        cf.AddR2Bucket("uploads");
+        cf.AddR2Bucket("uploads").RunAsEmulator();
 
         var container = Assert.Single(builder.Resources.OfType<ContainerResource>());
         Assert.Contains("minio", container.Name, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void AddR2Bucket_RunMode_Uses_Emulator_ConnectionString()
+    public void RunAsEmulator_Uses_Emulator_ConnectionString()
     {
         var builder = CreateRunModeBuilder();
         var cf = builder.AddCloudflareEnvironment();
 
-        var bucket = cf.AddR2Bucket("uploads", bucketName: "my-uploads");
+        var bucket = cf.AddR2Bucket("uploads", bucketName: "my-uploads").RunAsEmulator();
 
         Assert.True(bucket.Resource.UseEmulator);
         var expr = bucket.Resource.ConnectionStringExpression.ValueExpression;
@@ -40,13 +40,27 @@ public class R2HostingTests
     }
 
     [Fact]
-    public void Multiple_Buckets_Share_One_Minio_Emulator()
+    public void AddR2Bucket_Defaults_To_Real_Endpoint()
     {
         var builder = CreateRunModeBuilder();
         var cf = builder.AddCloudflareEnvironment();
 
-        cf.AddR2Bucket("uploads");
-        cf.AddR2Bucket("thumbnails");
+        var bucket = cf.AddR2Bucket("uploads");
+
+        Assert.False(bucket.Resource.UseEmulator);
+        Assert.Empty(builder.Resources.OfType<ContainerResource>()); // no MinIO unless RunAsEmulator()
+        var expr = bucket.Resource.ConnectionStringExpression.ValueExpression;
+        Assert.Contains("r2.cloudflarestorage.com", expr);
+    }
+
+    [Fact]
+    public void Multiple_Emulated_Buckets_Share_One_Minio_Emulator()
+    {
+        var builder = CreateRunModeBuilder();
+        var cf = builder.AddCloudflareEnvironment();
+
+        cf.AddR2Bucket("uploads").RunAsEmulator();
+        cf.AddR2Bucket("thumbnails").RunAsEmulator();
 
         Assert.Single(builder.Resources.OfType<ContainerResource>());
         Assert.Equal(2, builder.Resources.OfType<R2BucketResource>().Count());
@@ -61,18 +75,5 @@ public class R2HostingTests
         cf.AddR2Bucket("uploads");
 
         Assert.Contains(CloudflareScopes.WorkersR2StorageEdit, cf.Resource.RequiredScopes);
-    }
-
-    [Fact]
-    public void RunAsReal_Switches_To_Real_Endpoint()
-    {
-        var builder = CreateRunModeBuilder();
-        var cf = builder.AddCloudflareEnvironment();
-
-        var bucket = cf.AddR2Bucket("uploads").RunAsReal();
-
-        Assert.False(bucket.Resource.UseEmulator);
-        var expr = bucket.Resource.ConnectionStringExpression.ValueExpression;
-        Assert.Contains("r2.cloudflarestorage.com", expr);
     }
 }

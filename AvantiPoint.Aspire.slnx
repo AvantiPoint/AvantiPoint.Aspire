@@ -12,12 +12,15 @@
     <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.Pages/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Cloudflare.R2/AvantiPoint.Aspire.Cloudflare.R2.csproj" />
+    <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.D1/AvantiPoint.Aspire.Hosting.Cloudflare.D1.csproj" />
+    <Project Path="src/AvantiPoint.Aspire.Cloudflare.D1/AvantiPoint.Aspire.Cloudflare.D1.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Hosting.Extensions/AvantiPoint.Aspire.Hosting.Extensions.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests.csproj" />
+    <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Extensions.Tests/AvantiPoint.Aspire.Hosting.Extensions.Tests.csproj" />
   </Folder>

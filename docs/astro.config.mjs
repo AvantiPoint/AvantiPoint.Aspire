@@ -41,6 +41,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             'guides/r2',
+            'guides/d1',
             'guides/workers',
             'guides/containers',
             'guides/pages',
