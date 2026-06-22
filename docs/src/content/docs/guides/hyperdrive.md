@@ -1,0 +1,64 @@
+---
+title: "Hyperdrive"
+---
+
+
+[Hyperdrive](https://developers.cloudflare.com/hyperdrive/) accelerates and pools connections to an existing database (often a third-party hosted Postgres) so a Worker can reach it quickly. It's **consumed by a Worker via a binding, not over HTTP**, so — unlike the other services — there is **no .NET client**. This integration is hosting-only: it provisions the Hyperdrive configuration at deploy.
+
+## The two parts
+
+1. **Your dev loop is unchanged.** You model your database the normal Aspire way (`builder.AddPostgres("pg")`, or an external connection string) and your services connect to it directly. Nothing Cloudflare runs locally.
+2. **At deploy, a Hyperdrive config is created** pointing at your **production** database — which is usually *not* the local dev container. So `PublishAsHyperdrive` takes the production connection string explicitly, typically via `AddDeploymentParameter` (a parameter that's optional in dev but required at deploy).
+
+## Provision a Hyperdrive config
+
+The common case — a local Postgres for dev, and the production connection string supplied as a deployment parameter (absent in dev, required at deploy):
+
+```csharp
+builder.AddCloudflareEnvironment();
+
+// Production connection string — required at deploy, optional in local dev.
+var pgProd = builder.AddDeploymentParameter("pg-production-connection", secret: true);
+
+var pg = builder.AddPostgres("pg");          // normal local dev container
+pg.PublishAsHyperdrive("hd", pgProd);         // at deploy: a Hyperdrive config pointing at pgProd
+```
+
+At `aspire deploy`, the production connection string is resolved and parsed (both `postgres://user:pass@host:port/db` URI form and `Host=...;Port=...;Database=...;Username=...;Password=...` key-value form are supported) and a Hyperdrive configuration is provisioned.
+
+Other production sources:
+
+```csharp
+// From an external connection-string resource:
+var prod = builder.AddConnectionString("pg-prod");
+builder.AddPostgres("pg").PublishAsHyperdrive("hd", prod);
+
+// When the resource you call it on already resolves to production (no separate source):
+builder.AddConnectionString("pg").PublishAsHyperdrive("hd");
+```
+
+Options: `.WithCachingDisabled()`, `.AllowDeletion()` (permit destroy).
+
+## Binding it to a Worker
+
+Workers consume Hyperdrive through a binding. For a hand-authored [Worker](workers.md), associate the config so the provisioned id is surfaced at deploy:
+
+```csharp
+var hd = builder.AddPostgres("pg").PublishAsHyperdrive("hd", pgProd);
+
+builder.AddCloudflareWorker("api", "../worker")
+    .WithHyperdrive(hd, bindingName: "HYPERDRIVE");
+```
+
+At deploy the integration logs the binding snippet to add to the Worker's `wrangler.jsonc`:
+
+```jsonc
+"hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<provisioned-config-id>" }]
+```
+
+(The integration doesn't own a hand-authored Worker's `wrangler.jsonc`, so it surfaces the id rather than editing the file.)
+
+## Credentials
+
+- **API token**: needs *Hyperdrive: Edit* — see [API Tokens](../getting-started/api-tokens.md).
+- The **production database connection string** must point at the real/external database, never the local dev container — supply it as a deployment parameter or external connection-string resource.

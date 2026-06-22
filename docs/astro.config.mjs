@@ -46,6 +46,7 @@ export default defineConfig({
             'guides/vectorize',
             'guides/kv',
             'guides/queues',
+            'guides/hyperdrive',
             'guides/workers',
             'guides/containers',
             'guides/pages',

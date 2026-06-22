@@ -22,6 +22,7 @@
     <Project Path="src/AvantiPoint.Aspire.Cloudflare.KV/AvantiPoint.Aspire.Cloudflare.KV.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.Queues/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Cloudflare.Queues/AvantiPoint.Aspire.Cloudflare.Queues.csproj" />
+    <Project Path="src/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.csproj" />
     <Project Path="src/AvantiPoint.Aspire.Hosting.Extensions/AvantiPoint.Aspire.Hosting.Extensions.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -33,6 +34,7 @@
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests.csproj" />
+    <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests.csproj" />
     <Project Path="tests/AvantiPoint.Aspire.Hosting.Extensions.Tests/AvantiPoint.Aspire.Hosting.Extensions.Tests.csproj" />
   </Folder>

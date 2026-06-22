@@ -77,4 +77,13 @@ public interface ICloudflareApiClient
 
     /// <summary>Deletes a Queue by id. No-op if it does not exist.</summary>
     Task DeleteQueueAsync(string apiToken, string accountId, string queueId, CancellationToken cancellationToken = default);
+
+    /// <summary>Creates a Hyperdrive configuration. Idempotent: an existing config with the same name is updated.</summary>
+    Task<HyperdriveConfig> CreateHyperdriveConfigAsync(string apiToken, string accountId, CreateHyperdriveConfigRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a Hyperdrive configuration by name, or <c>null</c> if none exists.</summary>
+    Task<HyperdriveConfig?> GetHyperdriveConfigByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes a Hyperdrive configuration by id. No-op if it does not exist.</summary>
+    Task DeleteHyperdriveConfigAsync(string apiToken, string accountId, string configId, CancellationToken cancellationToken = default);
 }

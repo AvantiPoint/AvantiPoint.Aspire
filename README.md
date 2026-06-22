@@ -19,13 +19,14 @@ Hosting and client integrations that make [Aspire](https://aspire.dev) a first-c
 - **Vectorize** — a vector database for embeddings/RAG, used from .NET through `IVectorizeClient` (upsert/query/delete). Add `.RunAsEmulator()` for an in-memory store during `aspire run`; deployed, the same code runs against the Vectorize v2 HTTP API.
 - **Workers KV** — a key-value store, used from .NET through `ICloudflareKVClient` (get/put/delete/list). `.RunAsEmulator()` gives an in-memory store during `aspire run`; deployed, the Workers KV HTTP API.
 - **Queues** — a message queue, used from .NET through `IQueueClient` (send/pull/ack/retry). `.RunAsEmulator()` gives an in-memory queue during `aspire run`; deployed, the Queues HTTP API.
+- **Hyperdrive** — accelerates a production (e.g. third-party) database for Workers. `PublishAsHyperdrive(...)` provisions a Hyperdrive config at deploy from a production connection string; your dev loop keeps using your normal Aspire database. Hosting-only (Worker-binding consumption — no .NET client).
 
 Cross-cutting:
 
 - **API-token first** — the Cloudflare API token is an Aspire secret parameter, and its permission scopes are validated up front (fail-fast) before anything is provisioned.
 - **Custom domains** — attach a custom domain (with your Zone Id) to a Container or Pages app during deploy.
 
-> Status: active development. R2, D1, AI, Vectorize, KV, and Queues (each hosting + client, with a local emulator via `.RunAsEmulator()`), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
+> Status: active development. R2, D1, AI, Vectorize, KV, and Queues (each hosting + client, with a local emulator via `.RunAsEmulator()`), Hyperdrive (hosting-only), the deploy-pipeline hijack, Cloudflare Pages, Cloudflare Containers, and custom domains are implemented. Live `aspire deploy` against a Cloudflare account is exercised via gated integration tests.
 
 ## Packages
 
@@ -45,6 +46,7 @@ Cross-cutting:
 | `AvantiPoint.Aspire.Cloudflare.KV` | Workers KV **client** integration: registers an `ICloudflareKVClient` (in-memory locally, the KV HTTP API deployed). |
 | `AvantiPoint.Aspire.Hosting.Cloudflare.Queues` | Queues hosting: provisioning via the Cloudflare API plus an in-memory queue (`.RunAsEmulator()`) for `aspire run`. |
 | `AvantiPoint.Aspire.Cloudflare.Queues` | Queues **client** integration: registers an `IQueueClient` (in-memory locally, the Queues HTTP API deployed). |
+| `AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive` | Hyperdrive hosting (hosting-only): `PublishAsHyperdrive(...)` provisions a Hyperdrive config at deploy from a production database connection string. |
 | `AvantiPoint.Aspire.Hosting.Extensions` | General Aspire host helpers, e.g. `AddDeploymentParameter` — parameters required at deploy but optional in local development. |
 
 ## Quickstart

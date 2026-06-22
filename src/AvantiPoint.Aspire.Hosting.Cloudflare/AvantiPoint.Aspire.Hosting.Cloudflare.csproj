@@ -23,6 +23,7 @@
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.KV" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Queues" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests" />
@@ -30,6 +31,7 @@
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests" />
+    <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests" />
     <InternalsVisibleTo Include="AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests" />
   </ItemGroup>
 

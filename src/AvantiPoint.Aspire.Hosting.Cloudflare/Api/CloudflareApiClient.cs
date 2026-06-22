@@ -332,6 +332,47 @@ internal sealed class CloudflareApiClient(HttpClient httpClient, ILogger<Cloudfl
         }
     }
 
+    public async Task<HyperdriveConfig> CreateHyperdriveConfigAsync(string apiToken, string accountId, CreateHyperdriveConfigRequest body, CancellationToken cancellationToken = default)
+    {
+        // Idempotent: update the existing config (e.g. rotated credentials) rather than creating a duplicate.
+        var existing = await GetHyperdriveConfigByNameAsync(apiToken, accountId, body.Name, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            using var update = CreateRequest(HttpMethod.Put, $"accounts/{accountId}/hyperdrive/configs/{existing.Id}", apiToken);
+            update.Content = JsonContent.Create(body);
+            var updated = await SendAsync<HyperdriveConfig>(update, "update Hyperdrive config", cancellationToken).ConfigureAwait(false);
+            return updated ?? existing;
+        }
+
+        using var request = CreateRequest(HttpMethod.Post, $"accounts/{accountId}/hyperdrive/configs", apiToken);
+        request.Content = JsonContent.Create(body);
+        var result = await SendAsync<HyperdriveConfig>(request, "create Hyperdrive config", cancellationToken).ConfigureAwait(false);
+        return result ?? new HyperdriveConfig { Name = body.Name };
+    }
+
+    public async Task<HyperdriveConfig?> GetHyperdriveConfigByNameAsync(string apiToken, string accountId, string name, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Get, $"accounts/{accountId}/hyperdrive/configs", apiToken);
+        var configs = await SendAsync<List<HyperdriveConfig>>(request, "list Hyperdrive configs", cancellationToken).ConfigureAwait(false);
+        return configs?.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.Ordinal));
+    }
+
+    public async Task DeleteHyperdriveConfigAsync(string apiToken, string accountId, string configId, CancellationToken cancellationToken = default)
+    {
+        using var request = CreateRequest(HttpMethod.Delete, $"accounts/{accountId}/hyperdrive/configs/{configId}", apiToken);
+        using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
+        var envelope = await ReadEnvelopeAsync<object>(response, cancellationToken).ConfigureAwait(false);
+        if (!envelope.Success)
+        {
+            throw CloudflareApiException.FromResponse("delete Hyperdrive config", envelope.Errors);
+        }
+    }
+
     private static HttpRequestMessage CreateRequest(HttpMethod method, string relativeUri, string apiToken)
     {
         var request = new HttpRequestMessage(method, relativeUri);

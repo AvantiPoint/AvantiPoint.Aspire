@@ -43,4 +43,7 @@ public static class CloudflareScopes
 
     /// <summary>Required to create/manage and use Queues.</summary>
     public const string QueuesEdit = "Queues Write";
+
+    /// <summary>Required to create/manage Hyperdrive configurations.</summary>
+    public const string HyperdriveEdit = "Hyperdrive Write";
 }

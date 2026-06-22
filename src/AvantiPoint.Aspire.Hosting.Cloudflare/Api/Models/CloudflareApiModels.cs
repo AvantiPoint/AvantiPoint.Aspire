@@ -147,6 +147,58 @@ public sealed class CreateD1DatabaseRequest
     public string? PrimaryLocationHint { get; init; }
 }
 
+/// <summary>A Hyperdrive configuration as returned by the Hyperdrive API.</summary>
+public sealed class HyperdriveConfig
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
+
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+}
+
+/// <summary>Request body for creating a Hyperdrive configuration.</summary>
+public sealed class CreateHyperdriveConfigRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("origin")]
+    public HyperdriveOrigin Origin { get; init; } = new();
+
+    [JsonPropertyName("caching")]
+    public HyperdriveCaching Caching { get; init; } = new();
+}
+
+/// <summary>The upstream database an Hyperdrive configuration accelerates.</summary>
+public sealed class HyperdriveOrigin
+{
+    [JsonPropertyName("scheme")]
+    public string Scheme { get; init; } = "postgres";
+
+    [JsonPropertyName("host")]
+    public string Host { get; init; } = string.Empty;
+
+    [JsonPropertyName("port")]
+    public int Port { get; init; } = 5432;
+
+    [JsonPropertyName("database")]
+    public string Database { get; init; } = string.Empty;
+
+    [JsonPropertyName("user")]
+    public string User { get; init; } = string.Empty;
+
+    [JsonPropertyName("password")]
+    public string Password { get; init; } = string.Empty;
+}
+
+/// <summary>Hyperdrive caching options.</summary>
+public sealed class HyperdriveCaching
+{
+    [JsonPropertyName("disabled")]
+    public bool Disabled { get; init; }
+}
+
 /// <summary>A Workers KV namespace as returned by the KV API.</summary>
 public sealed class KvNamespace
 {
