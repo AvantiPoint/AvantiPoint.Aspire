@@ -15,7 +15,7 @@
 
   <!-- AWS SDK (R2 is S3-compatible) -->
   <ItemGroup>
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.25.2" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.25.3" />
   </ItemGroup>
 
   <!-- D1 (Cloudflare's SQLite) — local emulator backend.
