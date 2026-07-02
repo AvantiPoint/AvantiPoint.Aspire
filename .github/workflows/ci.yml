@@ -32,6 +32,23 @@ jobs:
       dotnet-version: 10.0.x
       solution-path: AvantiPoint.Aspire.slnx
       use-microsoft-testing-platform: true
+      # IntegrationTests needs Docker + Node/npm/wrangler (and, for some tests, real Cloudflare
+      # credentials) to boot the full playground AppHost; it's exercised by the separate,
+      # properly-provisioned integration.yml workflow instead. Prior to the reusable-workflow
+      # migration this job excluded it via `--filter "FullyQualifiedName!~IntegrationTests"`; the
+      # reusable workflow's test-projects input is an allow-list (no exclude), so list every other
+      # project explicitly to restore that behavior. Add new test projects here as they're created.
+      test-projects: |
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Extensions.Tests/AvantiPoint.Aspire.Hosting.Extensions.Tests.csproj
       code-sign: true
       codeSignEndpoint: ${{ vars.CODESIGN_ENDPOINT }}
       codeSignAccountName: ${{ vars.CODESIGN_ACCOUNTNAME }}
