@@ -3,7 +3,7 @@ name: Integration
 on:
   workflow_dispatch:
   schedule:
-    # Nightly at 04:00 UTC
+    # Monthly on the 1st at 04:00 UTC
     - cron: "0 4 1 * *"
 
 permissions:
@@ -50,6 +50,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        # Target the project directly rather than a --filter: MTP's xUnit filter syntax
+        # (--filter-namespace, etc.) differs from VSTest's --filter, and this repo only
+        # has one IntegrationTests project, so --project is simpler and equivalent.
         run: >
-          dotnet test AvantiPoint.Aspire.slnx -c Release
-          --filter "FullyQualifiedName~IntegrationTests"
+          dotnet test --project tests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests/AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests.csproj
+          -c Release
