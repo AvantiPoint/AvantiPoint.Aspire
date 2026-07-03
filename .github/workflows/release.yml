@@ -106,4 +106,7 @@ jobs:
               --api-key $key `
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate
+            # A later successful push resets $LASTEXITCODE to 0, which would silently mask an
+            # earlier failed one if left unchecked — check and fail fast after every push.
+            if ($LASTEXITCODE -ne 0) { throw "Failed to publish $($_.Name)" }
           }
