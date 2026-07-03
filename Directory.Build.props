@@ -42,8 +42,11 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <!-- All packages emit to a single repo-root Artifacts folder for CI publishing. -->
+    <!-- All packages emit to a single repo-root Artifacts folder for CI publishing. The reusable CI
+         workflow only runs `dotnet build` (no separate `dotnet pack` step), so packing must happen
+         as part of Build for packable (IsPackable=true) projects. -->
     <PackageOutputPath>$(MSBuildThisFileDirectory)Artifacts</PackageOutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <!-- Git-height based versioning; major.minor tracks the targeted Aspire release (see version.json). -->
