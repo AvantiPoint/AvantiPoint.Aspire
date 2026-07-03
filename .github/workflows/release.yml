@@ -67,9 +67,104 @@ jobs:
       # from, so the core package is used as the representative one.
       package-name: AvantiPoint.Aspire.Hosting.Cloudflare
 
+  # Azure Artifact Signing rotates its signing certificate roughly daily (~72h validity), but
+  # nuget.org's "required signer" allowlist (nuget.org account -> Certificates; separate from
+  # Trusted Publishing, which only governs *who* can push, not the package's own signature) can
+  # only pin a single certificate thumbprint at a time, with no API to update it — it's a manual
+  # website upload (see github.com/NuGet/NuGetGallery#10027, open/unresolved as of this writing).
+  # So: extract the exact leaf certificate this build's packages were actually signed with, and
+  # surface it (thumbprint + downloadable .cer) so it can be registered on nuget.org *before* the
+  # draft release below is published — otherwise the push succeeds but nuget.org's signature
+  # validation silently fails against a stale registered thumbprint.
+  extract-certificate:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download signed packages
+        uses: actions/download-artifact@v8
+        with:
+          name: NuGet
+          path: Artifacts/
+
+      - name: Extract signing certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Any one signed .nupkg carries the same leaf certificate this whole build was signed with.
+          nupkg=$(find Artifacts -maxdepth 1 -name '*.nupkg' | head -1)
+          echo "Extracting signature from $(basename "$nupkg")"
+
+          unzip -p "$nupkg" .signature.p7s > sig.p7s
+          # The signature is a PKCS#7/CMS blob containing the full chain (leaf + intermediates);
+          # pull every certificate out, then isolate the leaf below.
+          openssl pkcs7 -inform DER -in sig.p7s -print_certs -out chain.pem
+          csplit -s -z -f cert- -b '%02d.pem' chain.pem '/-----BEGIN CERTIFICATE-----/' '{*}'
+
+          leaf=""
+          for cert in cert-*.pem; do
+            subject=$(openssl x509 -in "$cert" -noout -subject 2>/dev/null || true)
+            # The leaf is the AvantiPoint, LLC end-entity cert, not one of the Microsoft CA/root
+            # certs also present in the chain.
+            if [[ "$subject" == *"AvantiPoint"* ]]; then
+              leaf="$cert"
+              break
+            fi
+          done
+
+          if [[ -z "$leaf" ]]; then
+            echo "::error::Could not find the AvantiPoint leaf certificate in the package signature chain."
+            exit 1
+          fi
+
+          openssl x509 -in "$leaf" -outform DER -out AvantiPoint.cer
+          {
+            echo "subject=$(openssl x509 -in "$leaf" -noout -subject -nameopt oneline | sed 's/^subject=//')"
+            echo "serial=$(openssl x509 -in "$leaf" -noout -serial | cut -d= -f2)"
+            echo "sha1=$(openssl x509 -in "$leaf" -noout -fingerprint -sha1 | cut -d= -f2)"
+            echo "sha256=$(openssl x509 -in "$leaf" -noout -fingerprint -sha256 | cut -d= -f2)"
+            echo "notafter=$(openssl x509 -in "$leaf" -noout -enddate | cut -d= -f2)"
+          } >> "$GITHUB_ENV"
+
+      - name: Summarize
+        shell: bash
+        run: |
+          {
+            echo "## NuGet.org signing certificate for this release"
+            echo
+            echo "Azure Artifact Signing rotates this certificate roughly every 24h (~72h validity)."
+            echo "**Register it on nuget.org before publishing the draft release**, or nuget.org's"
+            echo "signature validation will silently fail against a stale thumbprint even though the"
+            echo "push itself succeeds."
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Subject | \`$subject\` |"
+            echo "| Serial | \`$serial\` |"
+            echo "| SHA-1 thumbprint | \`$sha1\` |"
+            echo "| SHA-256 fingerprint | \`$sha256\` |"
+            echo "| Valid until | $notafter |"
+            echo
+            echo "1. Download the \`nuget-signing-certificate\` artifact from this run (the \`.cer\` file below)."
+            echo "2. Go to nuget.org -> your account -> **Certificates** -> register/upload it"
+            echo "   (there is no API for this step — it's website-only)."
+            echo "3. Only then publish the draft GitHub Release, which triggers the nuget.org push."
+            echo
+            echo "_Tracking the durable fix: [NuGet/NuGetGallery#10027](https://github.com/NuGet/NuGetGallery/issues/10027)_"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload certificate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-signing-certificate
+          path: AvantiPoint.cer
+          retention-days: 14
+
   publish-nuget:
     if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
     runs-on: ubuntu-latest
+    needs: build
     environment: production
     permissions:
       id-token: write
