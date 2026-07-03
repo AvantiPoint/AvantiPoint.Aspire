@@ -26,6 +26,9 @@ env:
 jobs:
   build:
     uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@master
+    permissions:
+      id-token: write
+      contents: read
     with:
       name: Build Package Feed
       runs-on: ubuntu-latest
