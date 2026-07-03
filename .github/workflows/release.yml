@@ -1,0 +1,109 @@
+name: Release
+
+# Two phases, one file:
+#   1. workflow_dispatch  -> build + sign the packages, create a DRAFT GitHub Release with them
+#                            attached (same build mechanism as ci.yml).
+#   2. release: published -> triggered when a human reviews and publishes that draft in the
+#                            GitHub UI; only then are the packages pushed to nuget.org. This keeps
+#                            a manual review gate before anything public/irreversible happens.
+#
+# NuGet Trusted Publishing's OIDC exchange (NuGet/login) must run directly in this repo's
+# workflow, not inside a shared/reusable workflow in a different repo — nuget.org validates the
+# repo+workflow where the login step itself executes, and secrets can't reliably cross a
+# reusable-workflow boundary the way non-secret inputs can. So publish-nuget is inline here rather
+# than calling out to workflow-templates like the build/release-creation steps do.
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@master
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      name: Build Package Feed
+      # dotnet sign (code-sign, below) is Windows-only — see ci.yml for the same requirement.
+      runs-on: windows-latest
+      dotnet-version: 10.0.x
+      solution-path: AvantiPoint.Aspire.slnx
+      use-microsoft-testing-platform: true
+      # Same exclusion as ci.yml: IntegrationTests needs Docker + Node/npm/wrangler that this job
+      # doesn't provision (it's exercised by integration.yml instead).
+      test-projects: |
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.D1.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.AI.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.KV.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests.csproj
+        tests/AvantiPoint.Aspire.Hosting.Extensions.Tests/AvantiPoint.Aspire.Hosting.Extensions.Tests.csproj
+      code-sign: true
+      codeSignEndpoint: ${{ vars.CODESIGN_ENDPOINT }}
+      codeSignAccountName: ${{ vars.CODESIGN_ACCOUNTNAME }}
+      codeSignCertificateProfile: ${{ vars.CODESIGN_CERTIFICATEPROFILE }}
+    secrets:
+      codeSignClientId: ${{ secrets.CodeSignClientId }}
+      codeSignTenantId: ${{ secrets.CodeSignTenantId }}
+
+  create-release:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: build
+    uses: avantipoint/workflow-templates/.github/workflows/generate-release.yml@master
+    permissions:
+      contents: write
+    with:
+      # Every package in this repo shares one Nerdbank.GitVersioning-derived version (version.json
+      # at the repo root); any single package's filename is enough to read the release version/tag
+      # from, so the core package is used as the representative one.
+      package-name: AvantiPoint.Aspire.Hosting.Cloudflare
+
+  publish-nuget:
+    if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Download release assets
+        uses: robinraju/release-downloader@v1.13
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ github.event.release.tag_name }}
+          fileName: "*"
+          out-file-path: Artifacts/
+          tarBall: false
+          zipBall: false
+
+      - name: NuGet login (Trusted Publishing)
+        id: nuget-login
+        uses: NuGet/login@v1.2.0
+        with:
+          # Your nuget.org profile name (not email). Requires a Trusted Publishing policy on
+          # nuget.org scoped to this repo + this workflow file (release.yml) + the "production"
+          # environment — see the PR description for the one-time setup steps.
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish to NuGet.org
+        shell: pwsh
+        run: |
+          $key = '${{ steps.nuget-login.outputs.NUGET_API_KEY }}'
+          Get-ChildItem Artifacts -Filter *.nupkg | ForEach-Object {
+            Write-Host "Publishing $($_.Name)"
+            # Symbol packages (.snupkg) publish automatically alongside a co-located .nupkg of the
+            # same name, so only .nupkg files need to be pushed explicitly here.
+            dotnet nuget push $_.FullName `
+              --api-key $key `
+              --source https://api.nuget.org/v3/index.json `
+              --skip-duplicate
+          }
