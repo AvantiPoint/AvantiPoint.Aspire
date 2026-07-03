@@ -31,7 +31,10 @@ jobs:
       contents: read
     with:
       name: Build Package Feed
-      runs-on: ubuntu-latest
+      # The dotnet/sign CLI (code-sign: true below) depends on Windows-only APIs (kernel32.dll) and
+      # cannot run on Linux (github.com/dotnet/sign#711) — the whole job runs on one runner, so this
+      # must be windows-latest. This restores what the pre-reusable-workflow ci.yml already used.
+      runs-on: windows-latest
       dotnet-version: 10.0.x
       solution-path: AvantiPoint.Aspire.slnx
       use-microsoft-testing-platform: true
