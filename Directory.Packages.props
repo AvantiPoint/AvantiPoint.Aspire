@@ -22,7 +22,7 @@
        Pin SQLitePCLRaw to 3.x: the 2.1.11 native lib that Microsoft.Data.Sqlite pulls in has a known
        high-severity advisory (GHSA-2m69-gcr7-jv3q); transitive pinning promotes it to the patched build. -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.10" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
     <PackageVersion Include="SQLitePCLRaw.core" Version="3.0.3" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.0.3" />
