@@ -113,7 +113,7 @@ public static class R2HostingExtensions
         IResourceBuilder<CloudflareEnvironmentResource> environment,
         IResourceBuilder<R2BucketResource> bucket)
     {
-        var minio = MinioEmulator.GetOrAdd(environment, bucket.Resource.BucketName);
+        var minio = MinioEmulator.GetOrAdd(environment, bucket.Resource);
         var resource = bucket.Resource;
         resource.UseEmulator = true;
         resource.EmulatorEndpoint = minio.S3Endpoint;
