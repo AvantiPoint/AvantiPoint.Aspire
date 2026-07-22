@@ -27,6 +27,7 @@ var seeder = builder.AddProject<Projects.CloudflarePlayground_Seeder>("seeder")
 
 // The API reads data.json from R2 and serves it, deployed as a Cloudflare Container.
 var api = builder.AddProject<Projects.CloudflarePlayground_Api>("api")
+    .WithHttpEndpoint()
     .WithReference(uploads)
     .WithReference(catalog)
     .WaitFor(uploads)

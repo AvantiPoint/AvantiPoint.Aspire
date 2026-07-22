@@ -24,7 +24,7 @@ internal sealed class MinioEmulatorAnnotation(
     public EndpointReference S3Endpoint { get; } = s3Endpoint;
     public string AccessKey { get; } = accessKey;
     public string SecretKey { get; } = secretKey;
-    public List<string> Buckets { get; } = [];
+    public List<R2BucketResource> Buckets { get; } = [];
 }
 
 internal static class MinioEmulator
@@ -41,16 +41,16 @@ internal static class MinioEmulator
 
     /// <summary>
     /// Returns the shared MinIO emulator for the environment, creating it (and wiring bucket
-    /// bootstrap) on first use. Adds <paramref name="bucketName"/> to the set of buckets created
-    /// when the emulator becomes ready.
+    /// bootstrap) on first use. Tracks <paramref name="bucket"/> so it can be created and marked
+    /// running when the emulator becomes ready.
     /// </summary>
     public static MinioEmulatorAnnotation GetOrAdd(
         IResourceBuilder<CloudflareEnvironmentResource> environment,
-        string bucketName)
+        R2BucketResource bucket)
     {
         if (environment.Resource.TryGetLastAnnotation<MinioEmulatorAnnotation>(out var existing))
         {
-            existing.Buckets.Add(bucketName);
+            existing.Buckets.Add(bucket);
             return existing;
         }
 
@@ -68,7 +68,7 @@ internal static class MinioEmulator
 
         var endpoint = minio.GetEndpoint(S3EndpointName);
         var annotation = new MinioEmulatorAnnotation(minio, endpoint, DefaultAccessKey, DefaultSecretKey);
-        annotation.Buckets.Add(bucketName);
+        annotation.Buckets.Add(bucket);
         environment.Resource.Annotations.Add(annotation);
 
         // Bootstrap: create the buckets in MinIO once it is healthy/ready.
@@ -84,6 +84,7 @@ internal static class MinioEmulator
         CancellationToken cancellationToken)
     {
         var logger = services.GetService<ILoggerFactory>()?.CreateLogger("Cloudflare.R2.MinioEmulator");
+        var notifications = services.GetRequiredService<ResourceNotificationService>();
         var serviceUrl = annotation.S3Endpoint.Url;
 
         var config = new AmazonS3Config
@@ -94,9 +95,13 @@ internal static class MinioEmulator
         };
         using var s3 = new AmazonS3Client(new BasicAWSCredentials(annotation.AccessKey, annotation.SecretKey), config);
 
-        foreach (var bucket in annotation.Buckets.Distinct(StringComparer.Ordinal))
+        foreach (var bucket in annotation.Buckets.Distinct())
         {
-            await CreateBucketWithRetryAsync(s3, bucket, logger, cancellationToken).ConfigureAwait(false);
+            await CreateBucketWithRetryAsync(s3, bucket.BucketName, logger, cancellationToken).ConfigureAwait(false);
+            await notifications.PublishUpdateAsync(bucket, snapshot => snapshot with
+            {
+                State = KnownResourceStates.Running,
+            }).ConfigureAwait(false);
         }
     }
 

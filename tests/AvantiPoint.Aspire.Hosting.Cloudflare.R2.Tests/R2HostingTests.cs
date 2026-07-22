@@ -2,6 +2,7 @@ using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 using AvantiPoint.Aspire.Hosting.Cloudflare.R2;
+using AvantiPoint.Aspire.Hosting.Cloudflare.R2.Emulator;
 using Xunit;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.R2.Tests;
@@ -64,6 +65,18 @@ public class R2HostingTests
 
         Assert.Single(builder.Resources.OfType<ContainerResource>());
         Assert.Equal(2, builder.Resources.OfType<R2BucketResource>().Count());
+    }
+
+    [Fact]
+    public void RunAsEmulator_Tracks_Logical_Bucket_Resource_For_Readiness()
+    {
+        var builder = CreateRunModeBuilder();
+        var cf = builder.AddCloudflareEnvironment();
+
+        var bucket = cf.AddR2Bucket("uploads").RunAsEmulator();
+
+        Assert.True(cf.Resource.TryGetLastAnnotation<MinioEmulatorAnnotation>(out var emulator));
+        Assert.Contains(bucket.Resource, emulator.Buckets);
     }
 
     [Fact]
