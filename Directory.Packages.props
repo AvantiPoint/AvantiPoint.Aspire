@@ -49,7 +49,7 @@
   <!-- Build / packaging -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.300" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.85" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.94" />
   </ItemGroup>
 
   <!-- Test stack: xUnit v3 (NOT the legacy xunit meta-package) running natively on
