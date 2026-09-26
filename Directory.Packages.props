@@ -55,10 +55,10 @@
   <!-- Test stack: xUnit v3 (NOT the legacy xunit meta-package) running natively on
        Microsoft.Testing.Platform (MTP v2) instead of VSTest — see global.json's "test.runner". -->
   <ItemGroup>
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.1" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.4" />
-    <PackageVersion Include="NSubstitute" Version="5.3.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="31.20.0" />
+    <PackageVersion Include="NSubstitute" Version="6.2.0" />
+    <PackageVersion Include="Verify.XunitV3" Version="33.1.5" />
   </ItemGroup>
 
 </Project>
