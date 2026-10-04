@@ -23,7 +23,15 @@ public class PlaygroundEndToEndTests
 
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.CloudflarePlayground_AppHost>(ct);
         await using var app = await appHost.BuildAsync(ct);
-        await app.StartAsync(ct);
+
+        // Diagnose unavailable emulator images before Aspire starts dependent resources.
+        foreach (var container in appHost.Resources.OfType<ContainerResource>())
+        {
+            Assert.True(container.TryGetContainerImageName(out var image));
+            await DockerImageChecks.PullAsync(image, ct);
+        }
+
+        await app.StartAsync(ct).WaitAsync(TimeSpan.FromMinutes(2), ct);
 
         var timeout = TimeSpan.FromMinutes(5);
 

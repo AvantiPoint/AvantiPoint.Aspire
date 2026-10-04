@@ -15,7 +15,7 @@ env:
 
 jobs:
   integration:
-    name: Cloudflare Integration Tests
+    name: Local emulator and live Cloudflare publishing tests
     # Ubuntu has a Linux Docker daemon for the MinIO emulator used by the R2 tests.
     runs-on: avp-linux
     # Requires the CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets to be configured.
@@ -50,6 +50,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        # Includes Docker-backed local development and isolated real Worker/R2 publish-deploy-destroy
+        # coverage. MinIO is local-only; it is never published to Cloudflare.
         # Target the project directly rather than a --filter: MTP's xUnit filter syntax
         # (--filter-namespace, etc.) differs from VSTest's --filter, and this repo only
         # has one IntegrationTests project, so --project is simpler and equivalent.

@@ -17,7 +17,7 @@ The repository uses native Microsoft Testing Platform, so use `--project` or `--
 dotnet test --solution AvantiPoint.Aspire.slnx -c Release
 ```
 
-The solution-wide command also includes integration tests. Playground end-to-end tests need Docker and Node/npm/wrangler and may start containers; they do not require a Cloudflare token. Real-cloud deployment tests require Cloudflare credentials and can create/delete resources. Review their implementation and resource names before opting in; do not use a production account. Missing prerequisites cause individual gated tests to skip, not the whole integration project.
+The solution-wide command also includes integration tests. Playground end-to-end tests need Docker and Node/npm/wrangler and may start containers; they do not require a Cloudflare token. MinIO is used only for local R2 emulation and is omitted in publish/deploy mode. Its community image is pinned by digest; the test checks image availability before starting the AppHost. Real-cloud tests validate token activeness, R2 CRUD, and the actual publish/deploy/destroy steps for an isolated Worker with an R2 binding, including HTTP content and cleanup checks. These tests require Cloudflare credentials and create/delete randomly named `ap-aspire-it-*` resources; they do not deploy the playground or modify production routes/domains. Review their implementation before opting in; do not use a production account. Missing prerequisites cause individual gated tests to skip, not the whole integration project.
 
 For docs changes, run `npm ci`, `npm run check` and `npm run build` in `docs`. Keep public examples complete with package setup and imports.
 

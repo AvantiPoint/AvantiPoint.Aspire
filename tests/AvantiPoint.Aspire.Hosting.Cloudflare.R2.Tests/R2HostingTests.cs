@@ -22,6 +22,22 @@ public class R2HostingTests
 
         var container = Assert.Single(builder.Resources.OfType<ContainerResource>());
         Assert.Contains("minio", container.Name, StringComparison.OrdinalIgnoreCase);
+        Assert.True(container.TryGetContainerImageName(out var image));
+        Assert.Equal("ghcr.io/coollabsio/minio@sha256:69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9", image);
+    }
+
+    [Fact]
+    public void RunAsEmulator_In_Publish_Mode_Uses_Real_R2_Without_Minio()
+    {
+        var builder = DistributedApplication.CreateBuilder(["--operation", "publish", "--output-path", "."]);
+        var cf = builder.AddCloudflareEnvironment();
+        var bucket = cf.AddR2Bucket("uploads", bucketName: "publish-uploads").RunAsEmulator();
+
+        Assert.False(bucket.Resource.UseEmulator);
+        Assert.Empty(builder.Resources.OfType<ContainerResource>());
+        Assert.False(cf.Resource.TryGetLastAnnotation<MinioEmulatorAnnotation>(out _));
+        Assert.Contains("r2.cloudflarestorage.com", bucket.Resource.ConnectionStringExpression.ValueExpression);
+        Assert.DoesNotContain("minio", bucket.Resource.ConnectionStringExpression.ValueExpression, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
