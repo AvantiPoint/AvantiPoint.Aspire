@@ -19,6 +19,14 @@
   <ItemGroup>
     <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj" />
     <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.AI/AvantiPoint.Aspire.Hosting.Cloudflare.AI.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.D1/AvantiPoint.Aspire.Hosting.Cloudflare.D1.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.KV/AvantiPoint.Aspire.Hosting.Cloudflare.KV.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Pages/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Queues/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.csproj" />
+    <ProjectReference Include="../../src/AvantiPoint.Aspire.Hosting.Extensions/AvantiPoint.Aspire.Hosting.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

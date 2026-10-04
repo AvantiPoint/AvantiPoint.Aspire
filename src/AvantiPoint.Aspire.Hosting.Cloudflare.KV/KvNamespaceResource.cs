@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -8,6 +9,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.KV;
 /// targets the real KV REST API by default (in run and deploy), or an in-process in-memory store during
 /// <c>aspire run</c> when <see cref="KvHostingExtensions.RunAsEmulator"/> is used.
 /// </summary>
+[AspireExport]
 public sealed class KvNamespaceResource : Resource, IResourceWithConnectionString, ICloudflareResource
 {
     internal KvNamespaceResource(string name, CloudflareEnvironmentResource environment, string title)

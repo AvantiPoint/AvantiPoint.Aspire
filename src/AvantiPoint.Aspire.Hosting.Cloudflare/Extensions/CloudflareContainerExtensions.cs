@@ -18,6 +18,7 @@ public static class CloudflareContainerExtensions
     /// Deploys this project as a Cloudflare Container, using the single Cloudflare environment added to
     /// the application. Add one with <see cref="CloudflareEnvironmentExtensions.AddCloudflareEnvironment"/> first.
     /// </summary>
+    [AspireExport("publishAsCloudflareContainer", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<ProjectResource> PublishAsCloudflareContainer(
         this IResourceBuilder<ProjectResource> project,
         Action<CloudflareContainerOptions>? configure = null)
@@ -30,6 +31,7 @@ public static class CloudflareContainerExtensions
     /// Deploys this project as a Cloudflare Container into a specific environment. Use this overload when
     /// the application has more than one Cloudflare environment.
     /// </summary>
+    [AspireExport("publishAsCloudflareContainerInEnvironment", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<ProjectResource> PublishAsCloudflareContainer(
         this IResourceBuilder<ProjectResource> project,
         IResourceBuilder<CloudflareEnvironmentResource> environment,

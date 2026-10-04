@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -9,6 +10,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.D1;
 /// <c>aspire run</c> when <see cref="D1HostingExtensions.RunAsEmulator"/> is used. D1 is SQLite under
 /// the hood, so the local emulator is a faithful backend.
 /// </summary>
+[AspireExport]
 public sealed class D1DatabaseResource : Resource, IResourceWithConnectionString, ICloudflareResource
 {
     internal D1DatabaseResource(string name, CloudflareEnvironmentResource environment, string databaseName)

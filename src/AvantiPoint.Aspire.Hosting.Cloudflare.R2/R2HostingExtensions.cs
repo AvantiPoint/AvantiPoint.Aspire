@@ -26,6 +26,7 @@ public static class R2HostingExtensions
     /// <param name="builder">The distributed application builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
     /// <param name="bucketName">The R2 bucket name; defaults to <paramref name="name"/>.</param>
+    [AspireExport("addR2Bucket")]
     public static IResourceBuilder<R2BucketResource> AddR2Bucket(
         this IDistributedApplicationBuilder builder,
         string name,
@@ -43,6 +44,7 @@ public static class R2HostingExtensions
     /// <param name="environment">The Cloudflare environment builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
     /// <param name="bucketName">The R2 bucket name; defaults to <paramref name="name"/>.</param>
+    [AspireExport("addR2BucketInEnvironment")]
     public static IResourceBuilder<R2BucketResource> AddR2Bucket(
         this IResourceBuilder<CloudflareEnvironmentResource> environment,
         string name,
@@ -72,6 +74,7 @@ public static class R2HostingExtensions
     }
 
     /// <summary>Sets the R2 location hint (e.g. <c>weur</c>, <c>enam</c>) used when provisioning.</summary>
+    [AspireExport("withLocationHint")]
     public static IResourceBuilder<R2BucketResource> WithLocationHint(
         this IResourceBuilder<R2BucketResource> bucket,
         string locationHint)
@@ -84,6 +87,7 @@ public static class R2HostingExtensions
     /// Permits <c>aspire deploy --destroy</c> to delete this real R2 bucket. Off by default so a
     /// destroy never silently drops stored objects.
     /// </summary>
+    [AspireExport("allowDeletion")]
     public static IResourceBuilder<R2BucketResource> AllowDeletion(this IResourceBuilder<R2BucketResource> bucket)
     {
         bucket.Resource.AllowDestroy = true;
@@ -95,6 +99,7 @@ public static class R2HostingExtensions
     /// credentials required). Ignored during <c>aspire publish</c>/<c>deploy</c>, which always use real R2.
     /// Mirrors the <c>RunAsEmulator()</c> convention of Aspire's Azure integrations.
     /// </summary>
+    [AspireExport("runAsEmulator")]
     public static IResourceBuilder<R2BucketResource> RunAsEmulator(this IResourceBuilder<R2BucketResource> bucket)
     {
         ArgumentNullException.ThrowIfNull(bucket);

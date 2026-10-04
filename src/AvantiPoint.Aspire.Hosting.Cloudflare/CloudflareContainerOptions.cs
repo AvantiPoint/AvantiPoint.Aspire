@@ -1,6 +1,8 @@
+using Aspire.Hosting;
 namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 
 /// <summary>Options for deploying a .NET project as a Cloudflare Container.</summary>
+[AspireExport(ExposeProperties = true)]
 public sealed class CloudflareContainerOptions
 {
     /// <summary>The Worker name. Defaults to a sanitized form of the resource name.</summary>

@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -10,6 +11,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.AI;
 /// points it at a local Ollama server during <c>aspire run</c>. The client integration turns the
 /// connection string into a <c>Microsoft.Extensions.AI</c> <c>IChatClient</c>/<c>IEmbeddingGenerator</c>.
 /// </summary>
+[AspireExport]
 public sealed class CloudflareAIResource : Resource, IResourceWithConnectionString, IResourceWithWaitSupport, ICloudflareResource
 {
     internal CloudflareAIResource(string name, CloudflareEnvironmentResource environment, CloudflareAIOptions options)

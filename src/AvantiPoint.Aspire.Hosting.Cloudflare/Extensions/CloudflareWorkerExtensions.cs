@@ -14,6 +14,7 @@ public static class CloudflareWorkerExtensions
     /// Adds a Cloudflare Worker, using the single Cloudflare environment added to the application.
     /// Add one with <see cref="CloudflareEnvironmentExtensions.AddCloudflareEnvironment"/> first.
     /// </summary>
+    [AspireExport("addCloudflareWorker", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<CloudflareWorkerResource> AddCloudflareWorker(
         this IDistributedApplicationBuilder builder,
         string name,
@@ -34,6 +35,7 @@ public static class CloudflareWorkerExtensions
     /// <param name="name">The Aspire resource name.</param>
     /// <param name="workerDirectory">Path to the Worker project (relative to the AppHost).</param>
     /// <param name="configure">Optional configuration.</param>
+    [AspireExport("addCloudflareWorkerInEnvironment", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<CloudflareWorkerResource> AddCloudflareWorker(
         this IResourceBuilder<CloudflareEnvironmentResource> environment,
         string name,

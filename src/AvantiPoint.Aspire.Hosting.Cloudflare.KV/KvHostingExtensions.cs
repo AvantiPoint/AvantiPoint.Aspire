@@ -19,6 +19,7 @@ public static class KvHostingExtensions
     /// <param name="builder">The distributed application builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
     /// <param name="title">The KV namespace title; defaults to <paramref name="name"/>.</param>
+    [AspireExport("addKvNamespace")]
     public static IResourceBuilder<KvNamespaceResource> AddKvNamespace(
         this IDistributedApplicationBuilder builder,
         string name,
@@ -36,6 +37,7 @@ public static class KvHostingExtensions
     /// <param name="environment">The Cloudflare environment builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
     /// <param name="title">The KV namespace title; defaults to <paramref name="name"/>.</param>
+    [AspireExport("addKvNamespaceInEnvironment")]
     public static IResourceBuilder<KvNamespaceResource> AddKvNamespace(
         this IResourceBuilder<CloudflareEnvironmentResource> environment,
         string name,
@@ -63,6 +65,7 @@ public static class KvHostingExtensions
     /// Backs this namespace with an in-process in-memory store during <c>aspire run</c> (no Cloudflare
     /// credentials required). Ignored during <c>aspire publish</c>/<c>deploy</c>, which always use real KV.
     /// </summary>
+    [AspireExport("runAsEmulator")]
     public static IResourceBuilder<KvNamespaceResource> RunAsEmulator(this IResourceBuilder<KvNamespaceResource> ns)
     {
         ArgumentNullException.ThrowIfNull(ns);
@@ -76,6 +79,7 @@ public static class KvHostingExtensions
     }
 
     /// <summary>Uses a specific API token (a parameter) for runtime KV access, instead of the environment's token.</summary>
+    [AspireExport("withAccessToken")]
     public static IResourceBuilder<KvNamespaceResource> WithAccessToken(
         this IResourceBuilder<KvNamespaceResource> ns,
         IResourceBuilder<ParameterResource> token)
@@ -85,6 +89,7 @@ public static class KvHostingExtensions
     }
 
     /// <summary>Permits <c>aspire deploy --destroy</c> to delete this real namespace. Off by default (data-loss guard).</summary>
+    [AspireExport("allowDeletion")]
     public static IResourceBuilder<KvNamespaceResource> AllowDeletion(this IResourceBuilder<KvNamespaceResource> ns)
     {
         ns.Resource.AllowDestroy = true;

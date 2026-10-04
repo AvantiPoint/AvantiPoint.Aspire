@@ -1,0 +1,22 @@
+{
+  "appHost": {
+    "path": "apphost.mts",
+    "language": "typescript/nodejs"
+  },
+  "sdk": {
+    "version": "13.6.0"
+  },
+  "packages": {
+    "Aspire.Hosting.JavaScript": "13.6.0",
+    "AvantiPoint.Aspire.Hosting.Cloudflare": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.AI": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.AI/AvantiPoint.Aspire.Hosting.Cloudflare.AI.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.D1": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.D1/AvantiPoint.Aspire.Hosting.Cloudflare.D1.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.KV": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.KV/AvantiPoint.Aspire.Hosting.Cloudflare.KV.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.Pages": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Pages/AvantiPoint.Aspire.Hosting.Cloudflare.Pages.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.Queues": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Queues/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.R2": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.R2/AvantiPoint.Aspire.Hosting.Cloudflare.R2.csproj",
+    "AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize/AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize.csproj",
+    "AvantiPoint.Aspire.Hosting.Extensions": "../../src/AvantiPoint.Aspire.Hosting.Extensions/AvantiPoint.Aspire.Hosting.Extensions.csproj"
+  }
+}

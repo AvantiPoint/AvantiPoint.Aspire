@@ -18,6 +18,7 @@ public static class DeploymentParameterExtensions
         /// </summary>
         /// <param name="name">The parameter name.</param>
         /// <param name="secret">Whether the parameter should be treated as a secret.</param>
+        [AspireExport("addDeploymentParameter")]
         public IResourceBuilder<ParameterResource> AddDeploymentParameter(string name, bool secret = false)
         {
             if (builder.ExecutionContext.IsPublishMode)

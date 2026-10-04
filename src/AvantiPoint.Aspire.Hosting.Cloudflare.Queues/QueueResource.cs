@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -8,6 +9,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.Queues;
 /// Queues REST API by default (in run and deploy), or an in-process in-memory queue during
 /// <c>aspire run</c> when <see cref="QueuesHostingExtensions.RunAsEmulator"/> is used.
 /// </summary>
+[AspireExport]
 public sealed class QueueResource : Resource, IResourceWithConnectionString, ICloudflareResource
 {
     internal QueueResource(string name, CloudflareEnvironmentResource environment, string queueName)

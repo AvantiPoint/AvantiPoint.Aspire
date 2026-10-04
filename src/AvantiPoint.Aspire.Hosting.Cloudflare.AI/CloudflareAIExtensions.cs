@@ -19,6 +19,7 @@ public static class CloudflareAIExtensions
     /// <param name="builder">The distributed application builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
     /// <param name="configure">Optional model/gateway configuration.</param>
+    [AspireExport("addCloudflareAI", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<CloudflareAIResource> AddCloudflareAI(
         this IDistributedApplicationBuilder builder,
         string name,
@@ -36,6 +37,7 @@ public static class CloudflareAIExtensions
     /// <param name="environment">The Cloudflare environment builder.</param>
     /// <param name="name">The Aspire resource name (also the connection name consumers reference).</param>
     /// <param name="configure">Optional model/gateway configuration.</param>
+    [AspireExport("addCloudflareAIInEnvironment", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<CloudflareAIResource> AddCloudflareAI(
         this IResourceBuilder<CloudflareEnvironmentResource> environment,
         string name,
@@ -69,6 +71,7 @@ public static class CloudflareAIExtensions
     /// </summary>
     /// <param name="ai">The AI resource builder.</param>
     /// <param name="configureOllama">Optional configuration of the shared Ollama container (GPU, ports, ...).</param>
+    [AspireExport("runAsEmulator", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<CloudflareAIResource> RunAsEmulator(
         this IResourceBuilder<CloudflareAIResource> ai,
         Action<IResourceBuilder<OllamaResource>>? configureOllama = null)
@@ -93,6 +96,7 @@ public static class CloudflareAIExtensions
     /// </summary>
     /// <param name="ai">The AI resource builder.</param>
     /// <param name="configureOllama">Optional configuration of the shared host Ollama (ports, ...).</param>
+    [AspireExport("runOnHost", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<CloudflareAIResource> RunOnHost(
         this IResourceBuilder<CloudflareAIResource> ai,
         Action<IResourceBuilder<OllamaExecutableResource>>? configureOllama = null)
@@ -113,6 +117,7 @@ public static class CloudflareAIExtensions
     /// Uses a specific API token (a parameter) for runtime AI access, instead of the environment's
     /// Cloudflare API token. Useful to scope runtime access to just AI.
     /// </summary>
+    [AspireExport("withAccessToken")]
     public static IResourceBuilder<CloudflareAIResource> WithAccessToken(
         this IResourceBuilder<CloudflareAIResource> ai,
         IResourceBuilder<ParameterResource> token)

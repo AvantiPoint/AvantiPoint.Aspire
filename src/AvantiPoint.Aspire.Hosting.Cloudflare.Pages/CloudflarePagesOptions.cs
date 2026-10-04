@@ -1,6 +1,8 @@
+using Aspire.Hosting;
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.Pages;
 
 /// <summary>Options for deploying a JavaScript app to Cloudflare Pages.</summary>
+[AspireExport(ExposeProperties = true)]
 public sealed class CloudflarePagesOptions
 {
     /// <summary>The Cloudflare Pages project name. Defaults to a sanitized form of the resource name.</summary>

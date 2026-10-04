@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare;
@@ -7,6 +8,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 /// locally via <c>wrangler dev</c> (Miniflare) during <c>aspire run</c> and is deployed with
 /// <c>wrangler deploy</c> during <c>aspire deploy</c>.
 /// </summary>
+[AspireExport]
 public sealed class CloudflareWorkerResource : ExecutableResource, ICloudflareResource
 {
     internal CloudflareWorkerResource(string name, string command, string workingDirectory, CloudflareEnvironmentResource environment)

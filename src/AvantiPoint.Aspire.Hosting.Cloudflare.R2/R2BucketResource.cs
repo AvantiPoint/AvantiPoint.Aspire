@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -8,6 +9,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.R2;
 /// points at the real R2 account by default (in run and deploy), or at the local MinIO emulator
 /// during <c>aspire run</c> when <see cref="R2HostingExtensions.RunAsEmulator"/> is used.
 /// </summary>
+[AspireExport]
 public sealed class R2BucketResource : Resource, IResourceWithConnectionString, IResourceWithWaitSupport, ICloudflareResource
 {
     internal R2BucketResource(string name, CloudflareEnvironmentResource environment, string bucketName)
