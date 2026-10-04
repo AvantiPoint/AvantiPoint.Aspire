@@ -88,7 +88,7 @@ public static class KvHostingExtensions
         return ns;
     }
 
-    /// <summary>Permits <c>aspire deploy --destroy</c> to delete this real namespace. Off by default (data-loss guard).</summary>
+    /// <summary>Permits <c>aspire destroy</c> to delete this real namespace. Off by default (data-loss guard).</summary>
     [AspireExport("allowDeletion")]
     public static IResourceBuilder<KvNamespaceResource> AllowDeletion(this IResourceBuilder<KvNamespaceResource> ns)
     {

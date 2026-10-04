@@ -33,8 +33,11 @@ internal static class MinioEmulator
     public const string DefaultAccessKey = "cloudflare-r2-local";
     public const string DefaultSecretKey = "cloudflare-r2-local-secret";
 
-    private const string Image = "minio/minio";
-    private const string Tag = "RELEASE.2025-09-07T16-13-09Z"; // pinned for reproducible dev runs
+    // Community build of the upstream MinIO release; upstream no longer distributes images.
+    // Pin the multi-platform manifest so local emulation remains reproducible.
+    private const string Image = "coollabsio/minio";
+    private const string Tag = "RELEASE.2025-10-15T17-29-55Z";
+    private const string ImageDigest = "69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9";
     private const int ApiPort = 9000;
     private const int ConsolePort = 9001;
     private const string S3EndpointName = "s3";
@@ -57,6 +60,8 @@ internal static class MinioEmulator
         var builder = environment.ApplicationBuilder;
 
         var minio = builder.AddContainer($"{environment.Resource.Name}-r2-minio", Image, Tag)
+            .WithImageRegistry("ghcr.io")
+            .WithImageSHA256(ImageDigest)
             .WithContainerName($"{environment.Resource.Name}-r2-minio")
             .WithArgs("server", "/data", "--console-address", $":{ConsolePort}")
             .WithEnvironment("MINIO_ROOT_USER", DefaultAccessKey)

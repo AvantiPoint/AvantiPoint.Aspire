@@ -70,7 +70,7 @@ public static class HyperdriveExtensions
         return hyperdrive;
     }
 
-    /// <summary>Permits <c>aspire deploy --destroy</c> to delete this Hyperdrive configuration. Off by default.</summary>
+    /// <summary>Permits <c>aspire destroy</c> to delete this Hyperdrive configuration. Off by default.</summary>
     [AspireExport("allowDeletion")]
     public static IResourceBuilder<HyperdriveResource> AllowDeletion(this IResourceBuilder<HyperdriveResource> hyperdrive)
     {

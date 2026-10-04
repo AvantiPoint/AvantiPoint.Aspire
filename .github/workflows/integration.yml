@@ -15,7 +15,7 @@ env:
 
 jobs:
   integration:
-    name: Cloudflare Integration Tests
+    name: Local emulator and live Cloudflare publishing tests
     # Ubuntu has a Linux Docker daemon for the MinIO emulator used by the R2 tests.
     runs-on: avp-linux
     # Requires the CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets to be configured.
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7.0.0
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Install wrangler
         run: npm install -g wrangler
@@ -46,10 +46,25 @@ jobs:
       - name: Restore
         run: dotnet restore AvantiPoint.Aspire.slnx
 
+      - name: Install Aspire CLI for TypeScript publishing
+        run: |
+          dotnet tool install Aspire.Cli --version 13.6.0 --tool-path "$RUNNER_TEMP/aspire"
+          echo "$RUNNER_TEMP/aspire" >> "$GITHUB_PATH"
+
+      - name: Restore and check TypeScript AppHost
+        working-directory: samples/typescript
+        run: |
+          npm ci
+          aspire restore --non-interactive
+          npm run check
+
       - name: Integration tests
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_TYPESCRIPT_APPHOST: ${{ github.workspace }}/samples/typescript/apphost.mts
+        # Includes Docker-backed local development and isolated real Worker/R2 publish-deploy-destroy
+        # coverage. MinIO is local-only; it is never published to Cloudflare.
         # Target the project directly rather than a --filter: MTP's xUnit filter syntax
         # (--filter-namespace, etc.) differs from VSTest's --filter, and this repo only
         # has one IntegrationTests project, so --project is simpler and equivalent.

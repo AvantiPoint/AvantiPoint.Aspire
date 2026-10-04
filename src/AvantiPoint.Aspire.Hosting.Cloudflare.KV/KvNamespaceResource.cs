@@ -28,7 +28,7 @@ public sealed class KvNamespaceResource : Resource, IResourceWithConnectionStrin
     /// <summary>True when this namespace is served by the in-memory emulator (opt-in via <c>RunAsEmulator()</c>).</summary>
     public bool UseEmulator { get; internal set; }
 
-    /// <summary>When true, <c>aspire deploy --destroy</c> will delete the real namespace. Off by default (data-loss guard).</summary>
+    /// <summary>When true, <c>aspire destroy</c> will delete the real namespace. Off by default (data-loss guard).</summary>
     public bool AllowDestroy { get; internal set; }
 
     // Optional token override for runtime access; defaults to the environment API token.

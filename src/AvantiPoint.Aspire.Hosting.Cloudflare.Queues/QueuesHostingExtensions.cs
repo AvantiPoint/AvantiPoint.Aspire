@@ -88,7 +88,7 @@ public static class QueuesHostingExtensions
         return queue;
     }
 
-    /// <summary>Permits <c>aspire deploy --destroy</c> to delete this real queue. Off by default (data-loss guard).</summary>
+    /// <summary>Permits <c>aspire destroy</c> to delete this real queue. Off by default (data-loss guard).</summary>
     [AspireExport("allowDeletion")]
     public static IResourceBuilder<QueueResource> AllowDeletion(this IResourceBuilder<QueueResource> queue)
     {

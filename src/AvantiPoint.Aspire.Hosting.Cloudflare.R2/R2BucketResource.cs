@@ -31,7 +31,7 @@ public sealed class R2BucketResource : Resource, IResourceWithConnectionString, 
     /// <summary>True when this bucket is served by the local MinIO emulator (opt-in via <c>RunAsEmulator()</c>).</summary>
     public bool UseEmulator { get; internal set; }
 
-    /// <summary>When true, <c>aspire deploy --destroy</c> will delete the real R2 bucket. Off by default (data-loss guard).</summary>
+    /// <summary>When true, <c>aspire destroy</c> will delete the real R2 bucket. Off by default (data-loss guard).</summary>
     public bool AllowDestroy { get; internal set; }
 
     // Emulator wiring (set when UseEmulator is true).

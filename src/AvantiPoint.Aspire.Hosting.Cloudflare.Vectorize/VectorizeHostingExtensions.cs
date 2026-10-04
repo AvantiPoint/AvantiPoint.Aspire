@@ -102,7 +102,7 @@ public static class VectorizeHostingExtensions
         return index;
     }
 
-    /// <summary>Permits <c>aspire deploy --destroy</c> to delete this real index. Off by default (data-loss guard).</summary>
+    /// <summary>Permits <c>aspire destroy</c> to delete this real index. Off by default (data-loss guard).</summary>
     [AspireExport("allowDeletion")]
     public static IResourceBuilder<VectorizeIndexResource> AllowDeletion(this IResourceBuilder<VectorizeIndexResource> index)
     {

@@ -40,6 +40,8 @@ The AppHost aggregates the permissions its resources need. Preflight verificatio
 | **Custom domains** (`WithCustomDomain`) | DNS | Edit | Zone |
 | **Custom domains** (`WithCustomDomain`) | Zone | Read | Zone |
 
+Hand-authored Workers also need **Workers Scripts: Edit** to deploy. Wrangler's Worker deletion command may additionally list legacy Workers Sites KV namespaces and require **Workers KV Storage: Read**, even for a Worker without KV bindings. This is a teardown requirement, not an R2 or Worker deployment requirement. If that auxiliary check fails after the Worker has been deleted, verify the Worker is absent before retrying or changing token permissions.
+
 :::note
 Cloudflare groups permissions into **Account**, **Zone**, and **User** categories, each granted at **Edit** or **Read**. Permission-group *names* are cosmetic and can change in the dashboard; if a name differs, search for the closest match in the right category. The authoritative, current list is the [API token permissions reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/).
 :::
