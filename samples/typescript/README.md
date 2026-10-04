@@ -34,7 +34,7 @@ The `ParameterDefault` overload of `AddDeploymentParameter` remains a C# API; Ty
 
 ## Model-only interop validation
 
-`validate.mts` exercises resource identity, builder/environment overloads, references, Vectorize enums, Hyperdrive and Worker/Pages/AI/Container options callbacks across the real TypeScript-to-.NET connection. It exits before building, starting, provisioning or deploying the application model. Set a process-local flag when invoking the CLI:
+`validate.mts` exercises resource identity, builder/environment overloads, references, Vectorize enums, PostgreSQL/Hyperdrive and Worker/Pages/AI/Container options callbacks across the real TypeScript-to-.NET connection. It also evaluates an environment callback through Aspire's execution-configuration builder, without starting that resource. It exits before building, starting, provisioning or deploying the application model. Set a process-local flag when invoking the CLI:
 
 ```sh
 CLOUDFLARE_INTEROP_TEST=1 aspire run --non-interactive

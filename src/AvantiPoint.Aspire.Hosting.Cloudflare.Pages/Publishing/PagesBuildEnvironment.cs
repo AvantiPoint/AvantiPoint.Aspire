@@ -8,10 +8,13 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.Pages.Publishing;
 internal static class PagesBuildEnvironment
 {
     public static async Task<IReadOnlyDictionary<string, string?>> ResolveAsync(
-        IResource resource, ILogger logger, CancellationToken cancellationToken)
+        IResource resource, IServiceProvider services, ILogger logger, CancellationToken cancellationToken)
     {
         var values = new Dictionary<string, object>();
-        var executionContext = new DistributedApplicationExecutionContext(DistributedApplicationOperation.Publish);
+        var executionContext = new DistributedApplicationExecutionContext(new DistributedApplicationExecutionContextOptions(DistributedApplicationOperation.Publish)
+        {
+            Services = services,
+        });
         if (resource.TryGetEnvironmentVariables(out var callbacks))
         {
             var context = new EnvironmentCallbackContext(executionContext, resource, values, cancellationToken) { Logger = logger };
@@ -56,7 +59,9 @@ internal static class PagesBuildEnvironment
                         var resolvedValue = await ResolveValueAsync(expression.ValueProviders[i]).ConfigureAwait(false);
                         var formatted = new ReferenceExpressionBuilder();
                         formatted.AppendFormatted(resolvedValue, expression.StringFormats[i]);
-                        arguments[i] = await formatted.Build().GetValueAsync(cancellationToken).ConfigureAwait(false);
+                        // These are already resolved strings. The builder applies Aspire's string format,
+                        // but evaluating its result as a composite format would reinterpret literal JSON braces.
+                        arguments[i] = formatted.Build().Format;
                     }
                     return expression.Format.Length == 0 ? null : string.Format(CultureInfo.InvariantCulture, expression.Format, arguments);
                 case IResourceBuilder<IResource> builder:

@@ -7,6 +7,8 @@ The **Cloudflare** integration (part of [AvantiPoint Aspire](../../../overview/)
 
 ## How it works
 
+AppHost examples provide synchronized **C#** and **TypeScript** tabs. Both use the same .NET hosting integrations and deployment behavior. See the [quickstart](../quickstart/) for package setup and builder initialization. The consuming .NET service-client examples remain C#; these packages do not provide JavaScript runtime clients.
+
 When you add a **Cloudflare environment** to your AppHost, the integration hooks into Aspire's publish/deploy pipeline:
 
 1. **Validate** - your Cloudflare API token is checked up front; deployment fails fast with a clear message if it's missing, invalid, or inactive. Permission checks happen in the service APIs during deployment.

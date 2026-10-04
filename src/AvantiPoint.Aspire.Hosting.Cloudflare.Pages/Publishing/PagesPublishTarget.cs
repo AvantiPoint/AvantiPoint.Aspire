@@ -24,7 +24,7 @@ internal sealed class PagesPublishTarget(ILogger<PagesPublishTarget> logger, IWr
             return;
         }
 
-        var environment = await PagesBuildEnvironment.ResolveAsync(resource, logger, cancellationToken).ConfigureAwait(false);
+        var environment = await PagesBuildEnvironment.ResolveAsync(resource, context.Services, logger, cancellationToken).ConfigureAwait(false);
         var (file, args) = SplitCommand(annotation.BuildCommand);
         logger.LogInformation("Building Pages app '{Resource}' with '{Command}'...", resource.Name, annotation.BuildCommand);
 

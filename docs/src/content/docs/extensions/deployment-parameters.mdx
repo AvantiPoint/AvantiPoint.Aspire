@@ -1,0 +1,71 @@
+---
+title: "Deployment Parameters"
+description: "AddDeploymentParameter — parameters required at deploy but optional in local development."
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+
+`AvantiPoint.Aspire.Hosting.Extensions` provides **`AddDeploymentParameter`**, a small, provider-agnostic helper for configuration that should be **required when you deploy** but **absent during local development** — things like a hostname, a Zone ID, a production connection string, or a token you only need against the real cloud.
+
+A normal `builder.AddParameter("x")` prompts (or fails) when the value is missing, which gets in the way of a credential-free `aspire run`. `AddDeploymentParameter` resolves to a real Aspire parameter during `aspire publish`/`aspire deploy`, but to an empty, non-prompting parameter during `aspire run`.
+
+## Usage
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
+```csharp
+var builder = DistributedApplication.CreateBuilder(args);
+
+// Required at deploy, optional in dev.
+var zone    = builder.AddDeploymentParameter("zone-id");
+var apiHost = builder.AddDeploymentParameter("api-hostname");
+var dbConn  = builder.AddDeploymentParameter("pg-production-connection", secret: true);
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+import { createBuilder } from './.aspire/modules/aspire.mjs';
+const builder = await createBuilder();
+const zone = await builder.addDeploymentParameter('zone-id');
+const apiHost = await builder.addDeploymentParameter('api-hostname');
+const dbConn = await builder.addDeploymentParameter('pg-production-connection', { secret: true });
+```
+
+</TabItem>
+</Tabs>
+
+These can be passed anywhere a parameter is accepted — for example a Cloudflare custom domain or a Hyperdrive production connection string:
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
+```csharp
+api.WithCustomDomain(apiHost, zone);
+builder.AddPostgres("pg").PublishAsHyperdrive("hd", dbConn);
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await api.withCustomDomainParameters(apiHost, zone);
+await builder.addPostgres('pg').publishAsHyperdriveWithParameter('hd', dbConn);
+```
+
+</TabItem>
+</Tabs>
+
+## Behavior
+
+| Mode | Behavior |
+| --- | --- |
+| `aspire run` | Resolves to an empty parameter — no prompt, no failure, so the inner loop stays credential-free. |
+| `aspire publish` / `aspire deploy` | Resolves to a real Aspire parameter, sourced from environment variables / user-secrets / configuration like any other. |
+
+Pass `secret: true` for sensitive values. The overload taking a `ParameterDefault` is C#-only; it has no TypeScript export. TypeScript uses the exported no-default overload shown above.
+
+The PostgreSQL example requires `Aspire.Hosting.PostgreSQL` in the C# AppHost or in the TypeScript `aspire.config.json` packages at version 13.6.0.
