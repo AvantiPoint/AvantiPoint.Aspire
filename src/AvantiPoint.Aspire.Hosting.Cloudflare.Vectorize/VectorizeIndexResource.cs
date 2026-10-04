@@ -41,7 +41,7 @@ public sealed class VectorizeIndexResource : Resource, IResourceWithConnectionSt
     /// <summary>True when this index is served by the in-memory emulator (opt-in via <c>RunAsEmulator()</c>).</summary>
     public bool UseEmulator { get; internal set; }
 
-    /// <summary>When true, <c>aspire deploy --destroy</c> will delete the real index. Off by default (data-loss guard).</summary>
+    /// <summary>When true, <c>aspire destroy</c> will delete the real index. Off by default (data-loss guard).</summary>
     public bool AllowDestroy { get; internal set; }
 
     // Optional token override for runtime access; defaults to the environment API token.

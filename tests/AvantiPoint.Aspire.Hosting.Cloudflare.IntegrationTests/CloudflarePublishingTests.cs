@@ -16,10 +16,14 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.IntegrationTests;
 
 public class CloudflarePublishingTests
 {
-    [Fact(Timeout = 600_000)]
-    public async Task Publish_Deploy_And_Destroy_Worker_With_Real_R2_Binding()
+    [Theory(Timeout = 600_000)]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Publish_Deploy_And_Destroy_Worker_With_Real_R2_Binding(bool typeScript)
     {
         Assert.SkipUnless(CloudflareAccount.IsConfigured, "Cloudflare integration credentials are required.");
+        Assert.SkipUnless(!typeScript || !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AspirePublishingChecks.AppHostVariable)),
+            "The TypeScript AppHost, generated SDK and Aspire CLI are required.");
         var ct = TestContext.Current.CancellationToken;
         var name = $"ap-aspire-it-{Guid.NewGuid():N}"[..40];
         var directory = Path.Combine(Path.GetTempPath(), name);
@@ -73,7 +77,10 @@ public class CloudflarePublishingTests
             await steps[CloudflarePipelineSteps.PublishStepName(environment.Resource)].Action(context);
             // Enter cleanup even if deployment only completes its first resource.
             deployed = true;
-            await steps[CloudflarePipelineSteps.DeployStepName(environment.Resource)].Action(context);
+            if (typeScript)
+                await AspirePublishingChecks.RunAsync("deploy", name, directory, ct);
+            else
+                await steps[CloudflarePipelineSteps.DeployStepName(environment.Resource)].Action(context);
             Assert.NotNull(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, ct));
 
             for (var attempt = 0; ; attempt++)
@@ -106,12 +113,15 @@ public class CloudflarePublishingTests
                         $"Could not empty integration R2 bucket (HTTP {(int)response.StatusCode}).");
                     var cleanupPipeline = new PipelineContext(new DistributedApplicationModel(builder.Resources), builder.ExecutionContext,
                         app.Services, NullLogger.Instance, cleanupCt);
-                    await steps[CloudflarePipelineSteps.DestroyStepName(environment.Resource)].Action(
-                        new PipelineStepContext { PipelineContext = cleanupPipeline, ReportingStep = null! });
+                    if (typeScript)
+                        await AspirePublishingChecks.RunAsync("destroy", name, directory, cleanupCt);
+                    else
+                        await steps[CloudflarePipelineSteps.DestroyStepName(environment.Resource)].Action(
+                            new PipelineStepContext { PipelineContext = cleanupPipeline, ReportingStep = null! });
                     Assert.Null(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, cleanupCt));
                     using var workerResponse = await accountHttp.GetAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", cleanupCt);
                     Assert.Equal(HttpStatusCode.NotFound, workerResponse.StatusCode);
-                    Console.WriteLine("Real Cloudflare publish/deploy, Worker HTTP content, R2 binding and destroy cleanup verified.");
+                    Console.WriteLine($"{(typeScript ? "TypeScript" : "C#")} real Cloudflare publish/deploy, Worker HTTP content, R2 binding and destroy cleanup verified.");
                 }
             }
             finally
@@ -127,11 +137,14 @@ public class CloudflarePublishingTests
                             using var response = await accountHttp.DeleteAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", cleanupCt);
                             Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound,
                                 $"Could not remove integration Worker (HTTP {(int)response.StatusCode}).");
+                            using var absentWorker = await accountHttp.GetAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", cleanupCt);
+                            Assert.Equal(HttpStatusCode.NotFound, absentWorker.StatusCode);
                         }
                         finally
                         {
                             await api.DeleteR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, cleanupCt);
                             Assert.Null(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, cleanupCt));
+                            Console.WriteLine($"Cleanup verified for integration resource '{name}'.");
                         }
                     }
                 }

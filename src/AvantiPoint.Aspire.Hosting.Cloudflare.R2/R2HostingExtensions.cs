@@ -84,7 +84,7 @@ public static class R2HostingExtensions
     }
 
     /// <summary>
-    /// Permits <c>aspire deploy --destroy</c> to delete this real R2 bucket. Off by default so a
+    /// Permits <c>aspire destroy</c> to delete this real R2 bucket. Off by default so a
     /// destroy never silently drops stored objects.
     /// </summary>
     [AspireExport("allowDeletion")]

@@ -42,7 +42,7 @@ The default is **real D1** — calling `.RunAsEmulator()` opts into the local SQ
 builder.AddD1Database("catalog", databaseName: "catalog-prod")
     .RunAsEmulator()            // back with local SQLite during `aspire run` (no credentials)
     .WithLocationHint("weur")   // D1 primary location hint
-    .AllowDeletion();           // permit `aspire deploy --destroy` to delete the database
+    .AllowDeletion();           // permit `aspire destroy` to delete the database
 ```
 
 </TabItem>

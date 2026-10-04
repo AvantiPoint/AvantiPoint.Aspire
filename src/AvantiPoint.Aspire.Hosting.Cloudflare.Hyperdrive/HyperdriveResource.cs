@@ -29,7 +29,7 @@ public sealed class HyperdriveResource : Resource, ICloudflareResource
     /// <summary>Disables Hyperdrive query caching when true.</summary>
     public bool CachingDisabled { get; internal set; }
 
-    /// <summary>When true, <c>aspire deploy --destroy</c> will delete the Hyperdrive config. Off by default.</summary>
+    /// <summary>When true, <c>aspire destroy</c> will delete the Hyperdrive config. Off by default.</summary>
     public bool AllowDestroy { get; internal set; }
 
     /// <summary>The provisioned Hyperdrive config id (available after deploy).</summary>

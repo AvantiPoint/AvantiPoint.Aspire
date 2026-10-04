@@ -29,7 +29,7 @@ public sealed class D1DatabaseResource : Resource, IResourceWithConnectionString
     /// <summary>True when this database is served by a local SQLite file (opt-in via <c>RunAsEmulator()</c>).</summary>
     public bool UseEmulator { get; internal set; }
 
-    /// <summary>When true, <c>aspire deploy --destroy</c> will delete the real D1 database. Off by default (data-loss guard).</summary>
+    /// <summary>When true, <c>aspire destroy</c> will delete the real D1 database. Off by default (data-loss guard).</summary>
     public bool AllowDestroy { get; internal set; }
 
     /// <summary>Optional D1 primary location hint (e.g. <c>weur</c>, <c>enam</c>) used when provisioning.</summary>

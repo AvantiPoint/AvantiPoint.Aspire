@@ -112,7 +112,7 @@ public static class D1HostingExtensions
     }
 
     /// <summary>
-    /// Permits <c>aspire deploy --destroy</c> to delete this real D1 database. Off by default so a
+    /// Permits <c>aspire destroy</c> to delete this real D1 database. Off by default so a
     /// destroy never silently drops stored data.
     /// </summary>
     [AspireExport("allowDeletion")]
