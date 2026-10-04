@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -8,6 +9,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.Vectorize;
 /// the real Vectorize v2 REST API by default (in run and deploy), or an in-process in-memory vector store
 /// during <c>aspire run</c> when <see cref="VectorizeHostingExtensions.RunAsEmulator"/> is used.
 /// </summary>
+[AspireExport]
 public sealed class VectorizeIndexResource : Resource, IResourceWithConnectionString, ICloudflareResource
 {
     internal VectorizeIndexResource(

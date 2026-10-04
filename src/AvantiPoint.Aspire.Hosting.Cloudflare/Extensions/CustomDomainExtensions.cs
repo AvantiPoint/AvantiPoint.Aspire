@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare;
@@ -11,6 +12,7 @@ public static class CustomDomainExtensions
     /// of source). Pair with <c>AddDeploymentParameter</c> so they're only required at deploy time. Call
     /// after <c>PublishAsCloudflareContainer</c> / <c>PublishAsCloudflarePages</c>. Repeatable.
     /// </summary>
+    [AspireExport("withCustomDomainParameters")]
     public static IResourceBuilder<T> WithCustomDomain<T>(
         this IResourceBuilder<T> builder,
         IResourceBuilder<ParameterResource> hostname,
@@ -25,6 +27,7 @@ public static class CustomDomainExtensions
     }
 
     /// <summary>Attaches a custom domain with a parameter hostname and a literal Zone Id.</summary>
+    [AspireExport("withCustomDomainHostnameParameter")]
     public static IResourceBuilder<T> WithCustomDomain<T>(
         this IResourceBuilder<T> builder,
         IResourceBuilder<ParameterResource> hostname,
@@ -39,6 +42,7 @@ public static class CustomDomainExtensions
     }
 
     /// <summary>Attaches a custom domain with a literal hostname and a parameter Zone Id.</summary>
+    [AspireExport("withCustomDomainZoneParameter")]
     public static IResourceBuilder<T> WithCustomDomain<T>(
         this IResourceBuilder<T> builder,
         string hostname,
@@ -56,6 +60,7 @@ public static class CustomDomainExtensions
     /// Attaches a custom domain using literal values. Prefer the parameter overloads for real deployments
     /// so hostnames/zone ids aren't hard-coded; this is handy for quick samples.
     /// </summary>
+    [AspireExport("withCustomDomain")]
     public static IResourceBuilder<T> WithCustomDomain<T>(
         this IResourceBuilder<T> builder,
         string hostname,

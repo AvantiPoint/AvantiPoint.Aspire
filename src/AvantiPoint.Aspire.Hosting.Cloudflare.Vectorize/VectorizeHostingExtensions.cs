@@ -21,6 +21,7 @@ public static class VectorizeHostingExtensions
     /// <param name="dimensions">The vector dimensionality (match your embedding model).</param>
     /// <param name="metric">The distance metric. Defaults to cosine.</param>
     /// <param name="indexName">The Vectorize index name; defaults to <paramref name="name"/>.</param>
+    [AspireExport("addVectorizeIndex")]
     public static IResourceBuilder<VectorizeIndexResource> AddVectorizeIndex(
         this IDistributedApplicationBuilder builder,
         string name,
@@ -42,6 +43,7 @@ public static class VectorizeHostingExtensions
     /// <param name="dimensions">The vector dimensionality (match your embedding model).</param>
     /// <param name="metric">The distance metric. Defaults to cosine.</param>
     /// <param name="indexName">The Vectorize index name; defaults to <paramref name="name"/>.</param>
+    [AspireExport("addVectorizeIndexInEnvironment")]
     public static IResourceBuilder<VectorizeIndexResource> AddVectorizeIndex(
         this IResourceBuilder<CloudflareEnvironmentResource> environment,
         string name,
@@ -74,6 +76,7 @@ public static class VectorizeHostingExtensions
     /// credentials required). Ignored during <c>aspire publish</c>/<c>deploy</c>, which always use real
     /// Vectorize. Mirrors the <c>RunAsEmulator()</c> convention of Aspire's Azure integrations.
     /// </summary>
+    [AspireExport("runAsEmulator")]
     public static IResourceBuilder<VectorizeIndexResource> RunAsEmulator(this IResourceBuilder<VectorizeIndexResource> index)
     {
         ArgumentNullException.ThrowIfNull(index);
@@ -90,6 +93,7 @@ public static class VectorizeHostingExtensions
     /// Uses a specific API token (a parameter) for runtime Vectorize access, instead of the environment's
     /// Cloudflare API token.
     /// </summary>
+    [AspireExport("withAccessToken")]
     public static IResourceBuilder<VectorizeIndexResource> WithAccessToken(
         this IResourceBuilder<VectorizeIndexResource> index,
         IResourceBuilder<ParameterResource> token)
@@ -99,6 +103,7 @@ public static class VectorizeHostingExtensions
     }
 
     /// <summary>Permits <c>aspire deploy --destroy</c> to delete this real index. Off by default (data-loss guard).</summary>
+    [AspireExport("allowDeletion")]
     public static IResourceBuilder<VectorizeIndexResource> AllowDeletion(this IResourceBuilder<VectorizeIndexResource> index)
     {
         index.Resource.AllowDestroy = true;

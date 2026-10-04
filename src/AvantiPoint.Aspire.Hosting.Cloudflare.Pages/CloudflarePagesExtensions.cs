@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using System.Text;
 using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.JavaScript;
@@ -16,6 +17,7 @@ public static class CloudflarePagesExtensions
     /// Deploys this JavaScript app to Cloudflare Pages, using the single Cloudflare environment added to
     /// the application. Add one with <c>AddCloudflareEnvironment</c> first.
     /// </summary>
+    [AspireExport("publishAsCloudflarePages", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<T> PublishAsCloudflarePages<T>(
         this IResourceBuilder<T> app,
         Action<CloudflarePagesOptions>? configure = null)
@@ -30,6 +32,7 @@ public static class CloudflarePagesExtensions
     /// Cloudflare environment during <c>aspire deploy</c>. The app's build is run during publish and the
     /// output directory is uploaded with <c>wrangler pages deploy</c>.
     /// </summary>
+    [AspireExport("publishAsCloudflarePagesInEnvironment", RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<T> PublishAsCloudflarePages<T>(
         this IResourceBuilder<T> app,
         IResourceBuilder<CloudflareEnvironmentResource> environment,

@@ -31,6 +31,7 @@ public static class CloudflareEnvironmentExtensions
     /// Optional account id parameter. When omitted, a parameter is created that resolves from the
     /// <c>CLOUDFLARE_ACCOUNT_ID</c> environment variable, then user-secrets/configuration.
     /// </param>
+    [AspireExport("addCloudflareEnvironment")]
     public static IResourceBuilder<CloudflareEnvironmentResource> AddCloudflareEnvironment(
         this IDistributedApplicationBuilder builder,
         string name = "cloudflare",

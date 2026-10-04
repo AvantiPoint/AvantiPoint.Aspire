@@ -98,6 +98,10 @@ Integration tests are skipped unless `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCO
 
 Requirements: .NET 10 SDK, [wrangler](https://developers.cloudflare.com/workers/wrangler/) (for Pages/Container deploys), and Docker (for the MinIO emulator and container image builds).
 
+## TypeScript AppHosts
+
+The hosting integrations also support official Aspire 13.6 TypeScript AppHosts through generated SDK exports. See the [TypeScript sample](samples/typescript/README.md) for local project references, callback configuration and credential-free interop validation. Existing C# AppHost APIs remain available.
+
 ## License
 
 [MIT](LICENSE)

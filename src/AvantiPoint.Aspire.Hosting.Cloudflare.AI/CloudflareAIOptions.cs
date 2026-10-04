@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 namespace AvantiPoint.Aspire.Hosting.Cloudflare.AI;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.AI;
 /// resource maps to local Ollama models under <c>RunAsEmulator()</c> and to Cloudflare models in
 /// production, so application code only references the connection — never a specific backend.
 /// </summary>
+[AspireExport(ExposeProperties = true)]
 public sealed class CloudflareAIOptions
 {
     /// <summary>Default Cloudflare Workers AI chat model.</summary>

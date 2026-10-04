@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
 namespace AvantiPoint.Aspire.Hosting.Cloudflare;
@@ -8,6 +9,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 /// target Cloudflare instead of the default (Azure). Holds the API token and account id used for
 /// all Cloudflare operations, and aggregates the permission scopes the application actually needs.
 /// </summary>
+[AspireExport]
 public sealed class CloudflareEnvironmentResource : Resource, IComputeEnvironmentResource
 {
     private readonly HashSet<string> _requiredScopes = new(StringComparer.OrdinalIgnoreCase)

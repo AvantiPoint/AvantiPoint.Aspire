@@ -21,6 +21,7 @@ public static class HyperdriveExtensions
     /// connection-string resource (e.g. <c>builder.AddConnectionString("pg")</c>) that already resolves to
     /// the production database at deploy.
     /// </summary>
+    [AspireExport("publishAsHyperdrive")]
     public static IResourceBuilder<HyperdriveResource> PublishAsHyperdrive(
         this IResourceBuilder<IResourceWithConnectionString> source,
         string name)
@@ -35,6 +36,7 @@ public static class HyperdriveExtensions
     /// <paramref name="productionConnectionString"/> holds the real production connection string (required at
     /// deploy, optional in dev via <c>AddDeploymentParameter</c>).
     /// </summary>
+    [AspireExport("publishAsHyperdriveWithParameter")]
     public static IResourceBuilder<HyperdriveResource> PublishAsHyperdrive(
         this IResourceBuilder<IResourceWithConnectionString> source,
         string name,
@@ -49,6 +51,7 @@ public static class HyperdriveExtensions
     /// Publishes a Hyperdrive configuration whose production origin is another connection-string resource
     /// (e.g. an external production database modeled with <c>builder.AddConnectionString(...)</c>).
     /// </summary>
+    [AspireExport("publishAsHyperdriveWithConnectionSource")]
     public static IResourceBuilder<HyperdriveResource> PublishAsHyperdrive(
         this IResourceBuilder<IResourceWithConnectionString> source,
         string name,
@@ -60,6 +63,7 @@ public static class HyperdriveExtensions
     }
 
     /// <summary>Disables Hyperdrive's query caching for this configuration.</summary>
+    [AspireExport("withCachingDisabled")]
     public static IResourceBuilder<HyperdriveResource> WithCachingDisabled(this IResourceBuilder<HyperdriveResource> hyperdrive)
     {
         hyperdrive.Resource.CachingDisabled = true;
@@ -67,6 +71,7 @@ public static class HyperdriveExtensions
     }
 
     /// <summary>Permits <c>aspire deploy --destroy</c> to delete this Hyperdrive configuration. Off by default.</summary>
+    [AspireExport("allowDeletion")]
     public static IResourceBuilder<HyperdriveResource> AllowDeletion(this IResourceBuilder<HyperdriveResource> hyperdrive)
     {
         hyperdrive.Resource.AllowDestroy = true;
@@ -79,6 +84,7 @@ public static class HyperdriveExtensions
     /// to add to the Worker's config — Workers consume Hyperdrive via a binding, which the integration does
     /// not own for hand-authored Workers.
     /// </summary>
+    [AspireExport("withHyperdrive")]
     public static IResourceBuilder<CloudflareWorkerResource> WithHyperdrive(
         this IResourceBuilder<CloudflareWorkerResource> worker,
         IResourceBuilder<HyperdriveResource> hyperdrive,

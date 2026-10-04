@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 
@@ -9,6 +10,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive;
 /// over HTTP, so there is no .NET client. This resource is provisioned at <c>aspire deploy</c> from a
 /// <b>production</b> connection string — never the local dev container.
 /// </summary>
+[AspireExport]
 public sealed class HyperdriveResource : Resource, ICloudflareResource
 {
     internal HyperdriveResource(string name, CloudflareEnvironmentResource environment, ReferenceExpression productionConnectionString)
