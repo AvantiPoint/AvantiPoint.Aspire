@@ -130,20 +130,22 @@ public class CloudflarePublishingTests
                 {
                     if (deployed)
                     {
+                        using var fallbackTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+                        var fallbackCt = fallbackTimeout.Token;
                         // A partly failed deploy must not strand the earlier R2 resource.
                         // Attempt both removals independently even if Worker HTTP/DNS never became ready.
                         try
                         {
-                            using var response = await accountHttp.DeleteAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", cleanupCt);
+                            using var response = await accountHttp.DeleteAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", fallbackCt);
                             Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound,
                                 $"Could not remove integration Worker (HTTP {(int)response.StatusCode}).");
-                            using var absentWorker = await accountHttp.GetAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", cleanupCt);
+                            using var absentWorker = await accountHttp.GetAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", fallbackCt);
                             Assert.Equal(HttpStatusCode.NotFound, absentWorker.StatusCode);
                         }
                         finally
                         {
-                            await api.DeleteR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, cleanupCt);
-                            Assert.Null(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, cleanupCt));
+                            await api.DeleteR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, fallbackCt);
+                            Assert.Null(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, fallbackCt));
                             Console.WriteLine($"Cleanup verified for integration resource '{name}'.");
                         }
                     }
