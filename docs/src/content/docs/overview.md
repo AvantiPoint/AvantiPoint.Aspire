@@ -1,6 +1,6 @@
 ---
-title: "AvantiPoint Aspire"
-description: "A family of AvantiPoint integrations for Aspire - model, provision and deploy Cloudflare resources."
+title: "Integration Overview"
+description: "Learn how AvantiPoint Aspire pairs hosting and .NET client packages, supports local emulators, and provisions Cloudflare resources during deployment."
 ---
 
 

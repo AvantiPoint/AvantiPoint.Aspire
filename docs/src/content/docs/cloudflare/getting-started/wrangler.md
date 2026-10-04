@@ -1,5 +1,6 @@
 ---
 title: "How wrangler authenticates"
+description: "Learn how AvantiPoint Aspire passes Cloudflare credentials to Wrangler for non-interactive Pages and Containers deployments."
 ---
 
 

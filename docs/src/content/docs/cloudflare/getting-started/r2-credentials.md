@@ -1,5 +1,6 @@
 ---
 title: "R2 S3 Credentials"
+description: "Configure R2 S3 access keys for application data access and understand how they differ from Cloudflare provisioning API tokens."
 ---
 
 
