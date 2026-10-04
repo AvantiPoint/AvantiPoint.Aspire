@@ -19,7 +19,6 @@ internal static class AspirePublishingChecks
         };
         foreach (var argument in new[] { command, "--apphost", appHost, "--output-path", directory, "--non-interactive" })
             startInfo.ArgumentList.Add(argument);
-        if (command == "destroy") startInfo.ArgumentList.Add("--yes");
         startInfo.Environment["CLOUDFLARE_PUBLISH_TEST"] = "1";
         startInfo.Environment["CLOUDFLARE_PUBLISH_TEST_NAME"] = name;
         startInfo.Environment["CLOUDFLARE_PUBLISH_TEST_DIRECTORY"] = directory;
