@@ -64,13 +64,18 @@ public class CloudflarePublishingTests
         Assert.True(subdomainResponse.IsSuccessStatusCode, $"Could not read Workers subdomain (HTTP {(int)subdomainResponse.StatusCode}).");
         using var subdomainJson = JsonDocument.Parse(await subdomainResponse.Content.ReadAsStringAsync(ct));
         var subdomain = subdomainJson.RootElement.GetProperty("result").GetProperty("subdomain").GetString();
-        using var workerHttp = new HttpClient { BaseAddress = new Uri($"https://{name}.{subdomain}.workers.dev/") };
+        using var workerHttp = new HttpClient
+        {
+            BaseAddress = new Uri($"https://{name}.{subdomain}.workers.dev/"),
+            Timeout = TimeSpan.FromSeconds(15),
+        };
 
         var pipeline = new PipelineContext(new DistributedApplicationModel(builder.Resources), builder.ExecutionContext,
             app.Services, NullLogger.Instance, ct);
         var context = new PipelineStepContext { PipelineContext = pipeline, ReportingStep = null! };
         var steps = CloudflarePipelineSteps.CreateSteps(environment.Resource).ToDictionary(step => step.Name);
         var deployed = false;
+        var probeMayExist = false;
         try
         {
             await steps[CloudflarePipelineSteps.ValidateTokenStepName(environment.Resource)].Action(context);
@@ -87,64 +92,74 @@ public class CloudflarePublishingTests
             {
                 try
                 {
+                    // A timed-out POST can still have written the object on the server.
+                    probeMayExist = true;
                     using var response = await workerHttp.PostAsync("", new StringContent(""), ct);
                     response.EnsureSuccessStatusCode();
                     Assert.Equal("AvantiPoint Aspire publishing", await response.Content.ReadAsStringAsync(ct));
                     Assert.Equal("AvantiPoint Aspire publishing", await workerHttp.GetStringAsync("", ct));
                     break;
                 }
-                catch (HttpRequestException) when (attempt < 20)
+                catch (Exception error) when ((error is HttpRequestException or TaskCanceledException) && attempt < 20 && !ct.IsCancellationRequested)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(3), ct);
                 }
             }
+            Console.WriteLine($"{(typeScript ? "TypeScript" : "C#")} real Cloudflare publish/deploy, Worker HTTP content and R2 binding verified.");
         }
         finally
         {
-            using var cleanupTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-            var cleanupCt = cleanupTimeout.Token;
             try
             {
                 if (deployed)
                 {
-                    // This fixture validates publishing. Cleanup uses scoped service APIs so
-                    // Wrangler's unrelated legacy Workers Sites KV check needs no extra permission.
-                    using var response = await workerHttp.DeleteAsync("", cleanupCt);
-                    Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound,
-                        $"Could not empty integration R2 bucket (HTTP {(int)response.StatusCode}).");
-                    Console.WriteLine($"{(typeScript ? "TypeScript" : "C#")} real Cloudflare publish/deploy, Worker HTTP content and R2 binding verified.");
+                    using var fallbackTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+                    var fallbackCt = fallbackTimeout.Token;
+                    // Keep the object-removal Worker until the bucket is confirmed empty.
+                    // If this fails, retain it for recovery rather than stranding a nonempty bucket.
+                    if (probeMayExist)
+                        await EmptyProbeAsync(workerHttp, name, fallbackCt);
+                    // A partly failed deploy must not strand the earlier R2 resource.
+                    // Attempt both removals independently even if Worker HTTP/DNS never became ready.
+                    try
+                    {
+                        using var response = await accountHttp.DeleteAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", fallbackCt);
+                        Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound,
+                            $"Could not remove integration Worker (HTTP {(int)response.StatusCode}).");
+                        using var absentWorker = await accountHttp.GetAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", fallbackCt);
+                        Assert.Equal(HttpStatusCode.NotFound, absentWorker.StatusCode);
+                    }
+                    finally
+                    {
+                        using var bucketTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+                        await api.DeleteR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, bucketTimeout.Token);
+                        Assert.Null(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, bucketTimeout.Token));
+                        Console.WriteLine($"Cleanup verified for integration resource '{name}'.");
+                    }
                 }
             }
             finally
             {
-                try
-                {
-                    if (deployed)
-                    {
-                        using var fallbackTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-                        var fallbackCt = fallbackTimeout.Token;
-                        // A partly failed deploy must not strand the earlier R2 resource.
-                        // Attempt both removals independently even if Worker HTTP/DNS never became ready.
-                        try
-                        {
-                            using var response = await accountHttp.DeleteAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", fallbackCt);
-                            Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound,
-                                $"Could not remove integration Worker (HTTP {(int)response.StatusCode}).");
-                            using var absentWorker = await accountHttp.GetAsync($"accounts/{CloudflareAccount.AccountId}/workers/scripts/{name}", fallbackCt);
-                            Assert.Equal(HttpStatusCode.NotFound, absentWorker.StatusCode);
-                        }
-                        finally
-                        {
-                            await api.DeleteR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, fallbackCt);
-                            Assert.Null(await api.GetR2BucketAsync(CloudflareAccount.Token!, CloudflareAccount.AccountId!, name, fallbackCt));
-                            Console.WriteLine($"Cleanup verified for integration resource '{name}'.");
-                        }
-                    }
-                }
-                finally
-                {
-                    Directory.Delete(directory, recursive: true);
-                }
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    private static async Task EmptyProbeAsync(HttpClient worker, string name, CancellationToken cancellationToken)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            try
+            {
+                using var response = await worker.DeleteAsync("", cancellationToken);
+                response.EnsureSuccessStatusCode();
+                return;
+            }
+            catch (Exception error) when (error is HttpRequestException or TaskCanceledException)
+            {
+                if (attempt == 4 || cancellationToken.IsCancellationRequested)
+                    throw new InvalidOperationException($"Could not empty test bucket '{name}'. Its cleanup Worker is retained for recovery.", error);
+                await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
             }
         }
     }
