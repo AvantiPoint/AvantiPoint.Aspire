@@ -8,7 +8,7 @@ assert.ok(name && /^ap-aspire-it-[a-f0-9]{27}$/.test(name));
 assert.ok(directory);
 
 const builder = await createBuilder();
-assert.equal((await builder.executionContext()).isRunMode, false, 'This fixture only publishes real Cloudflare services');
+assert.equal(await (await builder.executionContext()).isRunMode(), false, 'This fixture only publishes real Cloudflare services');
 const environment = await builder.addCloudflareEnvironment();
 await environment.addR2BucketInEnvironment('uploads', { bucketName: name }).runAsEmulator().allowDeletion();
 await environment.addCloudflareWorkerInEnvironment(name, directory);
