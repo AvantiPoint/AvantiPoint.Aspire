@@ -1,5 +1,6 @@
 ---
 title: "API Tokens & Scopes"
+description: "Choose Cloudflare API token permissions for the services you deploy, and keep provisioning tokens separate from R2 runtime credentials."
 ---
 
 

@@ -14,6 +14,7 @@ export default defineConfig({
       logo: { src: './src/assets/logo.png', alt: 'AvantiPoint' },
       favicon: '/favicon.png',
       customCss: ['./src/styles/brand.css'],
+      routeMiddleware: './src/social-metadata.ts',
       social: [
         {
           icon: 'github',
