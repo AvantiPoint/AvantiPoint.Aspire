@@ -12,7 +12,7 @@ This API token is **not** the same as the R2 S3 credentials your app uses at run
 
 ## Create a token
 
-1. Go to **[My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens)** (a user token), or **Manage Account → API Tokens** for an [account-owned token](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/) (recommended for CI/shared use, not tied to one person).
+1. The current integration verifies tokens through `/user/tokens/verify`. Create a user API token at **[My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens)**. Account-owned token verification uses a different endpoint and is not currently supported by this preflight.
 2. Select **Create Token → Create Custom Token**.
 3. Add the **permissions** for the services you'll deploy (see the table below).
 4. Set **Account Resources** to your account, and **Zone Resources** to the specific zone(s) only if you use custom domains.
@@ -22,13 +22,20 @@ Provide it to the integration via the `CLOUDFLARE_API_TOKEN` environment variabl
 
 ## Which permissions do I need?
 
-The integration only requires the permissions for the resources actually in your AppHost — it validates the token against exactly that set before deploying. Grant the union of the rows that apply to you:
+The AppHost aggregates the permissions its resources need. Preflight verification checks whether the token is active; it does not inspect its permission policy. Cloudflare service APIs enforce permissions during provisioning and deployment. Grant the union of the rows that apply:
 
 | If you deploy… | Permission group | Level | Category |
 | --- | --- | --- | --- |
 | **Anything** (always) | User Details | Read | User |
 | **R2 buckets** (`…Hosting.Cloudflare.R2`) | Workers R2 Storage | Edit | Account |
 | **Containers / .NET APIs** (`…Hosting.Cloudflare`) | Workers Scripts | Edit | Account |
+| **D1 databases** | D1 | Edit | Account |
+| **Workers AI** | Workers AI | Read | Account |
+| **AI Gateway** | AI Gateway | Edit | Account |
+| **Vectorize indexes** | Vectorize | Edit | Account |
+| **Workers KV namespaces** | Workers KV Storage | Edit | Account |
+| **Queues** | Queues | Edit | Account |
+| **Hyperdrive configurations** | Hyperdrive | Edit | Account |
 | **Pages** (`…Hosting.Cloudflare.Pages`) | Cloudflare Pages | Edit | Account |
 | **Custom domains** (`WithCustomDomain`) | DNS | Edit | Zone |
 | **Custom domains** (`WithCustomDomain`) | Zone | Read | Zone |
@@ -49,9 +56,11 @@ Cloudflare groups permissions into **Account**, **Zone**, and **User** categorie
 
 On `aspire deploy`, the first pipeline step calls Cloudflare's [token verify](https://developers.cloudflare.com/fundamentals/api/how-to/test-token/) endpoint. If the token is missing, inactive, or rejected, the deploy stops immediately with a message listing the scopes the operation expected — so you can fix the token before anything is provisioned.
 
+A successful preflight does **not** establish that the token has these scopes or access to the intended account and zones. An active but under-scoped token can fail later, after earlier resources have been provisioned.
+
 ## Security tips
 
-- Prefer **account-owned tokens** for CI so access doesn't depend on one person's account.
+- Use a dedicated, narrowly scoped token for CI, and review access when its owner changes.
 - Scope **Zone Resources** to specific zones rather than *All zones* when you can.
 - Store the token as a **secret** (GitHub Actions secret, user-secrets) — never commit it.
 - Rotate tokens periodically; you can roll or delete them from the same dashboard page.

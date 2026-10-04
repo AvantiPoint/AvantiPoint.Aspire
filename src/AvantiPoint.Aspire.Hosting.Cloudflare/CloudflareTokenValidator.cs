@@ -37,8 +37,7 @@ internal sealed class CloudflareTokenValidator(ICloudflareApiClient apiClient, I
                 return;
             }
 
-            TokenVerifyOrThrow();
-
+            // Verification checks activeness, not permissions. Service APIs enforce the required scopes.
             var result = await apiClient.VerifyTokenAsync(apiToken, cancellationToken).ConfigureAwait(false);
             if (!string.Equals(result.Status, "active", StringComparison.OrdinalIgnoreCase))
             {
@@ -58,13 +57,6 @@ internal sealed class CloudflareTokenValidator(ICloudflareApiClient apiClient, I
             _gate.Release();
         }
 
-        void TokenVerifyOrThrow()
-        {
-            // Note: /user/tokens/verify confirms the token is valid/active but does not enumerate
-            // its scopes (and a narrowly-scoped deploy token often cannot read its own definition).
-            // We therefore validate activeness here and rely on individual API calls to surface a
-            // precise "missing scope" error. The required-scope list is logged to guide the user.
-        }
     }
 
     private static string FormatScopes(IReadOnlyCollection<string> scopes)

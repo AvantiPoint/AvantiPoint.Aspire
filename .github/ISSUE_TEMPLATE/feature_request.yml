@@ -2,6 +2,13 @@ name: Feature request
 description: Suggest a capability or Cloudflare resource to support
 labels: ["enhancement", "triage"]
 body:
+  - type: input
+    id: area
+    attributes:
+      label: Affected area
+      description: Service/package, shared extensions, TypeScript AppHost, documentation or build.
+    validations:
+      required: true
   - type: textarea
     id: problem
     attributes:

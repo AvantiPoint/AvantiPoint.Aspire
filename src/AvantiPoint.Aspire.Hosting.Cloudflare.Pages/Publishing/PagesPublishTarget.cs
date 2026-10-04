@@ -24,10 +24,11 @@ internal sealed class PagesPublishTarget(ILogger<PagesPublishTarget> logger, IWr
             return;
         }
 
+        var environment = await PagesBuildEnvironment.ResolveAsync(resource, logger, cancellationToken).ConfigureAwait(false);
         var (file, args) = SplitCommand(annotation.BuildCommand);
         logger.LogInformation("Building Pages app '{Resource}' with '{Command}'...", resource.Name, annotation.BuildCommand);
 
-        var result = await CliRunner.RunAsync(file, args, annotation.WorkingDirectory, logger: logger, cancellationToken: cancellationToken)
+        var result = await CliRunner.RunAsync(file, args, annotation.WorkingDirectory, environment: environment, logger: logger, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         if (!result.Success)

@@ -1,10 +1,10 @@
 ---
 title: "AvantiPoint Aspire"
-description: "A family of AvantiPoint integrations for Aspire — provision and deploy to providers beyond Azure."
+description: "A family of AvantiPoint integrations for Aspire - model, provision and deploy Cloudflare resources."
 ---
 
 
-**AvantiPoint Aspire** is a family of integrations for [Aspire](https://aspire.dev) by AvantiPoint. Each integration plugs into Aspire's model and `aspire run` / `aspire deploy` pipeline so you can provision and deploy real cloud resources — without being limited to the built-in Azure path.
+**AvantiPoint Aspire** is a family of integrations for [Aspire](https://aspire.dev) by AvantiPoint. Each integration plugs into Aspire's model and `aspire run` / `aspire deploy` pipeline so you can provision and deploy real cloud resources.
 
 The packages share a few conventions, so once you've learned one integration the others feel familiar:
 

@@ -19,9 +19,27 @@ export R2_SECRET_ACCESS_KEY="<r2 secret access key>"
 
 In development, prefer [user-secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) on the AppHost over exporting secrets in your shell.
 
-## 2. Wire up the AppHost
+## 2. Install packages and wire up the AppHost
+
+In an existing Aspire AppHost, install these packages at the same available 13.6 version from your package feed and add a project reference to your API. Set the version below to the package version you are using:
+
+```bash
+export AVANTIPOINT_VERSION="<available-13.6-package-version>"
+dotnet add AppHost/AppHost.csproj package AvantiPoint.Aspire.Hosting.Cloudflare --version "$AVANTIPOINT_VERSION"
+dotnet add AppHost/AppHost.csproj package AvantiPoint.Aspire.Hosting.Cloudflare.R2 --version "$AVANTIPOINT_VERSION"
+dotnet add AppHost/AppHost.csproj package AvantiPoint.Aspire.Hosting.Cloudflare.Pages --version "$AVANTIPOINT_VERSION"
+dotnet add AppHost/AppHost.csproj package AvantiPoint.Aspire.Hosting.Extensions --version "$AVANTIPOINT_VERSION"
+dotnet add AppHost/AppHost.csproj package Aspire.Hosting.JavaScript --version 13.6.0
+dotnet add AppHost/AppHost.csproj reference Api/Api.csproj
+dotnet add Api/Api.csproj package AvantiPoint.Aspire.Cloudflare.R2 --version "$AVANTIPOINT_VERSION"
+```
+
+Adjust paths to your solution. `Projects.Api` is generated from the AppHost's API project reference. The Vite project at `../web` must contain a build script and have its npm dependencies installed.
 
 ```csharp
+using Aspire.Hosting;
+using Aspire.Hosting.JavaScript;
+using AvantiPoint.Aspire.Hosting.Extensions;
 using AvantiPoint.Aspire.Hosting.Cloudflare;
 using AvantiPoint.Aspire.Hosting.Cloudflare.Pages;
 using AvantiPoint.Aspire.Hosting.Cloudflare.R2;
@@ -48,7 +66,7 @@ var api = builder.AddProject<Projects.Api>("api")
 
 // A Vite frontend deployed to Cloudflare Pages.
 builder.AddViteApp("web", "../web")
-    .WithReference(api)
+    .WithEnvironment("VITE_API_URL", api.GetEndpoint("http"))
     .PublishAsCloudflarePages()
     .WithCustomDomain(webHost, zone);
 
@@ -64,6 +82,8 @@ Each resource resolves the single Cloudflare environment for you. With more than
 In the API (or any service) project:
 
 ```csharp
+using AvantiPoint.Aspire.Cloudflare.R2;
+
 builder.AddR2Client("uploads");   // registers IR2Client (and IAmazonS3) configured for R2
 ```
 
@@ -90,7 +110,7 @@ Because the bucket uses `.RunAsEmulator()`, MinIO starts, the bucket is created 
 aspire deploy
 ```
 
-The token is validated, R2 buckets are provisioned, the API container and Pages site are deployed via wrangler, and any custom domains are configured.
+The token is checked for activeness, R2 buckets are provisioned, the API container and Pages site are deployed via wrangler, and any custom domains are configured.
 
 ## Provisioning / seeding
 

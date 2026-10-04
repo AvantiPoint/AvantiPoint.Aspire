@@ -58,7 +58,7 @@ builder.AddProject<Projects.Api>("api")
 At deploy, the R2 connection string resolves to the **real** R2 endpoint and credentials, so the container reaches R2 in production with no code change.
 
 :::note
-Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
+Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Generated Worker files can contain credentials in plaintext. Keep publish output private; never attach generated Worker artifacts, `.aspire` output, or unredacted logs to issues or pull requests. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
 :::
 
 

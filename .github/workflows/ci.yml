@@ -31,7 +31,7 @@ jobs:
       contents: read
     with:
       name: Build Package Feed
-      # The dotnet/sign CLI (code-sign: true below) depends on Windows-only APIs (kernel32.dll) and
+      # Signing trusted master builds with the dotnet/sign CLI depends on Windows-only APIs (kernel32.dll) and
       # cannot run on Linux (github.com/dotnet/sign#711) — the whole job runs on one runner, so this
       # must be windows-latest. This restores what the pre-reusable-workflow ci.yml already used.
       runs-on: windows-latest
@@ -55,7 +55,7 @@ jobs:
         tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Queues.Tests.csproj
         tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests/AvantiPoint.Aspire.Hosting.Cloudflare.Hyperdrive.Tests.csproj
         tests/AvantiPoint.Aspire.Hosting.Extensions.Tests/AvantiPoint.Aspire.Hosting.Extensions.Tests.csproj
-      code-sign: true
+      code-sign: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       codeSignEndpoint: ${{ vars.CODESIGN_ENDPOINT }}
       codeSignAccountName: ${{ vars.CODESIGN_ACCOUNTNAME }}
       codeSignCertificateProfile: ${{ vars.CODESIGN_CERTIFICATEPROFILE }}

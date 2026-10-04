@@ -4,16 +4,22 @@ labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
-      value: Thanks for taking the time to file a bug report!
+      value: Do not include credentials, generated publish artifacts or unredacted logs. For vulnerabilities, follow SECURITY.md.
   - type: dropdown
     id: package
     attributes:
       label: Package
       description: Which package does this affect?
       options:
-        - AvantiPoint.Aspire.Hosting.Cloudflare
-        - AvantiPoint.Aspire.Hosting.Cloudflare.R2
-        - AvantiPoint.Aspire.Cloudflare.R2
+        - Core hosting / deployment / custom domains
+        - R2
+        - D1
+        - Workers / Containers / Pages
+        - AI / AI Gateway
+        - Vectorize / KV / Queues / Hyperdrive
+        - Shared hosting extensions
+        - TypeScript AppHost / interop
+        - Documentation / build
         - Not sure
     validations:
       required: true
@@ -36,11 +42,12 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Package version, .NET SDK version, wrangler version, OS.
+      description: Affected package/version, Aspire CLI version, .NET SDK, Node/wrangler versions, OS, and C# or TypeScript AppHost.
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
-      label: Relevant log output
+      label: Relevant redacted log output
+      description: Remove secrets and connection strings. Do not upload generated Worker or publish output.
       render: shell

@@ -34,14 +34,22 @@ builder.AddViteApp("web", "../web")
 Inject the API's URL so the frontend can call it:
 
 ```csharp
-var api = builder.AddProject<Projects.Api>("api").PublishAsCloudflareContainer();
+var api = builder.AddProject<Projects.Api>("api")
+    .PublishAsCloudflareContainer()
+    .WithCustomDomain("api.example.com", "your-zone-id");
 
 builder.AddViteApp("web", "../web")
     .WithEnvironment("VITE_API_URL", api.GetEndpoint("http"))
     .PublishAsCloudflarePages();
 ```
 
-In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it.
+The build receives resolved `WithEnvironment` values in publish context. Endpoint references use the target's custom domain (`https://api.example.com` here), not a local dev-server URL. A referenced endpoint must have a Cloudflare target and custom domain; otherwise provide its production URL explicitly. The default `workers.dev` placeholder is not an account-qualified production address.
+
+In the frontend, read `import.meta.env.VITE_API_URL` and `fetch` from it. Configure the API's CORS policy for the site's origin.
+
+:::caution
+Vite embeds `VITE_*` variables in browser assets; those values are public. Never use these variables for API tokens, passwords, R2 credentials or other secrets. Build tools can also print environment values: redact output before sharing it.
+:::
 
 ## Requirements
 
