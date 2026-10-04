@@ -70,8 +70,8 @@ jobs:
   # Azure Artifact Signing rotates its signing certificate roughly daily (~72h validity), but
   # nuget.org's "required signer" allowlist (nuget.org account -> Certificates; separate from
   # Trusted Publishing, which only governs *who* can push, not the package's own signature) can
-  # only pin a single certificate thumbprint at a time, with no API to update it — it's a manual
-  # website upload (see github.com/NuGet/NuGetGallery#10027, open/unresolved as of this writing).
+  # requires registering the actual signing certificate. Multiple certificates can be registered
+  # through the website; keep existing certificates when adding this release's certificate.
   # So: extract the exact leaf certificate this build's packages were actually signed with, and
   # surface it (thumbprint + downloadable .cer) so it can be registered on nuget.org *before* the
   # draft release below is published — otherwise the push succeeds but nuget.org's signature
@@ -98,8 +98,10 @@ jobs:
 
           unzip -p "$nupkg" .signature.p7s > sig.p7s
           # The signature is a PKCS#7/CMS blob containing the full chain (leaf + intermediates);
-          # pull every certificate out, then isolate the leaf below.
-          openssl pkcs7 -inform DER -in sig.p7s -print_certs -out chain.pem
+          # CMS supports both issuer/serial and subject-key-identifier signer encodings. The
+          # legacy pkcs7 parser rejects the latter, which Azure Artifact Signing can produce.
+          # Pull every certificate out, then isolate the leaf below.
+          openssl cms -cmsout -inform DER -in sig.p7s -noout -certsout chain.pem
           csplit -s -z -f cert- -b '%02d.pem' chain.pem '/-----BEGIN CERTIFICATE-----/' '{*}'
 
           leaf=""
