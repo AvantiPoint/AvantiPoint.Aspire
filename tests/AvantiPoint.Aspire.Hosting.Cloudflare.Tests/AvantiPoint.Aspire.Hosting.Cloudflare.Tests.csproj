@@ -12,7 +12,6 @@
     <PackageReference Include="xunit.v3.mtp-v2" />
     <PackageReference Include="GitHubActionsTestLogger" />
     <PackageReference Include="NSubstitute" />
-    <PackageReference Include="Verify.XunitV3" />
     <PackageReference Include="Aspire.Hosting.Testing" />
   </ItemGroup>
 
