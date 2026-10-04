@@ -1,24 +1,15 @@
-<!-- Thanks for contributing to AvantiPoint.Aspire for Cloudflare! -->
+## Change
 
-## Summary
-
-<!-- What does this PR change and why? -->
+<!-- Describe the problem and resulting behavior. Mention affected packages, docs or AppHost languages. -->
 
 ## Related issues
 
-<!-- e.g. Closes #123 -->
+<!-- Closes #123, or explain the relationship. -->
 
-## Type of change
+## Validation
 
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Docs / chore
+<!-- List checks actually run and any skipped checks with a reason. Use native MTP: dotnet test --project ... or --solution AvantiPoint.Aspire.slnx. State Docker/cloud prerequisites for integration tests. -->
 
-## Checklist
-
-- [ ] `dotnet build AvantiPoint.Aspire.slnx -c Release` succeeds
-- [ ] `dotnet test AvantiPoint.Aspire.slnx` passes (unit tests)
-- [ ] Added/updated tests for the change
-- [ ] Updated docs / README where relevant
-- [ ] Integration tests considered (run locally with a Cloudflare token if the change touches provisioning/deploy)
+- [ ] Existing C# consumers remain compatible, or breaking changes are explained
+- [ ] Relevant behavior tested and examples/docs updated
+- [ ] No credentials, generated publish artifacts or unredacted logs included

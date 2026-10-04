@@ -2,10 +2,15 @@
 title: "Custom Domains"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 Attach a custom hostname to a Container or Pages app with `WithCustomDomain`. Call it **after** `PublishAsCloudflareContainer` / `PublishAsCloudflarePages`.
 
 Both the **hostname** and the **Zone ID** are deploy-specific configuration, so pass them as Aspire **parameters** rather than hard-coding them:
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 using AvantiPoint.Aspire.Hosting.Extensions;
@@ -22,6 +27,24 @@ builder.AddViteApp("web", "../web")
     .PublishAsCloudflarePages()
     .WithCustomDomain(webHost, zone);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+const zone = await builder.addDeploymentParameter('zone-id');
+const apiHost = await builder.addDeploymentParameter('api-hostname');
+const webHost = await builder.addDeploymentParameter('web-hostname');
+const api = await builder.addProject('api', '../Api/Api.csproj')
+    .publishAsCloudflareContainer()
+    .withCustomDomainParameters(apiHost, zone);
+await builder.addViteApp('web', '../web')
+    .publishAsCloudflarePages()
+    .withCustomDomainParameters(webHost, zone);
+```
+
+</TabItem>
+</Tabs>
 
 Literal overloads — `WithCustomDomain("api.example.com", "<zone-id>")` — also exist for quick samples, and you can mix (parameter hostname + literal zone, or vice versa). Prefer parameters for real deployments.
 

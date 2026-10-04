@@ -8,6 +8,7 @@
   },
   "packages": {
     "Aspire.Hosting.JavaScript": "13.6.0",
+    "Aspire.Hosting.PostgreSQL": "13.6.0",
     "AvantiPoint.Aspire.Hosting.Cloudflare": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare/AvantiPoint.Aspire.Hosting.Cloudflare.csproj",
     "AvantiPoint.Aspire.Hosting.Cloudflare.AI": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.AI/AvantiPoint.Aspire.Hosting.Cloudflare.AI.csproj",
     "AvantiPoint.Aspire.Hosting.Cloudflare.D1": "../../src/AvantiPoint.Aspire.Hosting.Cloudflare.D1/AvantiPoint.Aspire.Hosting.Cloudflare.D1.csproj",

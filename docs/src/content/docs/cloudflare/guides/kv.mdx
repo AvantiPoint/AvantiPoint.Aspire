@@ -2,24 +2,53 @@
 title: "Workers KV"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 [Workers KV](https://developers.cloudflare.com/kv/) is Cloudflare's low-latency key-value store. The integration provisions a KV namespace and gives you an `ICloudflareKVClient` to read and write it from .NET.
 
 ## Add a namespace (hosting)
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 builder.AddCloudflareEnvironment();
 var cache = builder.AddKvNamespace("cache").RunAsEmulator();
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addCloudflareEnvironment();
+const cache = await builder.addKvNamespace('cache').runAsEmulator();
+```
+
+</TabItem>
+</Tabs>
+
 - **`aspire run`** → with `.RunAsEmulator()`, an in-process **in-memory** store backs the namespace. No credentials needed.
 - **`aspire deploy`** → the namespace is provisioned in real KV via the Cloudflare API.
 
 ## Reference it from a service
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 builder.AddProject<Projects.Api>("api").WithReference(cache);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addProject('api', '../Api/Api.csproj').withReference(cache);
+```
+
+</TabItem>
+</Tabs>
 
 ## Use it (client)
 

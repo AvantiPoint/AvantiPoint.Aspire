@@ -2,6 +2,8 @@
 title: "Account ID & Zone ID"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 Cloudflare uses two identifiers you'll provide to the integration.
 
@@ -36,6 +38,9 @@ The Zone ID is **per-domain**. If you attach custom domains across multiple zone
 
 ## Where these are used
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 // Account id: from CLOUDFLARE_ACCOUNT_ID (or a parameter you pass to AddCloudflareEnvironment).
 builder.AddCloudflareEnvironment();
@@ -45,3 +50,16 @@ var zone = builder.AddDeploymentParameter("zone-id");
 var host = builder.AddDeploymentParameter("api-hostname");
 api.WithCustomDomain(host, zone);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addCloudflareEnvironment();
+const zone = await builder.addDeploymentParameter('zone-id');
+const host = await builder.addDeploymentParameter('api-hostname');
+await api.withCustomDomainParameters(host, zone);
+```
+
+</TabItem>
+</Tabs>

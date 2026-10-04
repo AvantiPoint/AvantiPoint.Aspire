@@ -17,7 +17,6 @@ updates:
           - "xunit*"
           - "Microsoft.NET.Test.Sdk"
           - "NSubstitute"
-          - "Verify.*"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

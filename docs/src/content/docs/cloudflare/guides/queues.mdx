@@ -2,24 +2,53 @@
 title: "Queues"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 [Cloudflare Queues](https://developers.cloudflare.com/queues/) is a message queue. The integration provisions a queue and gives you an `IQueueClient` to send and pull messages from .NET (using the HTTP push producer and pull consumer).
 
 ## Add a queue (hosting)
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 builder.AddCloudflareEnvironment();
 var jobs = builder.AddQueue("jobs").RunAsEmulator();
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addCloudflareEnvironment();
+const jobs = await builder.addQueue('jobs').runAsEmulator();
+```
+
+</TabItem>
+</Tabs>
+
 - **`aspire run`** → with `.RunAsEmulator()`, an in-process **in-memory** queue backs it (with lease/visibility semantics). No credentials needed.
 - **`aspire deploy`** → the queue is provisioned in real Queues via the Cloudflare API.
 
 ## Reference it from a service
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 builder.AddProject<Projects.Api>("api").WithReference(jobs);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addProject('api', '../Api/Api.csproj').withReference(jobs);
+```
+
+</TabItem>
+</Tabs>
 
 ## Use it (client)
 

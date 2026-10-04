@@ -2,15 +2,31 @@
 title: "D1 Databases"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 [D1](https://developers.cloudflare.com/d1/) is Cloudflare's serverless SQL database, built on SQLite. The integration provides both a **hosting** side (provision the database) and a **client** side (query it from your .NET app) — and because D1 *is* SQLite, the local dev loop runs against a real SQLite file, so the same query code works locally and in production.
 
 ## Add a database (hosting)
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 builder.AddCloudflareEnvironment();
 var catalog = builder.AddD1Database("catalog").RunAsEmulator();
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addCloudflareEnvironment();
+const catalog = await builder.addD1Database('catalog').runAsEmulator();
+```
+
+</TabItem>
+</Tabs>
 
 - **`aspire run`** → with `.RunAsEmulator()`, the database is a local **SQLite** file (created automatically under the AppHost's `.aspire/d1` folder). No credentials needed. Without it, `aspire run` targets real D1 (and provisions the database).
 - **`aspire deploy`** → the database is always provisioned in real D1 via the Cloudflare API (`.RunAsEmulator()` only affects run mode).
@@ -19,6 +35,9 @@ The default is **real D1** — calling `.RunAsEmulator()` opts into the local SQ
 
 ### Options
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 builder.AddD1Database("catalog", databaseName: "catalog-prod")
     .RunAsEmulator()            // back with local SQLite during `aspire run` (no credentials)
@@ -26,11 +45,37 @@ builder.AddD1Database("catalog", databaseName: "catalog-prod")
     .AllowDeletion();           // permit `aspire deploy --destroy` to delete the database
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addD1Database('catalog', { databaseName: 'catalog-prod' })
+    .runAsEmulator()
+    .withLocationHint('weur')
+    .allowDeletion();
+```
+
+</TabItem>
+</Tabs>
+
 ## Reference it from a service
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 builder.AddProject<Projects.Api>("api").WithReference(catalog);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addProject('api', '../Api/Api.csproj').withReference(catalog);
+```
+
+</TabItem>
+</Tabs>
 
 This injects the D1 connection string into the service — `Provider=Sqlite;Data Source=...` locally, or `Provider=D1;AccountId=...;Database=...;Token=...` in production.
 

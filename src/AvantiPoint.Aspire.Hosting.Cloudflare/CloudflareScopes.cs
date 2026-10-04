@@ -4,7 +4,7 @@ namespace AvantiPoint.Aspire.Hosting.Cloudflare;
 /// Human-readable Cloudflare API token permission scopes required by the integration,
 /// keyed by the Cloudflare permission-group names shown when minting a token.
 /// The environment aggregates only the scopes actually needed by the resources in the
-/// application model, and validates the supplied token has them before provisioning.
+/// application model. Token verification checks activeness; service APIs enforce permissions.
 /// </summary>
 public static class CloudflareScopes
 {

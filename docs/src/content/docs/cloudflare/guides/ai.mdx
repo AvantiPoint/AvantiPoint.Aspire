@@ -2,10 +2,15 @@
 title: "AI (Workers AI / AI Gateway)"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 Cloudflare's AI endpoints — [Workers AI](https://developers.cloudflare.com/workers-ai/) and [AI Gateway](https://developers.cloudflare.com/ai-gateway/) — are OpenAI-compatible, and so is [Ollama](https://ollama.com/). The integration uses that to give you one [`Microsoft.Extensions.AI`](https://learn.microsoft.com/dotnet/ai/) `IChatClient`/`IEmbeddingGenerator` that runs against **local Ollama** during development and **Cloudflare** in production — the connection string just changes the endpoint and model.
 
 ## Add an AI resource (hosting)
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 builder.AddCloudflareEnvironment();
@@ -19,6 +24,24 @@ var ai = builder.AddCloudflareAI("ai", o =>
 }).RunAsEmulator();
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addCloudflareEnvironment();
+const ai = await builder.addCloudflareAI('ai', {
+    configure: async options => {
+        await options.chatModel.set('@cf/meta/llama-3.1-8b-instruct');
+        await options.embeddingModel.set('@cf/baai/bge-base-en-v1.5');
+        await options.localChatModel.set('llama3.2');
+        await options.localEmbeddingModel.set('all-minilm');
+    }
+}).runAsEmulator();
+```
+
+</TabItem>
+</Tabs>
+
 - **`aspire run`** → with `.RunAsEmulator()`, a local **Ollama** server starts (shared across AI resources in the environment, with a persistent data volume) and pulls the configured local models. No Cloudflare credentials needed.
 - **`aspire deploy`** → the same code talks to **Workers AI** (or an **AI Gateway**, see below). `.RunAsEmulator()` only affects run mode.
 
@@ -30,16 +53,34 @@ The first Ollama model pull downloads several GB. It is cached in a data volume,
 
 `.RunAsEmulator()` runs Ollama as a **container** (Docker required) — self-contained and consistent with the other emulators. If you'd rather use an Ollama **installed on your machine** (for example to use a native GPU without container passthrough, or to avoid Docker), call `.RunOnHost()` instead:
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 var ai = builder.AddCloudflareAI("ai", o => { /* models */ })
     .RunOnHost();   // attach to a host-installed Ollama instead of a container
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+const ai = await builder.addCloudflareAI('ai', {
+    configure: async options => { /* configure models */ }
+}).runOnHost();
+```
+
+</TabItem>
+</Tabs>
 
 Both give the same credential-free local dev loop and the same `IChatClient`/`IEmbeddingGenerator`; only the source of the Ollama server differs.
 
 ### Routing through an AI Gateway
 
 Set a `GatewayId` to route through [AI Gateway](https://developers.cloudflare.com/ai-gateway/) — caching, logging, rate limiting, and multi-provider models (`anthropic/claude-*`, `openai/*`, `workers-ai/@cf/*`). The gateway is provisioned at deploy.
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 var ai = builder.AddCloudflareAI("ai", o =>
@@ -49,11 +90,39 @@ var ai = builder.AddCloudflareAI("ai", o =>
 }).RunAsEmulator();
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+const ai = await builder.addCloudflareAI('ai', {
+    configure: async options => {
+        await options.gatewayId.set('my-gateway');
+        await options.chatModel.set('anthropic/claude-3-5-sonnet');
+    }
+}).runAsEmulator();
+```
+
+</TabItem>
+</Tabs>
+
 ## Reference it from a service
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 builder.AddProject<Projects.Api>("api").WithReference(ai);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addProject('api', '../Api/Api.csproj').withReference(ai);
+```
+
+</TabItem>
+</Tabs>
 
 ## Use it (client)
 

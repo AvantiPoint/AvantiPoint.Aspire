@@ -2,10 +2,15 @@
 title: "Cloudflare Containers"
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 
 Deploy a .NET project as a [Cloudflare Container](https://developers.cloudflare.com/containers/) — fronted by a Worker and a Durable Object, with the image built and pushed by `wrangler`.
 
 ## Deploy a project as a container
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 builder.AddCloudflareEnvironment();
@@ -13,6 +18,17 @@ builder.AddCloudflareEnvironment();
 builder.AddProject<Projects.Api>("api")
     .PublishAsCloudflareContainer();
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addCloudflareEnvironment();
+await builder.addProject('api', '../Api/Api.csproj').publishAsCloudflareContainer();
+```
+
+</TabItem>
+</Tabs>
 
 - **`aspire run`** → the project runs locally as a normal Aspire project.
 - **`aspire deploy`** → the project is published, a Dockerfile + Worker + `wrangler.jsonc` are generated, and `wrangler deploy` builds the image (linux/amd64), pushes it to Cloudflare's registry, and deploys the Worker.
@@ -27,6 +43,9 @@ builder.AddProject<Projects.Api>("api")
 
 ## Options
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 .PublishAsCloudflareContainer(options =>
 {
@@ -38,6 +57,24 @@ builder.AddProject<Projects.Api>("api")
 });
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await api.publishAsCloudflareContainer({
+    configure: async options => {
+        await options.workerName.set('orders-api');
+        await options.port.set(8080);
+        await options.maxInstances.set(5);
+        await options.instanceType.set('standard');
+        await options.sleepAfter.set('10m');
+    }
+});
+```
+
+</TabItem>
+</Tabs>
+
 ## Requirements
 
 - **Docker** running locally (wrangler builds the image).
@@ -48,6 +85,9 @@ builder.AddProject<Projects.Api>("api")
 
 The project's resolved environment variables — connection strings from `WithReference`, anything from `WithEnvironment` — are injected into the container via the Worker's `envVars`, so your app reads its configuration exactly as it does locally. Local-only variables (OpenTelemetry endpoints, service-discovery URLs, the local listen URL) are filtered out.
 
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
+
 ```csharp
 builder.AddProject<Projects.Api>("api")
     .WithReference(uploads)               // an R2 bucket — its connection string is injected
@@ -55,14 +95,30 @@ builder.AddProject<Projects.Api>("api")
     .PublishAsCloudflareContainer();
 ```
 
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+await builder.addProject('api', '../Api/Api.csproj')
+    .withReference(uploads)
+    .withEnvironment('FEATURE_FLAG', 'on')
+    .publishAsCloudflareContainer();
+```
+
+</TabItem>
+</Tabs>
+
 At deploy, the R2 connection string resolves to the **real** R2 endpoint and credentials, so the container reaches R2 in production with no code change.
 
 :::note
-Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
+Values are resolved at deploy time and embedded in the generated Worker (which Cloudflare stores privately per account). Set deploy credentials (`CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) before `aspire deploy` so they resolve. Generated Worker files can contain credentials in plaintext. Keep publish output private; never attach generated Worker artifacts, `.aspire` output, or unredacted logs to issues or pull requests. Promoting secret values to Cloudflare Worker secrets is a planned enhancement.
 :::
 
 
 ## Custom domains
+
+<Tabs syncKey="apphost-language">
+<TabItem label="C#">
 
 ```csharp
 var zone = builder.AddDeploymentParameter("zone-id");
@@ -72,5 +128,19 @@ builder.AddProject<Projects.Api>("api")
     .PublishAsCloudflareContainer()
     .WithCustomDomain(host, zone);
 ```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```typescript
+const zone = await builder.addDeploymentParameter('zone-id');
+const host = await builder.addDeploymentParameter('api-hostname');
+await builder.addProject('api', '../Api/Api.csproj')
+    .publishAsCloudflareContainer()
+    .withCustomDomainParameters(host, zone);
+```
+
+</TabItem>
+</Tabs>
 
 See [Custom Domains](../custom-domains/).
