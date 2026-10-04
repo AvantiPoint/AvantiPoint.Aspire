@@ -34,7 +34,7 @@ The `ParameterDefault` overload of `AddDeploymentParameter` remains a C# API; Ty
 
 ## Model-only interop validation
 
-`validate.mts` exercises resource identity, builder/environment overloads, references, Vectorize enums, Hyperdrive, Workers and Pages options callbacks across the real TypeScript-to-.NET connection. It exits before building, starting, provisioning or deploying the application model. Set a process-local flag when invoking the CLI:
+`validate.mts` exercises resource identity, builder/environment overloads, references, Vectorize enums, Hyperdrive and Worker/Pages/AI/Container options callbacks across the real TypeScript-to-.NET connection. It exits before building, starting, provisioning or deploying the application model. Set a process-local flag when invoking the CLI:
 
 ```sh
 CLOUDFLARE_INTEROP_TEST=1 aspire run --non-interactive
@@ -48,6 +48,6 @@ aspire run --non-interactive
 Remove-Item Env:CLOUDFLARE_INTEROP_TEST
 ```
 
-The assertions require neither cloud credentials nor Docker. The .NET test suite also checks capability-id uniqueness, exported resource types and the background dispatch needed by synchronous C# configuration callbacks that re-enter the remote host.
+The assertions require neither cloud credentials nor Docker. Aspire records the `TypeScript interop passed` message in its CLI log; if the CLI remains at `Connecting to AppHost` after that message, press Ctrl+C to stop it. The .NET test suite also checks capability-id uniqueness, exported resource types and the background dispatch needed by synchronous C# configuration callbacks that re-enter the remote host.
 
 Official references: [Aspire 13.6 release](https://github.com/microsoft/aspire/releases/tag/v13.6.0), [TypeScript AppHost example](https://github.com/microsoft/aspire/tree/v13.6.0/playground/TypeScriptAppHost), [export attribute](https://github.com/microsoft/aspire/blob/v13.6.0/src/Aspire.Hosting/Ats/AspireExportAttribute.cs), and [remote-host protocol](https://github.com/microsoft/aspire/blob/v13.6.0/src/Aspire.Hosting.RemoteHost/README.md).

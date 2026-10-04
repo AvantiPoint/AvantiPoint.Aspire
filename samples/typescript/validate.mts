@@ -16,6 +16,13 @@ assert.equal(await cache.getResourceName(), 'cache');
 assert.equal(await queue.getResourceName(), 'queue');
 assert.equal(await vectors.getResourceName(), 'vectors');
 assert.equal(await bucket.getResourceName(), 'bucket');
+const ai = await builder.addCloudflareAI('ai', {
+    configure: async options => {
+        await options.chatModel.set('@cf/meta/llama-3.1-8b-instruct');
+        assert.equal(await options.chatModel.get(), '@cf/meta/llama-3.1-8b-instruct');
+    }
+});
+assert.equal(await ai.getResourceName(), 'ai');
 
 let callbackCompleted = false;
 const worker = await environment.addCloudflareWorkerInEnvironment('worker', '.', {
@@ -42,6 +49,18 @@ await pages.publishAsCloudflarePagesInEnvironment(environment, {
     }
 });
 await pages.withCustomDomain('test.example.com', 'test-zone');
-console.log('TypeScript interop passed: resource identity, references, enum, overloads and reentrant options callbacks.');
+const api = await builder.addProject('api', '../playground/CloudflarePlayground.Api/CloudflarePlayground.Api.csproj');
+await api.publishAsCloudflareContainerInEnvironment(environment, {
+    configure: async options => {
+        await options.port.set(8081);
+        await options.maxInstances.set(2);
+        assert.equal(await options.port.get(), 8081);
+        assert.equal(await options.maxInstances.get(), 2);
+    }
+});
+await api.withCustomDomainParameters(token, token);
+await api.withCustomDomainHostnameParameter(token, 'test-zone');
+await api.withCustomDomainZoneParameter('test.example.com', token);
+console.log('TypeScript interop passed: resource identity, references, enum, overloads and Worker/Pages/AI/Container options callbacks.');
 // This consumer intentionally exercises only model construction. Do not build/run/deploy the model.
 process.exit(0);
